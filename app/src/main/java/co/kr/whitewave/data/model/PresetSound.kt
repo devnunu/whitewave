@@ -4,9 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
 
-@Entity(tableName = "presets")
-data class Preset(
+@Entity(tableName = "preset_sounds")
+data class PresetSound(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
-    val name: String,
-    val createdAt: Long = System.currentTimeMillis()
+    val presetId: String,
+    val soundId: String,
+    val volume: Float
 )
