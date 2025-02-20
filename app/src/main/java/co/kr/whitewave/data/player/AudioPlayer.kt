@@ -7,6 +7,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import co.kr.whitewave.data.model.Sound
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AudioPlayer(
     private val context: Context,
@@ -99,10 +101,14 @@ class AudioPlayer(
             val volumeStep = targetVolume / steps
 
             for (i in 0..steps) {
-                player.volume = volumeStep * i
+                withContext(Dispatchers.Main) {
+                    player.volume = volumeStep * i
+                }
                 delay(FADE_INTERVAL)
             }
-            player.volume = targetVolume
+            withContext(Dispatchers.Main) {
+                player.volume = targetVolume
+            }
         }
     }
 
@@ -115,10 +121,14 @@ class AudioPlayer(
             val volumeStep = startVolume / steps
 
             for (i in 0..steps) {
-                player.volume = startVolume - (volumeStep * i)
+                withContext(Dispatchers.Main) {
+                    player.volume = startVolume - (volumeStep * i)
+                }
                 delay(FADE_INTERVAL)
             }
-            player.volume = 0f
+            withContext(Dispatchers.Main) {
+                player.volume = 0f
+            }
             onComplete()
         }
     }
