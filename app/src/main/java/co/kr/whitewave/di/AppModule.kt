@@ -15,7 +15,7 @@ val appModule = module {
     viewModel { PresetViewModel(get()) }
 
     // Use cases
-    single { AudioPlayer(get()) }
+    single { AudioPlayer(get(), get()) }
     single { PresetRepository(get()) }
 
     // DAO
