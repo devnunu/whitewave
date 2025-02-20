@@ -54,7 +54,7 @@ class HomeViewModel(
         _timerDuration.value = duration
         duration?.let {
             timer.start(it) {
-                stopAllSounds()
+                stopAllSounds()  // 이제 여기서 자동으로 페이드 아웃 됨
             }
         } ?: timer.cancel()
     }

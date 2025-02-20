@@ -6,6 +6,9 @@ import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.ui.screens.HomeViewModel
 import co.kr.whitewave.ui.screens.preset.PresetViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -15,7 +18,12 @@ val appModule = module {
     viewModel { PresetViewModel(get()) }
 
     // Use cases
-    single { AudioPlayer(get(), get()) }
+    single {
+        AudioPlayer(
+            context = get(),
+            coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        )
+    }
     single { PresetRepository(get()) }
 
     // DAO
