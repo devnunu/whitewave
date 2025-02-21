@@ -24,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.utils.formatForDisplay
+import co.kr.whitewave.R
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -51,7 +53,7 @@ fun TimerPicker(
             style = MaterialTheme.typography.bodyLarge
         )
         Icon(
-            imageVector = Icons.Default.Call,
+            painter = painterResource(id = R.drawable.ic_timer),
             contentDescription = "Set timer"
         )
     }

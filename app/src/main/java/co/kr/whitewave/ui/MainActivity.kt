@@ -19,6 +19,9 @@ import co.kr.whitewave.ui.screens.HomeScreen
 import co.kr.whitewave.ui.screens.preset.PresetScreen
 import co.kr.whitewave.ui.theme.WhiteWaveTheme
 import android.Manifest
+import android.content.Intent
+import android.provider.Settings
+import co.kr.whitewave.ui.screens.setting.SettingsScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -48,6 +51,9 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(
                                 onPresetClick = {
                                     navController.navigate(Screen.Presets.route)
+                                },
+                                onSettingsClick = {
+                                    navController.navigate(Screen.Settings.route)
                                 }
                             )
                         }
@@ -62,6 +68,17 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onBackClick = {
                                     navController.popBackStack()
+                                }
+                            )
+                        }
+                        composable(Screen.Settings.route) {
+                            SettingsScreen(
+                                onBackClick = { navController.popBackStack() },
+                                onNotificationSettingClick = {
+                                    // 시스템 알림 설정으로 이동
+                                    startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                                    })
                                 }
                             )
                         }

@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import co.kr.whitewave.R
 import co.kr.whitewave.ui.components.SavePresetDialog
 import co.kr.whitewave.ui.components.SoundItem
 import co.kr.whitewave.ui.components.TimerPicker
@@ -35,6 +36,7 @@ import co.kr.whitewave.utils.formatForDisplay
 import org.koin.androidx.compose.koinViewModel
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 
 val md_theme_light_primary = Color(0xFF006C4C)
 val md_theme_light_background = Color(0xFFFBFDF8)
@@ -50,7 +52,8 @@ val md_theme_dark_surface = Color(0xFF191C1A)
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    onPresetClick: () -> Unit
+    onPresetClick: () -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
     var showSavePresetDialog by remember { mutableStateOf(false) }
     val sounds by viewModel.sounds.collectAsState()
@@ -64,8 +67,14 @@ fun HomeScreen(
                 actions = {
                     IconButton(onClick = onPresetClick) {
                         Icon(
-                            imageVector = Icons.Default.AccountBox,
-                            contentDescription = "Presets"
+                            painter = painterResource(id = R.drawable.ic_preset),
+                            contentDescription = "프리셋"
+                        )
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_settings),
+                            contentDescription = "설정"
                         )
                     }
                 }
