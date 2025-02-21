@@ -1,9 +1,11 @@
 package co.kr.whitewave.di
 
+import android.content.Context
 import androidx.room.Room
 import co.kr.whitewave.data.local.PresetDatabase
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
+import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.ui.screens.HomeViewModel
 import co.kr.whitewave.ui.screens.preset.PresetViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -14,10 +16,20 @@ import org.koin.dsl.module
 
 val appModule = module {
     // ViewModels
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel {
+        HomeViewModel(
+            audioPlayer = get(),
+            audioServiceController = get(),
+            presetRepository = get()
+        )
+    }
     viewModel { PresetViewModel(get()) }
 
     // Use cases
+    single {
+        AudioServiceController(get<Context>().applicationContext)
+    }
+
     single {
         AudioPlayer(
             context = get(),

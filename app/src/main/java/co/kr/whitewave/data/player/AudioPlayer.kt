@@ -2,6 +2,7 @@ package co.kr.whitewave.data.player
 
 // data/player/AudioPlayer.kt
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -38,6 +39,7 @@ class AudioPlayer(
     val playingSounds: StateFlow<Map<String, Sound>> = _playingSounds.asStateFlow()
 
     fun playSound(sound: Sound) {
+        Log.d("AudioPlayer", "Playing sound: ${sound.name}")
         if (!hasAudioFocus) {
             requestAudioFocus()
         }
@@ -55,6 +57,7 @@ class AudioPlayer(
                 originalVolumes[sound.id] = sound.volume
                 fadeIn(sound.id, sound.volume)
                 _playingSounds.value = _playingSounds.value + (sound.id to sound)
+                Log.d("AudioPlayer", "Current playing sounds: ${_playingSounds.value}")
             }
         }
     }

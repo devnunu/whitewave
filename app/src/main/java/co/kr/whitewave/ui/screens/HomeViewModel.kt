@@ -1,5 +1,10 @@
 package co.kr.whitewave.ui.screens
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.local.PresetWithSounds
@@ -7,7 +12,10 @@ import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
+import co.kr.whitewave.service.AudioService
+import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.utils.SoundTimer
+import co.kr.whitewave.utils.formatForDisplay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,8 +24,10 @@ import kotlin.time.Duration
 
 class HomeViewModel(
     private val audioPlayer: AudioPlayer,
+    private val audioServiceController: AudioServiceController,
     private val presetRepository: PresetRepository
 ) : ViewModel() {
+
     private val timer = SoundTimer()
 
     private val _timerDuration = MutableStateFlow<Duration?>(null)
@@ -29,6 +39,20 @@ class HomeViewModel(
     val sounds: StateFlow<List<Sound>> = _sounds.asStateFlow()
 
     init {
+        audioServiceController.bind { service ->
+            // 서비스 연결 후 현재 타이머 상태 전달
+            timer.remainingTime.value?.formatForDisplay()?.let { time ->
+                service.updateRemainingTime(time)
+            }
+        }
+
+        // 타이머 상태 모니터링
+        viewModelScope.launch {
+            timer.remainingTime.collect { duration ->
+                val formattedTime = duration?.formatForDisplay()
+                audioServiceController.updateRemainingTime(formattedTime)
+            }
+        }
         loadSounds()
     }
 
@@ -63,6 +87,7 @@ class HomeViewModel(
         super.onCleared()
         timer.cancel()
         audioPlayer.release()
+        audioServiceController.unbind()
     }
 
     fun savePreset(name: String) {
