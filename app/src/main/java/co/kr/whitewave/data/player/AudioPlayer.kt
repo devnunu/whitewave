@@ -42,18 +42,20 @@ class AudioPlayer(
             requestAudioFocus()
         }
 
-        players.getOrPut(sound.id) {
-            ExoPlayer.Builder(context).build().apply {
-                setMediaItem(MediaItem.fromUri("asset:///${sound.assetPath}"))
-                repeatMode = Player.REPEAT_MODE_ALL
-                prepare()
-                volume = 0f
+        coroutineScope.launch(Dispatchers.Main) {
+            players.getOrPut(sound.id) {
+                ExoPlayer.Builder(context).build().apply {
+                    setMediaItem(MediaItem.fromUri("asset:///${sound.assetPath}"))
+                    repeatMode = Player.REPEAT_MODE_ALL
+                    prepare()
+                    volume = 0f
+                }
+            }.apply {
+                play()
+                originalVolumes[sound.id] = sound.volume
+                fadeIn(sound.id, sound.volume)
+                _playingSounds.value = _playingSounds.value + (sound.id to sound)
             }
-        }.apply {
-            play()
-            originalVolumes[sound.id] = sound.volume
-            fadeIn(sound.id, sound.volume)
-            _playingSounds.value = _playingSounds.value + (sound.id to sound)
         }
     }
 
@@ -61,22 +63,21 @@ class AudioPlayer(
 
     private fun requestAudioFocus() {
         hasAudioFocus = audioFocusManager.requestAudioFocus { active, volume ->
-            when {
-                active && volume < 1.0f -> {
-                    // 볼륨 줄이기 (ducking)
-                    players.forEach { (id, player) ->
-                        player.volume = originalVolumes[id]!! * volume
+            coroutineScope.launch(Dispatchers.Main) {
+                when {
+                    active && volume < 1.0f -> {
+                        players.forEach { (id, player) ->
+                            player.volume = originalVolumes[id]!! * volume
+                        }
                     }
-                }
-                active -> {
-                    // 볼륨 복구
-                    players.forEach { (id, player) ->
-                        player.volume = originalVolumes[id]!!
+                    active -> {
+                        players.forEach { (id, player) ->
+                            player.volume = originalVolumes[id]!!
+                        }
                     }
-                }
-                else -> {
-                    // 일시 정지
-                    players.values.forEach { it.pause() }
+                    else -> {
+                        players.values.forEach { it.pause() }
+                    }
                 }
             }
         }
@@ -84,12 +85,14 @@ class AudioPlayer(
 
     fun stopSound(soundId: String) {
         fadeOut(soundId) {
-            players[soundId]?.apply {
-                stop()
-                release()
+            coroutineScope.launch(Dispatchers.Main) {
+                players[soundId]?.apply {
+                    stop()
+                    release()
+                }
+                players.remove(soundId)
+                _playingSounds.value = _playingSounds.value - soundId
             }
-            players.remove(soundId)
-            _playingSounds.value = _playingSounds.value - soundId
         }
     }
 
@@ -116,8 +119,13 @@ class AudioPlayer(
         fadeJobs[soundId]?.cancel()
         fadeJobs[soundId] = coroutineScope.launch {
             val player = players[soundId] ?: return@launch
+
+            // volume 읽기도 메인 스레드에서 실행
+            val startVolume = withContext(Dispatchers.Main) {
+                player.volume
+            }
+
             val steps = FADE_DURATION / FADE_INTERVAL
-            val startVolume = player.volume
             val volumeStep = startVolume / steps
 
             for (i in 0..steps) {
@@ -135,14 +143,16 @@ class AudioPlayer(
 
     fun updateVolume(soundId: String, volume: Float) {
         fadeJobs[soundId]?.cancel()
-        players[soundId]?.volume = volume
-        _playingSounds.value[soundId]?.let { sound ->
-            _playingSounds.value = _playingSounds.value + (soundId to sound.copy(volume = volume))
+        coroutineScope.launch(Dispatchers.Main) {
+            players[soundId]?.volume = volume
+            _playingSounds.value[soundId]?.let { sound ->
+                _playingSounds.value = _playingSounds.value + (soundId to sound.copy(volume = volume))
+            }
         }
     }
 
     fun release() {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Main) {
             fadeJobs.values.forEach { it.cancelAndJoin() }
             fadeJobs.clear()
             players.values.forEach { it.release() }
