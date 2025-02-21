@@ -1,21 +1,10 @@
 package co.kr.whitewave.service
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaSessionService
-import co.kr.whitewave.R
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
@@ -42,17 +31,7 @@ class AudioService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        notificationManager = MediaNotificationManager(this, this)
-
-        // 즉시 Foreground 서비스로 시작
-        startForeground(
-            MediaNotificationManager.NOTIFICATION_ID,
-            notificationManager.buildNotification(
-                isPlaying = false,
-                remainingTime = null,
-                activeSounds = emptyList()
-            )
-        )
+        notificationManager = MediaNotificationManager(this)
 
         // 재생 중인 사운드 모니터링
         serviceScope.launch {
@@ -60,7 +39,22 @@ class AudioService : Service() {
                 activeSounds.clear()
                 activeSounds.addAll(soundMap.values.map { it.name })
                 isPlaying = soundMap.isNotEmpty()
-                updateNotification()
+
+                // 재생 상태에 따라 Foreground 서비스 시작/중지
+                if (isPlaying) {
+                    Log.d("AudioService", "Starting foreground service")
+                    startForeground(
+                        MediaNotificationManager.NOTIFICATION_ID,
+                        notificationManager.buildNotification(
+                            isPlaying = true,
+                            remainingTime = remainingTime,
+                            activeSounds = activeSounds
+                        )
+                    )
+                } else {
+                    Log.d("AudioService", "Stopping foreground service")
+                    stopForeground(true)
+                }
             }
         }
     }
@@ -78,6 +72,13 @@ class AudioService : Service() {
                 stopAllSounds()
                 stopForeground(true)
                 stopSelf()
+
+                // MainActivity 종료
+                Intent(this, MainActivity::class.java).also {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    it.action = "ACTION_SHUTDOWN"
+                    startActivity(it)
+                }
             }
         }
 

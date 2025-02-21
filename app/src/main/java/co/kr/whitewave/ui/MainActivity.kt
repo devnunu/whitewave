@@ -25,6 +25,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 종료 액션 처리
+        if (intent?.action == "ACTION_SHUTDOWN") {
+            finishAndRemoveTask()  // finish() 대신 finishAndRemoveTask() 사용
+            return
+        }
+
         checkNotificationPermission()
         setContent {
             WhiteWaveTheme {

@@ -13,8 +13,7 @@ import co.kr.whitewave.ui.MainActivity
 
 
 class MediaNotificationManager(
-    private val context: Context,
-    private val service: AudioService
+    private val context: Context
 ) {
     companion object {
         const val NOTIFICATION_ID = 1
@@ -101,8 +100,19 @@ class MediaNotificationManager(
                 stopIntent
             )
             .setStyle(MediaStyle().setShowActionsInCompactView(0, 1))
-            .setOngoing(true)  // 알림이 사용자에 의해 쉽게 닫히지 않도록 설정
-            .setAutoCancel(false)  // 알림 터치시 자동으로 닫히지 않도록 설정
+            .setOngoing(isPlaying)  // true에서 isPlaying으로 변경
+            .setAutoCancel(false)
+            // 알림이 스와이프로 제거될 때 실행될 Intent 설정
+            .setDeleteIntent(
+                PendingIntent.getService(
+                    context,
+                    0,
+                    Intent(context, AudioService::class.java).apply {
+                        action = ACTION_STOP
+                    },
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
             .build()
     }
 
