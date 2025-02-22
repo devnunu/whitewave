@@ -26,7 +26,7 @@ val appModule = module {
         )
     }
     viewModel { PresetViewModel(get()) }
-    viewModel { SettingsViewModel() }
+    viewModel { SettingsViewModel(get()) }
 
     // Use cases
     single {
