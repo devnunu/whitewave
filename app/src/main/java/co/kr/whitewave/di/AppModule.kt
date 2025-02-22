@@ -22,7 +22,8 @@ val appModule = module {
         HomeViewModel(
             audioPlayer = get(),
             audioServiceController = get(),
-            presetRepository = get()
+            presetRepository = get(),
+            subscriptionManager = get()
         )
     }
     viewModel { PresetViewModel(get()) }

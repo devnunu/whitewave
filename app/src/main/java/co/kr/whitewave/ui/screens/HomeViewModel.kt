@@ -1,5 +1,6 @@
 package co.kr.whitewave.ui.screens
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.local.PresetWithSounds
@@ -15,8 +16,10 @@ import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
@@ -43,9 +46,18 @@ class HomeViewModel(
     private val _playError = MutableStateFlow<String?>(null)
     val playError: StateFlow<String?> = _playError.asStateFlow()
 
+    private val _showPremiumDialog = MutableStateFlow(false)
+    val showPremiumDialog: StateFlow<Boolean> = _showPremiumDialog.asStateFlow()
+
+    val subscriptionTier = subscriptionManager.subscriptionTier
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SubscriptionTier.Free
+        )
+
     init {
         audioServiceController.bind { service ->
-            // 서비스 연결 후 현재 타이머 상태 전달
             timer.remainingTime.value?.formatForDisplay()?.let { time ->
                 service.updateRemainingTime(time)
             }
@@ -58,16 +70,13 @@ class HomeViewModel(
                 audioServiceController.updateRemainingTime(formattedTime)
             }
         }
-        viewModelScope.launch {
-            // 구독 상태 변경을 관찰하여 사운드 목록 업데이트
-            subscriptionManager.subscriptionTier.collect { tier ->
-                loadSounds(tier is SubscriptionTier.Premium)
-            }
-        }
+
+        // 모든 사운드를 바로 로드
+        loadSounds()
     }
 
-    private fun loadSounds(isPremiumUser: Boolean) {
-        _sounds.value = DefaultSounds.getAvailableSounds(isPremiumUser)
+    private fun loadSounds() {
+        _sounds.value = DefaultSounds.ALL
     }
 
     fun toggleSound(sound: Sound) {
@@ -75,14 +84,23 @@ class HomeViewModel(
             audioPlayer.stopSound(sound.id)
             updateSoundState(sound.id, false)
         } else {
+            // 프리미엄 사운드 재생 시도 시 구독 상태 체크
+            if (sound.isPremium && subscriptionTier.value is SubscriptionTier.Free) {
+                _showPremiumDialog.value = true
+                return
+            }
+
             try {
                 audioPlayer.playSound(sound)
                 updateSoundState(sound.id, true)
-                _playError.value = null
             } catch (e: SoundMixingLimitException) {
                 _playError.value = e.message
             }
         }
+    }
+
+    fun dismissPremiumDialog() {
+        _showPremiumDialog.value = false
     }
 
     fun updateVolume(sound: Sound, volume: Float) {
@@ -151,6 +169,12 @@ class HomeViewModel(
                     volume = volume ?: sound.volume
                 )
             } else sound
+        }
+    }
+
+    fun startSubscription(activity: Activity) {
+        viewModelScope.launch {
+            subscriptionManager.startSubscription(activity)
         }
     }
 }

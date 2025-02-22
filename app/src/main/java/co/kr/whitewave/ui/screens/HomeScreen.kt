@@ -1,5 +1,6 @@
 package co.kr.whitewave.ui.screens
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,7 +41,9 @@ import co.kr.whitewave.utils.formatForDisplay
 import org.koin.androidx.compose.koinViewModel
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import co.kr.whitewave.ui.components.PremiumInfoDialog
 
 val md_theme_light_primary = Color(0xFF006C4C)
 val md_theme_light_background = Color(0xFFFBFDF8)
@@ -59,6 +62,8 @@ fun HomeScreen(
     onPresetClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val showPremiumDialog by viewModel.showPremiumDialog.collectAsState()
     var showSavePresetDialog by remember { mutableStateOf(false) }
     val sounds by viewModel.sounds.collectAsState()
     val timerDuration by viewModel.timerDuration.collectAsState()
@@ -76,6 +81,16 @@ fun HomeScreen(
                 showSavePresetDialog = false
             },
             error = savePresetError
+        )
+    }
+    // 프리미엄 다이얼로그
+    if (showPremiumDialog) {
+        PremiumInfoDialog(
+            onDismiss = viewModel::dismissPremiumDialog,
+            onSubscribe = {
+                viewModel.startSubscription(context as Activity)
+                viewModel.dismissPremiumDialog()
+            }
         )
     }
 
