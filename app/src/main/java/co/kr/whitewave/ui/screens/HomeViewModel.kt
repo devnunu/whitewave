@@ -9,6 +9,8 @@ import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.player.SoundMixingLimitException
 import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
+import co.kr.whitewave.data.subscription.SubscriptionManager
+import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
@@ -21,7 +23,8 @@ import kotlin.time.Duration
 class HomeViewModel(
     private val audioPlayer: AudioPlayer,
     private val audioServiceController: AudioServiceController,
-    private val presetRepository: PresetRepository
+    private val presetRepository: PresetRepository,
+    private val subscriptionManager: SubscriptionManager,
 ) : ViewModel() {
 
     private val timer = SoundTimer()
@@ -55,11 +58,16 @@ class HomeViewModel(
                 audioServiceController.updateRemainingTime(formattedTime)
             }
         }
-        loadSounds()
+        viewModelScope.launch {
+            // 구독 상태 변경을 관찰하여 사운드 목록 업데이트
+            subscriptionManager.subscriptionTier.collect { tier ->
+                loadSounds(tier is SubscriptionTier.Premium)
+            }
+        }
     }
 
-    private fun loadSounds() {
-        _sounds.value = DefaultSounds.ALL
+    private fun loadSounds(isPremiumUser: Boolean) {
+        _sounds.value = DefaultSounds.getAvailableSounds(isPremiumUser)
     }
 
     fun toggleSound(sound: Sound) {

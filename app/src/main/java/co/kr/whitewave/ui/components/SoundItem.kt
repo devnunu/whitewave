@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.PlayArrow
@@ -18,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import co.kr.whitewave.R
 import co.kr.whitewave.data.model.Sound
 
 @Composable
@@ -38,29 +41,30 @@ fun SoundItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = sound.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = sound.name,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (sound.isPremium) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_premium),
+                            contentDescription = "Premium Sound",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
                 IconButton(
                     onClick = { onPlayToggle(sound) }
                 ) {
                     Icon(
-                        imageVector = if (sound.isPlaying) {
-                            Icons.Filled.Build
-                        } else {
-                            Icons.Filled.PlayArrow
-                        },
-                        contentDescription = if (sound.isPlaying) {
-                            "Pause ${sound.name}"
-                        } else {
-                            "Play ${sound.name}"
-                        },
-                        tint = if (sound.isPlaying) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        }
+                        imageVector = if (sound.isPlaying) Icons.Filled.Build else Icons.Filled.PlayArrow,
+                        contentDescription = if (sound.isPlaying) "Pause ${sound.name}" else "Play ${sound.name}",
+                        tint = if (sound.isPlaying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
