@@ -39,7 +39,7 @@ val appModule = module {
             coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
         )
     }
-    single { PresetRepository(get()) }
+    single { PresetRepository(get(), get()) }
 
     // DAO
     single {

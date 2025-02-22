@@ -59,6 +59,18 @@ fun HomeScreen(
     val sounds by viewModel.sounds.collectAsState()
     val timerDuration by viewModel.timerDuration.collectAsState()
     val remainingTime by viewModel.remainingTime.collectAsState()
+    val savePresetError by viewModel.savePresetError.collectAsState()
+
+    if (showSavePresetDialog) {
+        SavePresetDialog(
+            onDismiss = { showSavePresetDialog = false },
+            onSave = {
+                viewModel.savePreset(it)
+                showSavePresetDialog = false
+            },
+            error = savePresetError
+        )
+    }
 
     Scaffold(
         topBar = {

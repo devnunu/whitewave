@@ -6,6 +6,7 @@ import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.player.AudioPlayer
+import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.utils.SoundTimer
@@ -31,6 +32,9 @@ class HomeViewModel(
 
     private val _sounds = MutableStateFlow<List<Sound>>(emptyList())
     val sounds: StateFlow<List<Sound>> = _sounds.asStateFlow()
+
+    private val _savePresetError = MutableStateFlow<String?>(null)
+    val savePresetError: StateFlow<String?> = _savePresetError.asStateFlow()
 
     init {
         audioServiceController.bind { service ->
@@ -86,8 +90,13 @@ class HomeViewModel(
 
     fun savePreset(name: String) {
         viewModelScope.launch {
-            val activeSounds = sounds.value.filter { it.isPlaying }
-            presetRepository.savePreset(name, activeSounds)
+            try {
+                val activeSounds = sounds.value.filter { it.isPlaying }
+                presetRepository.savePreset(name, activeSounds)
+                _savePresetError.value = null
+            } catch (e: PresetLimitExceededException) {
+                _savePresetError.value = e.message
+            }
         }
     }
 
