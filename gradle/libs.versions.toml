@@ -11,6 +11,8 @@ navigation = "2.7.7"
 coroutines = "1.7.3"
 ksp = "1.9.24-1.0.20"
 media = "1.6.0"
+billing = "6.1.0"
+datastorePreferences = "1.0.0"
 
 # Test dependencies
 junit = "4.13.2"
@@ -23,6 +25,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
 # Compose
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -31,6 +34,7 @@ compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+
 
 # Koin
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -48,6 +52,10 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 
 # Coroutines
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# billing
+android-billingclient = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
+
 
 # Test
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -6,6 +6,7 @@ import co.kr.whitewave.data.local.PresetDatabase
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.service.AudioServiceController
+import co.kr.whitewave.data.subscription.SubscriptionManager
 import co.kr.whitewave.ui.screens.HomeViewModel
 import co.kr.whitewave.ui.screens.preset.PresetViewModel
 import co.kr.whitewave.ui.screens.setting.SettingsViewModel
@@ -52,5 +53,13 @@ val appModule = module {
             PresetDatabase::class.java,
             "whitewave.db"
         ).build()
+    }
+
+    // Subscription
+    single {
+        SubscriptionManager(
+            context = get(),
+            coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        )
     }
 }

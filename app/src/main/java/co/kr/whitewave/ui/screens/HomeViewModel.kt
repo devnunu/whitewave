@@ -1,10 +1,6 @@
 package co.kr.whitewave.ui.screens
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.local.PresetWithSounds
@@ -12,20 +8,24 @@ import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.service.AudioService
 import co.kr.whitewave.service.AudioServiceController
+import co.kr.whitewave.data.subscription.SubscriptionManager
+import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
 class HomeViewModel(
     private val audioPlayer: AudioPlayer,
     private val audioServiceController: AudioServiceController,
-    private val presetRepository: PresetRepository
+    private val presetRepository: PresetRepository,
+    private val subscriptionManager: SubscriptionManager
 ) : ViewModel() {
 
     private val timer = SoundTimer()
@@ -37,6 +37,20 @@ class HomeViewModel(
 
     private val _sounds = MutableStateFlow<List<Sound>>(emptyList())
     val sounds: StateFlow<List<Sound>> = _sounds.asStateFlow()
+
+    val subscriptionTier = subscriptionManager.subscriptionTier
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SubscriptionTier.Free
+        )
+
+    // 구독 시작 함수
+    fun startSubscription(activity: Activity) {
+        viewModelScope.launch {
+            subscriptionManager.startSubscription(activity)
+        }
+    }
 
     init {
         audioServiceController.bind { service ->
