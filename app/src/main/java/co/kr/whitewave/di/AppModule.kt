@@ -2,6 +2,7 @@ package co.kr.whitewave.di
 
 import android.content.Context
 import androidx.room.Room
+import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.data.local.PresetDatabase
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
@@ -23,7 +24,8 @@ val appModule = module {
             audioPlayer = get(),
             audioServiceController = get(),
             presetRepository = get(),
-            subscriptionManager = get()
+            subscriptionManager = get(),
+            adManager = get(),
         )
     }
     viewModel { PresetViewModel(get()) }
@@ -62,6 +64,14 @@ val appModule = module {
         SubscriptionManager(
             context = get(),
             coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        )
+    }
+
+    // Ad
+    single {
+        AdManager(
+            context = get(),
+            subscriptionManager = get()
         )
     }
 }

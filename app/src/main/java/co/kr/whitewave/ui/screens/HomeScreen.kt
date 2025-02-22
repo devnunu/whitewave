@@ -43,7 +43,11 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import co.kr.whitewave.data.ads.AdEvent
+import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.ui.components.PremiumInfoDialog
+import org.koin.androidx.compose.get
+import org.koin.compose.getKoin
 
 val md_theme_light_primary = Color(0xFF006C4C)
 val md_theme_light_background = Color(0xFFFBFDF8)
@@ -59,10 +63,12 @@ val md_theme_dark_surface = Color(0xFF191C1A)
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
+//    adManager: AdManager = get(),
     onPresetClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val showPremiumDialog by viewModel.showPremiumDialog.collectAsState()
     var showSavePresetDialog by remember { mutableStateOf(false) }
     val sounds by viewModel.sounds.collectAsState()
@@ -94,6 +100,21 @@ fun HomeScreen(
         )
     }
 
+//    LaunchedEffect(Unit) {
+//        viewModel.adEvent.collect { event ->
+//            when (event) {
+//                is AdEvent.ShowAd -> {
+//                    activity?.let {
+//                        adManager.showAd(it) {
+//                            viewModel.onAdClosed()
+//                        }
+//                    }
+//                }
+//
+//                else -> Unit
+//            }
+//        }
+//    }
     LaunchedEffect(playError) {
         playError?.let {
             snackbarHostState.showSnackbar(

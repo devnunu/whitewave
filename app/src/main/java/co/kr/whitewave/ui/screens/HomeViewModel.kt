@@ -3,6 +3,8 @@ package co.kr.whitewave.ui.screens
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.kr.whitewave.data.ads.AdEvent
+import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
@@ -15,10 +17,12 @@ import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -28,7 +32,14 @@ class HomeViewModel(
     private val audioServiceController: AudioServiceController,
     private val presetRepository: PresetRepository,
     private val subscriptionManager: SubscriptionManager,
+    private val adManager: AdManager
 ) : ViewModel() {
+
+    private val _adEvent = Channel<AdEvent>()
+    val adEvent = _adEvent.receiveAsFlow()
+
+    private var pendingSound: Sound? = null
+    private var isPendingStop = false
 
     private val timer = SoundTimer()
 
@@ -81,21 +92,9 @@ class HomeViewModel(
 
     fun toggleSound(sound: Sound) {
         if (sound.isPlaying) {
-            audioPlayer.stopSound(sound.id)
-            updateSoundState(sound.id, false)
+            stopSound(sound)
         } else {
-            // 프리미엄 사운드 재생 시도 시 구독 상태 체크
-            if (sound.isPremium && subscriptionTier.value is SubscriptionTier.Free) {
-                _showPremiumDialog.value = true
-                return
-            }
-
-            try {
-                audioPlayer.playSound(sound)
-                updateSoundState(sound.id, true)
-            } catch (e: SoundMixingLimitException) {
-                _playError.value = e.message
-            }
+            playSound(sound)
         }
     }
 
@@ -137,8 +136,58 @@ class HomeViewModel(
     }
 
     private fun playSound(sound: Sound) {
-        audioPlayer.playSound(sound)
-        updateSoundState(sound.id, true, sound.volume)
+        viewModelScope.launch {
+            if (sound.isPremium && subscriptionTier.value is SubscriptionTier.Free) {
+                _showPremiumDialog.value = true
+                return@launch
+            }
+
+            if (adManager.shouldShowAd()) {
+                pendingSound = sound
+                isPendingStop = false
+                _adEvent.send(AdEvent.ShowAd)
+            } else {
+                playSoundInternal(sound)
+            }
+        }
+    }
+
+    private fun playSoundInternal(sound: Sound) {
+        try {
+            audioPlayer.playSound(sound)
+            updateSoundState(sound.id, true)
+            _playError.value = null
+        } catch (e: SoundMixingLimitException) {
+            _playError.value = e.message
+        }
+    }
+
+    private fun stopSound(sound: Sound) {
+        viewModelScope.launch {
+            if (adManager.shouldShowAd()) {
+                pendingSound = sound
+                isPendingStop = true
+                _adEvent.send(AdEvent.ShowAd)
+            } else {
+                stopSoundInternal(sound)
+            }
+        }
+    }
+
+    private fun stopSoundInternal(sound: Sound) {
+        audioPlayer.stopSound(sound.id)
+        updateSoundState(sound.id, false)
+    }
+
+    fun onAdClosed() {
+        pendingSound?.let { sound ->
+            if (isPendingStop) {
+                stopSoundInternal(sound)
+            } else {
+                playSoundInternal(sound)
+            }
+        }
+        pendingSound = null
     }
 
     fun loadPreset(preset: PresetWithSounds) {

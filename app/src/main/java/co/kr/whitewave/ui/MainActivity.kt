@@ -1,9 +1,12 @@
 package co.kr.whitewave.ui
 
 
+import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +20,11 @@ import androidx.navigation.compose.rememberNavController
 import co.kr.whitewave.ui.navigation.Screen
 import co.kr.whitewave.ui.screens.HomeScreen
 import co.kr.whitewave.ui.screens.preset.PresetScreen
-import co.kr.whitewave.ui.theme.WhiteWaveTheme
-import android.Manifest
-import android.content.Intent
-import android.provider.Settings
 import co.kr.whitewave.ui.screens.setting.SettingsScreen
+import co.kr.whitewave.ui.theme.WhiteWaveTheme
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
+
 
 class MainActivity : ComponentActivity() {
 
@@ -86,6 +89,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        Thread {
+            // Initialize the Google Mobile Ads SDK on a background thread.
+            MobileAds.initialize(
+                this
+            ) { initializationStatus: InitializationStatus? -> }
+        }.start()
     }
 
     private fun checkNotificationPermission() {
