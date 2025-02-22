@@ -6,6 +6,7 @@ import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.player.AudioPlayer
+import co.kr.whitewave.data.player.SoundMixingLimitException
 import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.service.AudioServiceController
@@ -36,6 +37,9 @@ class HomeViewModel(
     private val _savePresetError = MutableStateFlow<String?>(null)
     val savePresetError: StateFlow<String?> = _savePresetError.asStateFlow()
 
+    private val _playError = MutableStateFlow<String?>(null)
+    val playError: StateFlow<String?> = _playError.asStateFlow()
+
     init {
         audioServiceController.bind { service ->
             // 서비스 연결 후 현재 타이머 상태 전달
@@ -61,10 +65,16 @@ class HomeViewModel(
     fun toggleSound(sound: Sound) {
         if (sound.isPlaying) {
             audioPlayer.stopSound(sound.id)
+            updateSoundState(sound.id, false)
         } else {
-            audioPlayer.playSound(sound)
+            try {
+                audioPlayer.playSound(sound)
+                updateSoundState(sound.id, true)
+                _playError.value = null
+            } catch (e: SoundMixingLimitException) {
+                _playError.value = e.message
+            }
         }
-        updateSoundState(sound.id, !sound.isPlaying)
     }
 
     fun updateVolume(sound: Sound, volume: Float) {

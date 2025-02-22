@@ -7,6 +7,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import co.kr.whitewave.data.model.Sound
+import co.kr.whitewave.data.subscription.SubscriptionManager
+import co.kr.whitewave.data.subscription.SubscriptionTier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,11 +22,13 @@ import kotlinx.coroutines.withContext
 
 class AudioPlayer(
     private val context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val subscriptionManager: SubscriptionManager
 ) {
     companion object {
-        private const val FADE_DURATION = 1000L // 1초
-        private const val FADE_INTERVAL = 50L // 50ms마다 업데이트
+        private const val FREE_MIXING_LIMIT = 2
+        private const val FADE_DURATION = 1000L
+        private const val FADE_INTERVAL = 50L
     }
 
     private val audioFocusManager = AudioFocusManager(context)
@@ -38,8 +42,18 @@ class AudioPlayer(
     private val _playingSounds = MutableStateFlow<Map<String, Sound>>(emptyMap())
     val playingSounds: StateFlow<Map<String, Sound>> = _playingSounds.asStateFlow()
 
+    private fun canPlayMoreSounds(): Boolean {
+        return when (subscriptionManager.subscriptionTier.value) {
+            is SubscriptionTier.Premium -> true
+            is SubscriptionTier.Free -> players.size < FREE_MIXING_LIMIT
+        }
+    }
+
     fun playSound(sound: Sound) {
-        Log.d("AudioPlayer", "Playing sound: ${sound.name}")
+        if (!canPlayMoreSounds()) {
+            throw SoundMixingLimitException()
+        }
+
         if (!hasAudioFocus) {
             requestAudioFocus()
         }
@@ -57,7 +71,6 @@ class AudioPlayer(
                 originalVolumes[sound.id] = sound.volume
                 fadeIn(sound.id, sound.volume)
                 _playingSounds.value = _playingSounds.value + (sound.id to sound)
-                Log.d("AudioPlayer", "Current playing sounds: ${_playingSounds.value}")
             }
         }
     }
@@ -165,3 +178,5 @@ class AudioPlayer(
         }
     }
 }
+
+class SoundMixingLimitException : Exception("Free users can only mix up to 3 sounds")

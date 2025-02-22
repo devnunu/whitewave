@@ -18,9 +18,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +65,9 @@ fun HomeScreen(
     val remainingTime by viewModel.remainingTime.collectAsState()
     val savePresetError by viewModel.savePresetError.collectAsState()
 
+    val playError by viewModel.playError.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     if (showSavePresetDialog) {
         SavePresetDialog(
             onDismiss = { showSavePresetDialog = false },
@@ -72,6 +79,14 @@ fun HomeScreen(
         )
     }
 
+    LaunchedEffect(playError) {
+        playError?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,7 +106,8 @@ fun HomeScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = modifier

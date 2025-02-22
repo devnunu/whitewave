@@ -36,7 +36,8 @@ val appModule = module {
     single {
         AudioPlayer(
             context = get(),
-            coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+            coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
+            subscriptionManager = get()
         )
     }
     single { PresetRepository(get(), get()) }
