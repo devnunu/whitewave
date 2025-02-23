@@ -2,6 +2,7 @@ package co.kr.whitewave.data.ads
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import co.kr.whitewave.data.subscription.SubscriptionManager
 import co.kr.whitewave.data.subscription.SubscriptionTier
 import com.google.android.gms.ads.AdError
@@ -21,8 +22,9 @@ class AdManager(
     private val subscriptionManager: SubscriptionManager
 ) {
     companion object {
-        private const val AD_UNIT_ID = "ca-app-pub-8942852781629120~7311989169" // 실제 광고 단위 ID로 교체 필요
-        private const val PLAY_COUNT_THRESHOLD = 5  // 5번째마다 광고 표시
+        // 전면 광고용 테스트 ID
+        private const val AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+        private const val PLAY_COUNT_THRESHOLD = 3  // 3번째마다 광고 표시
     }
 
     private var playCount = 0
@@ -36,9 +38,6 @@ class AdManager(
     }
 
     private fun loadAd() {
-        if (interstitialAd != null || _isLoadingAd.value) return
-
-        _isLoadingAd.value = true
         val adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
@@ -48,18 +47,20 @@ class AdManager(
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad
-                    _isLoadingAd.value = false
+                    Log.d("AdManager", "Ad loaded successfully")
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     interstitialAd = null
-                    _isLoadingAd.value = false
+                    Log.e("AdManager", "Ad failed to load: ${error.message}")
+                    // 실패 시 재시도
+                    loadAd()
                 }
             }
         )
     }
 
-    suspend fun shouldShowAd(): Boolean {
+    fun shouldShowAd(): Boolean {
         if (subscriptionManager.subscriptionTier.value is SubscriptionTier.Premium) {
             return false
         }
@@ -72,20 +73,20 @@ class AdManager(
         val ad = interstitialAd
         if (ad == null) {
             onAdClosed()
-            loadAd()
+            loadAd()  // 다음 광고를 미리 로드
             return
         }
 
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 interstitialAd = null
-                loadAd()
+                loadAd()  // 다음 광고를 미리 로드
                 onAdClosed()
             }
 
             override fun onAdFailedToShowFullScreenContent(error: AdError) {
                 interstitialAd = null
-                loadAd()
+                loadAd()  // 다음 광고를 미리 로드
                 onAdClosed()
             }
         }

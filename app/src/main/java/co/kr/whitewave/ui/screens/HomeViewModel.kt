@@ -163,15 +163,8 @@ class HomeViewModel(
     }
 
     private fun stopSound(sound: Sound) {
-        viewModelScope.launch {
-            if (adManager.shouldShowAd()) {
-                pendingSound = sound
-                isPendingStop = true
-                _adEvent.send(AdEvent.ShowAd)
-            } else {
-                stopSoundInternal(sound)
-            }
-        }
+        // 광고 체크 없이 바로 중지
+        stopSoundInternal(sound)
     }
 
     private fun stopSoundInternal(sound: Sound) {

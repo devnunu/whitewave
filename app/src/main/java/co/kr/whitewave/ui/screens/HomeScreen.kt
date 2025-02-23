@@ -48,6 +48,7 @@ import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.ui.components.PremiumInfoDialog
 import org.koin.androidx.compose.get
 import org.koin.compose.getKoin
+import org.koin.compose.koinInject
 
 val md_theme_light_primary = Color(0xFF006C4C)
 val md_theme_light_background = Color(0xFFFBFDF8)
@@ -63,7 +64,7 @@ val md_theme_dark_surface = Color(0xFF191C1A)
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-//    adManager: AdManager = get(),
+    adManager: AdManager = koinInject(),
     onPresetClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
@@ -100,21 +101,21 @@ fun HomeScreen(
         )
     }
 
-//    LaunchedEffect(Unit) {
-//        viewModel.adEvent.collect { event ->
-//            when (event) {
-//                is AdEvent.ShowAd -> {
-//                    activity?.let {
-//                        adManager.showAd(it) {
-//                            viewModel.onAdClosed()
-//                        }
-//                    }
-//                }
-//
-//                else -> Unit
-//            }
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        viewModel.adEvent.collect { event ->
+            when (event) {
+                is AdEvent.ShowAd -> {
+                    activity?.let {
+                        adManager.showAd(it) {
+                            viewModel.onAdClosed()
+                        }
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+    }
     LaunchedEffect(playError) {
         playError?.let {
             snackbarHostState.showSnackbar(

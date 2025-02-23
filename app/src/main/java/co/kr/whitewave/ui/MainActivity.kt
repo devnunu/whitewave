@@ -89,13 +89,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        Thread {
-            // Initialize the Google Mobile Ads SDK on a background thread.
-            MobileAds.initialize(
-                this
-            ) { initializationStatus: InitializationStatus? -> }
-        }.start()
     }
 
     private fun checkNotificationPermission() {
