@@ -62,9 +62,9 @@ fun SoundItem(
                     onClick = { onPlayToggle(sound) }
                 ) {
                     Icon(
-                        imageVector = if (sound.isPlaying) Icons.Filled.Build else Icons.Filled.PlayArrow,
-                        contentDescription = if (sound.isPlaying) "Pause ${sound.name}" else "Play ${sound.name}",
-                        tint = if (sound.isPlaying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        imageVector = if (sound.isSelected) Icons.Filled.Build else Icons.Filled.PlayArrow,
+                        contentDescription = if (sound.isSelected) "Pause ${sound.name}" else "Play ${sound.name}",
+                        tint = if (sound.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

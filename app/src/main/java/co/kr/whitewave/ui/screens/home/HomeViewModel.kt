@@ -60,6 +60,9 @@ class HomeViewModel(
     private val _showPremiumDialog = MutableStateFlow(false)
     val showPremiumDialog: StateFlow<Boolean> = _showPremiumDialog.asStateFlow()
 
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
+
     val subscriptionTier = subscriptionManager.subscriptionTier
         .stateIn(
             scope = viewModelScope,
@@ -91,10 +94,46 @@ class HomeViewModel(
     }
 
     fun toggleSound(sound: Sound) {
-        if (sound.isPlaying) {
-            stopSound(sound)
-        } else {
-            playSound(sound)
+        if (sound.isPremium && subscriptionManager.subscriptionTier.value is SubscriptionTier.Free) {
+            _showPremiumDialog.value = true
+            return
+        }
+
+        _sounds.value = _sounds.value.map { s ->
+            if (s.id == sound.id) {
+                s.copy(isSelected = !s.isSelected).also { updated ->
+                    if (updated.isSelected) {
+                        if (isPlaying.value) {
+                            audioPlayer.playSound(updated)
+                        }
+                    } else {
+                        audioPlayer.stopSound(updated.id)
+                        if (_sounds.value.count { it.isSelected } == 0) {
+                            _isPlaying.value = false
+                        }
+                    }
+                }
+            } else s
+        }
+    }
+
+    // 전체 재생/정지 토글 함수 추가
+    fun togglePlayback() {
+        viewModelScope.launch {
+            val newState = !isPlaying.value
+            _isPlaying.value = newState
+
+            if (newState) {
+                if (adManager.shouldShowAd()) {
+                    _adEvent.send(AdEvent.ShowAd)
+                    return@launch
+                }
+                sounds.value.filter { it.isSelected }.forEach { sound ->
+                    audioPlayer.playSound(sound)
+                }
+            } else {
+                stopAllSounds()
+            }
         }
     }
 
@@ -104,7 +143,7 @@ class HomeViewModel(
 
     fun updateVolume(sound: Sound, volume: Float) {
         audioPlayer.updateVolume(sound.id, volume)
-        updateSoundState(sound.id, sound.isPlaying, volume)
+        updateSoundState(sound.id, sound.isSelected, volume)
     }
 
     fun setTimer(duration: Duration?) {
@@ -126,7 +165,7 @@ class HomeViewModel(
     fun savePreset(name: String) {
         viewModelScope.launch {
             try {
-                val activeSounds = sounds.value.filter { it.isPlaying }
+                val activeSounds = sounds.value.filter { it.isSelected }
                 presetRepository.savePreset(name, activeSounds)
                 _savePresetError.value = null
             } catch (e: PresetLimitExceededException) {
@@ -172,15 +211,11 @@ class HomeViewModel(
         updateSoundState(sound.id, false)
     }
 
+    // 광고 종료 후 콜백 수정
     fun onAdClosed() {
-        pendingSound?.let { sound ->
-            if (isPendingStop) {
-                stopSoundInternal(sound)
-            } else {
-                playSoundInternal(sound)
-            }
+        if (!isPlaying.value) {
+            togglePlayback()
         }
-        pendingSound = null
     }
 
     fun loadPreset(preset: PresetWithSounds) {
@@ -197,17 +232,17 @@ class HomeViewModel(
     }
 
     private fun stopAllSounds() {
-        sounds.value.filter { it.isPlaying }.forEach { sound ->
+        sounds.value.filter { it.isSelected }.forEach { sound ->
             audioPlayer.stopSound(sound.id)
-            updateSoundState(sound.id, false)
         }
+        _isPlaying.value = false
     }
 
     private fun updateSoundState(id: String, isPlaying: Boolean, volume: Float? = null) {
         _sounds.value = _sounds.value.map { sound ->
             if (sound.id == id) {
                 sound.copy(
-                    isPlaying = isPlaying,
+                    isSelected = isPlaying,
                     volume = volume ?: sound.volume
                 )
             } else sound
