@@ -18,12 +18,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import co.kr.whitewave.ui.navigation.Screen
-import co.kr.whitewave.ui.screens.HomeScreen
+import co.kr.whitewave.ui.screens.home.HomeScreen
 import co.kr.whitewave.ui.screens.preset.PresetScreen
 import co.kr.whitewave.ui.screens.setting.SettingsScreen
 import co.kr.whitewave.ui.theme.WhiteWaveTheme
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.initialization.InitializationStatus
 
 
 class MainActivity : ComponentActivity() {

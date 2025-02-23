@@ -1,4 +1,4 @@
-package co.kr.whitewave.ui.screens
+package co.kr.whitewave.ui.screens.home
 
 import android.app.Activity
 import androidx.lifecycle.ViewModel
