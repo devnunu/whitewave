@@ -2,6 +2,7 @@ package co.kr.whitewave.ui.screens.home
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,13 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -46,6 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import co.kr.whitewave.data.ads.AdEvent
 import co.kr.whitewave.data.ads.AdManager
+import co.kr.whitewave.ui.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.components.SoundGrid
 import co.kr.whitewave.ui.components.TimerPickerDialog
@@ -70,6 +76,10 @@ fun HomeScreen(
     val remainingTime by viewModel.remainingTime.collectAsState()
     val savePresetError by viewModel.savePresetError.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+
+    var showPlayingSounds by remember { mutableStateOf(false) }
+    val playingSounds = sounds.filter { it.isSelected }
+    val hasPlayingSounds = playingSounds.isNotEmpty()
 
     val playError by viewModel.playError.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -105,6 +115,17 @@ fun HomeScreen(
             onDismiss = { showTimerDialog = false }
         )
     }
+
+    if (showPlayingSounds) {
+        PlayingSoundsBottomSheet(
+            playingSounds = playingSounds,
+            onVolumeChange = viewModel::updateVolume,
+            onSoundRemove = viewModel::toggleSound,
+            onSavePreset = { showSavePresetDialog = true },
+            onDismiss = { showPlayingSounds = false }
+        )
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.adEvent.collect { event ->
@@ -158,29 +179,17 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Save preset button
-                Button(
-                    onClick = { showSavePresetDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                ) {
-                    Text("Save Current Mix")
-                }
-
-                // Control bar with Timer and Play button
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Timer section은 그대로 유지
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.weight(1f)
                     ) {
-                        IconButton(
-                            onClick = { showTimerDialog = true }
-                        ) {
+                        IconButton(onClick = { showTimerDialog = true }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_timer),
                                 contentDescription = "Timer"
@@ -195,13 +204,15 @@ fun HomeScreen(
                         }
                     }
 
+                    // Play/Pause button - enabled 속성 추가
                     Button(
-                        onClick = { viewModel.togglePlayback() }
+                        onClick = { viewModel.togglePlayback() },
+                        enabled = hasPlayingSounds // 재생할 사운드가 있을 때만 활성화
                     ) {
                         Icon(
                             painter = painterResource(
                                 if (isPlaying) R.drawable.ic_pause
-                                else R.drawable.ic_play,
+                                else R.drawable.ic_play
                             ),
                             contentDescription = if (isPlaying) "Pause" else "Play"
                         )
@@ -209,6 +220,34 @@ fun HomeScreen(
                             text = if (isPlaying) "정지" else "재생",
                             modifier = Modifier.padding(start = 8.dp)
                         )
+                    }
+
+                    // Playing sounds button - enabled 속성 추가
+                    Box(
+                        modifier = Modifier.padding(start = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = { showPlayingSounds = true },
+                            enabled = hasPlayingSounds // 재생 중인 사운드가 있을 때만 활성화
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_music_note),
+                                contentDescription = "Playing sounds",
+                                // disabled 상태일 때 흐리게 표시
+                                tint = if (hasPlayingSounds)
+                                    LocalContentColor.current
+                                else
+                                    LocalContentColor.current.copy(alpha = 0.38f)
+                            )
+                        }
+                        if (hasPlayingSounds) {
+                            Badge(
+                                modifier = Modifier.align(Alignment.TopEnd)
+                            ) {
+                                Text(playingSounds.size.toString())
+                            }
+                        }
                     }
                 }
             }
