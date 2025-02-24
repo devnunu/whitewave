@@ -1,9 +1,7 @@
 package co.kr.whitewave.ui.screens.home
 
 import android.app.Activity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.ads.AdEvent
 import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.DefaultSounds
@@ -15,15 +13,12 @@ import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.data.subscription.SubscriptionManager
 import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.service.AudioServiceController
+import co.kr.whitewave.ui.mvi.BaseViewModel
+import co.kr.whitewave.ui.screens.home.HomeContract.Effect
+import co.kr.whitewave.ui.screens.home.HomeContract.Intent
+import co.kr.whitewave.ui.screens.home.HomeContract.State
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
@@ -33,44 +28,12 @@ class HomeViewModel(
     private val presetRepository: PresetRepository,
     private val subscriptionManager: SubscriptionManager,
     private val adManager: AdManager
-) : ViewModel() {
-
-    private val _adEvent = Channel<AdEvent>()
-    val adEvent = _adEvent.receiveAsFlow()
-
-    private var pendingSound: Sound? = null
-    private var isPendingStop = false
+) : BaseViewModel<State, Intent, Effect>(State()) {
 
     private val timer = SoundTimer()
 
-    private val _timerDuration = MutableStateFlow<Duration?>(null)
-    val timerDuration: StateFlow<Duration?> = _timerDuration.asStateFlow()
-
-    val remainingTime: StateFlow<Duration?> = timer.remainingTime
-
-    private val _sounds = MutableStateFlow<List<Sound>>(emptyList())
-    val sounds: StateFlow<List<Sound>> = _sounds.asStateFlow()
-
-    private val _savePresetError = MutableStateFlow<String?>(null)
-    val savePresetError: StateFlow<String?> = _savePresetError.asStateFlow()
-
-    private val _playError = MutableStateFlow<String?>(null)
-    val playError: StateFlow<String?> = _playError.asStateFlow()
-
-    private val _showPremiumDialog = MutableStateFlow(false)
-    val showPremiumDialog: StateFlow<Boolean> = _showPremiumDialog.asStateFlow()
-
-    private val _isPlaying = MutableStateFlow(false)
-    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
-
-    val subscriptionTier = subscriptionManager.subscriptionTier
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = SubscriptionTier.Free
-        )
-
     init {
+        // AudioService 연결
         audioServiceController.bind { service ->
             timer.remainingTime.value?.formatForDisplay()?.let { time ->
                 service.updateRemainingTime(time)
@@ -80,89 +43,222 @@ class HomeViewModel(
         // 타이머 상태 모니터링
         viewModelScope.launch {
             timer.remainingTime.collect { duration ->
+                updateState { it.copy(remainingTime = duration) }
                 val formattedTime = duration?.formatForDisplay()
                 audioServiceController.updateRemainingTime(formattedTime)
             }
         }
 
-        // 모든 사운드를 바로 로드
-        loadSounds()
+        // 구독 상태 모니터링
+        viewModelScope.launch {
+            subscriptionManager.subscriptionTier.collect { tier ->
+                updateState { it.copy(subscriptionTier = tier) }
+            }
+        }
+
+        // 초기 데이터 로드
+        processIntent(Intent.LoadSounds)
+    }
+
+    override fun processIntent(intent: Intent) {
+        when (intent) {
+            is Intent.LoadSounds -> loadSounds()
+            is Intent.ToggleSound -> toggleSound(intent.sound)
+            is Intent.UpdateVolume -> updateVolume(intent.sound, intent.volume)
+            is Intent.SetTimer -> setTimer(intent.duration)
+            is Intent.SavePreset -> savePreset(intent.name)
+            is Intent.LoadPreset -> loadPreset(intent.preset)
+            is Intent.TogglePlayback -> togglePlayback()
+            is Intent.DismissPremiumDialog -> dismissPremiumDialog()
+            is Intent.StartSubscription -> startSubscription(intent.activity)
+            is Intent.OnAdClosed -> onAdClosed()
+        }
     }
 
     private fun loadSounds() {
-        _sounds.value = DefaultSounds.ALL
+        updateState { it.copy(sounds = DefaultSounds.ALL) }
     }
 
-    fun toggleSound(sound: Sound) {
-        if (sound.isPremium && subscriptionManager.subscriptionTier.value is SubscriptionTier.Free) {
-            _showPremiumDialog.value = true
+    private fun toggleSound(sound: Sound) {
+        // 프리미엄 사운드 처리
+        if (sound.isPremium && currentState.subscriptionTier is SubscriptionTier.Free) {
+            updateState { it.copy(showPremiumDialog = true) }
             return
         }
 
-        val isLastSound = sounds.value.count { it.isSelected } == 1 && sounds.value.find { it.isSelected }?.id == sound.id
+        // 사운드 토글 후 선택된 사운드가 있는지 확인하기 위한 변수
+        var willHaveSelectedSounds = false
 
-        _sounds.value = _sounds.value.map { s ->
-            if (s.id == sound.id) {
-                s.copy(isSelected = !s.isSelected).also { updated ->
-                    if (updated.isSelected) {
-                        // 사운드 활성화: 전체가 정지 상태였다면 자동 재생 시작
-                        if (!isPlaying.value) {
-                            _isPlaying.value = true
-                            audioPlayer.playSound(updated)
-                        } else if (isPlaying.value) {
-                            // 이미 재생 중이었다면 해당 사운드만 추가
-                            audioPlayer.playSound(updated)
+        updateState { currentState ->
+            val updatedSounds = currentState.sounds.map { s ->
+                if (s.id == sound.id) {
+                    val updatedSound = s.copy(isSelected = !s.isSelected)
+
+                    if (updatedSound.isSelected) {
+                        // 사운드 활성화: 자동 재생 시작
+                        viewModelScope.launch {
+                            try {
+                                // 이전에 재생 중지 버튼을 눌러 정지된 사운드들이 있을 수 있음
+                                // 따라서 정지 상태(isPlaying=false)에서 새 사운드를 선택하면 모든 선택된 사운드를 재생
+                                if (!currentState.isPlaying) {
+                                    // 선택된 모든 사운드를 재생 (현재 토글 중인 사운드 제외)
+                                    currentState.sounds.filter { it.isSelected }.forEach { selectedSound ->
+                                        audioPlayer.playSound(selectedSound)
+                                    }
+                                    // 토글 중인 현재 사운드 재생
+                                    audioPlayer.playSound(updatedSound)
+                                } else {
+                                    // 이미 재생 중이면 새로 선택한 사운드만 추가
+                                    audioPlayer.playSound(updatedSound)
+                                }
+                            } catch (e: SoundMixingLimitException) {
+                                updateState { it.copy(playError = e.message) }
+                                sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
+                            }
                         }
                     } else {
                         // 사운드 비활성화: 해당 사운드 중지
-                        audioPlayer.stopSound(updated.id)
-
-                        // 마지막 사운드였다면 전체 재생 중지
-                        if (isLastSound) {
-                            _isPlaying.value = false
-                        }
+                        audioPlayer.stopSound(updatedSound.id)
                     }
-                }
-            } else s
+
+                    updatedSound
+                } else s
+            }
+
+            // 업데이트된 목록에서 선택된 사운드가 있는지 확인
+            willHaveSelectedSounds = updatedSounds.any { it.isSelected }
+
+            // 선택된 사운드가 없으면 재생 상태를 false로, 있으면 true로 설정
+            currentState.copy(
+                sounds = updatedSounds,
+                isPlaying = willHaveSelectedSounds
+            )
         }
     }
 
-    // 전체 재생/정지 토글 함수 추가
-    fun togglePlayback() {
-        viewModelScope.launch {
-            val newState = !isPlaying.value
-            _isPlaying.value = newState
+    private fun updateVolume(sound: Sound, volume: Float) {
+        audioPlayer.updateVolume(sound.id, volume)
 
-            if (newState) {
+        updateState { currentState ->
+            val updatedSounds = currentState.sounds.map { s ->
+                if (s.id == sound.id) {
+                    s.copy(volume = volume)
+                } else s
+            }
+            currentState.copy(sounds = updatedSounds)
+        }
+    }
+
+    private fun setTimer(duration: Duration?) {
+        updateState { it.copy(timerDuration = duration) }
+
+        duration?.let {
+            timer.start(it) {
+                stopAllSounds()
+            }
+        } ?: timer.cancel()
+    }
+
+    private fun savePreset(name: String) {
+        viewModelScope.launch {
+            try {
+                val activeSounds = currentState.sounds.filter { it.isSelected }
+                presetRepository.savePreset(name, activeSounds)
+                updateState { it.copy(savePresetError = null) }
+            } catch (e: PresetLimitExceededException) {
+                updateState { it.copy(savePresetError = e.message) }
+                sendEffect(Effect.ShowSnackbar(e.message ?: "프리셋 저장 오류"))
+            }
+        }
+    }
+
+    private fun loadPreset(preset: PresetWithSounds) {
+        // 현재 재생 중인 모든 사운드 중지
+        stopAllSounds()
+
+        // 프리셋의 사운드 ID와 볼륨 매핑
+        val presetSoundMap = preset.sounds.associate { it.soundId to it.volume }
+
+        // 사운드 상태 업데이트 및 재생
+        updateState { state ->
+            val updatedSounds = state.sounds.map { sound ->
+                val volume = presetSoundMap[sound.id]
+                if (volume != null) {
+                    // 프리셋에 포함된 사운드
+                    val updatedSound = sound.copy(isSelected = true, volume = volume)
+
+                    // 사운드 재생 (비동기)
+                    viewModelScope.launch {
+                        try {
+                            audioPlayer.playSound(updatedSound)
+                        } catch (e: SoundMixingLimitException) {
+                            updateState { it.copy(playError = e.message) }
+                            sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
+                        }
+                    }
+
+                    updatedSound
+                } else {
+                    // 프리셋에 포함되지 않은 사운드
+                    sound.copy(isSelected = false)
+                }
+            }
+
+            state.copy(
+                sounds = updatedSounds,
+                isPlaying = true
+            )
+        }
+    }
+
+    private fun togglePlayback() {
+        viewModelScope.launch {
+            val newPlayingState = !currentState.isPlaying
+
+            if (newPlayingState) {
                 if (adManager.shouldShowAd()) {
-                    _adEvent.send(AdEvent.ShowAd)
+                    sendEffect(Effect.ShowAd)
                     return@launch
                 }
-                sounds.value.filter { it.isSelected }.forEach { sound ->
-                    audioPlayer.playSound(sound)
+
+                currentState.sounds.filter { it.isSelected }.forEach { sound ->
+                    try {
+                        audioPlayer.playSound(sound)
+                    } catch (e: SoundMixingLimitException) {
+                        updateState { it.copy(playError = e.message) }
+                        sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
+                        return@launch
+                    }
                 }
             } else {
                 stopAllSounds()
             }
+
+            updateState { it.copy(isPlaying = newPlayingState) }
         }
     }
 
-    fun dismissPremiumDialog() {
-        _showPremiumDialog.value = false
+    private fun dismissPremiumDialog() {
+        updateState { it.copy(showPremiumDialog = false) }
     }
 
-    fun updateVolume(sound: Sound, volume: Float) {
-        audioPlayer.updateVolume(sound.id, volume)
-        updateSoundState(sound.id, sound.isSelected, volume)
+    private fun startSubscription(activity: Activity) {
+        viewModelScope.launch {
+            subscriptionManager.startSubscription(activity)
+        }
     }
 
-    fun setTimer(duration: Duration?) {
-        _timerDuration.value = duration
-        duration?.let {
-            timer.start(it) {
-                stopAllSounds()  // 이제 여기서 자동으로 페이드 아웃 됨
-            }
-        } ?: timer.cancel()
+    fun onAdClosed() {
+        if (!currentState.isPlaying) {
+            togglePlayback()
+        }
+    }
+
+    private fun stopAllSounds() {
+        currentState.sounds.filter { it.isSelected }.forEach { sound ->
+            audioPlayer.stopSound(sound.id)
+        }
+        updateState { it.copy(isPlaying = false) }
     }
 
     override fun onCleared() {
@@ -170,98 +266,5 @@ class HomeViewModel(
         timer.cancel()
         audioPlayer.release()
         audioServiceController.unbind()
-    }
-
-    fun savePreset(name: String) {
-        viewModelScope.launch {
-            try {
-                val activeSounds = sounds.value.filter { it.isSelected }
-                presetRepository.savePreset(name, activeSounds)
-                _savePresetError.value = null
-            } catch (e: PresetLimitExceededException) {
-                _savePresetError.value = e.message
-            }
-        }
-    }
-
-    private fun playSound(sound: Sound) {
-        viewModelScope.launch {
-            if (sound.isPremium && subscriptionTier.value is SubscriptionTier.Free) {
-                _showPremiumDialog.value = true
-                return@launch
-            }
-
-            if (adManager.shouldShowAd()) {
-                pendingSound = sound
-                isPendingStop = false
-                _adEvent.send(AdEvent.ShowAd)
-            } else {
-                playSoundInternal(sound)
-            }
-        }
-    }
-
-    private fun playSoundInternal(sound: Sound) {
-        try {
-            audioPlayer.playSound(sound)
-            updateSoundState(sound.id, true)
-            _playError.value = null
-        } catch (e: SoundMixingLimitException) {
-            _playError.value = e.message
-        }
-    }
-
-    private fun stopSound(sound: Sound) {
-        // 광고 체크 없이 바로 중지
-        stopSoundInternal(sound)
-    }
-
-    private fun stopSoundInternal(sound: Sound) {
-        audioPlayer.stopSound(sound.id)
-        updateSoundState(sound.id, false)
-    }
-
-    // 광고 종료 후 콜백 수정
-    fun onAdClosed() {
-        if (!isPlaying.value) {
-            togglePlayback()
-        }
-    }
-
-    fun loadPreset(preset: PresetWithSounds) {
-        // 현재 재생 중인 모든 사운드 중지
-        stopAllSounds()
-
-        // 프리셋의 사운드 재생
-        preset.sounds.forEach { presetSound ->
-            sounds.value.find { it.id == presetSound.soundId }?.let { sound ->
-                val soundWithVolume = sound.copy(volume = presetSound.volume)
-                playSound(soundWithVolume)
-            }
-        }
-    }
-
-    private fun stopAllSounds() {
-        sounds.value.filter { it.isSelected }.forEach { sound ->
-            audioPlayer.stopSound(sound.id)
-        }
-        _isPlaying.value = false
-    }
-
-    private fun updateSoundState(id: String, isPlaying: Boolean, volume: Float? = null) {
-        _sounds.value = _sounds.value.map { sound ->
-            if (sound.id == id) {
-                sound.copy(
-                    isSelected = isPlaying,
-                    volume = volume ?: sound.volume
-                )
-            } else sound
-        }
-    }
-
-    fun startSubscription(activity: Activity) {
-        viewModelScope.launch {
-            subscriptionManager.startSubscription(activity)
-        }
     }
 }

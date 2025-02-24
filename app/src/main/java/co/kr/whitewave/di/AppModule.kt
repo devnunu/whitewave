@@ -6,8 +6,8 @@ import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.data.local.PresetDatabase
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.data.subscription.SubscriptionManager
+import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.ui.screens.home.HomeViewModel
 import co.kr.whitewave.ui.screens.preset.PresetViewModel
 import co.kr.whitewave.ui.screens.setting.SettingsViewModel
@@ -18,14 +18,13 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    // ViewModels
     viewModel {
         HomeViewModel(
             audioPlayer = get(),
             audioServiceController = get(),
             presetRepository = get(),
             subscriptionManager = get(),
-            adManager = get(),
+            adManager = get()
         )
     }
     viewModel { PresetViewModel(get()) }
