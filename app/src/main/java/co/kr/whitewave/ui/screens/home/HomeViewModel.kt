@@ -43,7 +43,7 @@ class HomeViewModel(
         // 타이머 상태 모니터링
         viewModelScope.launch {
             timer.remainingTime.collect { duration ->
-                updateState { it.copy(remainingTime = duration) }
+                setState { it.copy(remainingTime = duration) }
                 val formattedTime = duration?.formatForDisplay()
                 audioServiceController.updateRemainingTime(formattedTime)
             }
@@ -52,15 +52,15 @@ class HomeViewModel(
         // 구독 상태 모니터링
         viewModelScope.launch {
             subscriptionManager.subscriptionTier.collect { tier ->
-                updateState { it.copy(subscriptionTier = tier) }
+                setState { it.copy(subscriptionTier = tier) }
             }
         }
 
         // 초기 데이터 로드
-        processIntent(Intent.LoadSounds)
+        handleIntent(Intent.LoadSounds)
     }
 
-    override fun processIntent(intent: Intent) {
+    override fun handleIntent(intent: Intent) {
         when (intent) {
             is Intent.LoadSounds -> loadSounds()
             is Intent.ToggleSound -> toggleSound(intent.sound)
@@ -76,20 +76,20 @@ class HomeViewModel(
     }
 
     private fun loadSounds() {
-        updateState { it.copy(sounds = DefaultSounds.ALL) }
+        setState { it.copy(sounds = DefaultSounds.ALL) }
     }
 
     private fun toggleSound(sound: Sound) {
         // 프리미엄 사운드 처리
         if (sound.isPremium && currentState.subscriptionTier is SubscriptionTier.Free) {
-            updateState { it.copy(showPremiumDialog = true) }
+            setState { it.copy(showPremiumDialog = true) }
             return
         }
 
         // 사운드 토글 후 선택된 사운드가 있는지 확인하기 위한 변수
         var willHaveSelectedSounds = false
 
-        updateState { currentState ->
+        setState { currentState ->
             val updatedSounds = currentState.sounds.map { s ->
                 if (s.id == sound.id) {
                     val updatedSound = s.copy(isSelected = !s.isSelected)
@@ -112,7 +112,7 @@ class HomeViewModel(
                                     audioPlayer.playSound(updatedSound)
                                 }
                             } catch (e: SoundMixingLimitException) {
-                                updateState { it.copy(playError = e.message) }
+                                setState { it.copy(playError = e.message) }
                                 sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
                             }
                         }
@@ -139,7 +139,7 @@ class HomeViewModel(
     private fun updateVolume(sound: Sound, volume: Float) {
         audioPlayer.updateVolume(sound.id, volume)
 
-        updateState { currentState ->
+        setState { currentState ->
             val updatedSounds = currentState.sounds.map { s ->
                 if (s.id == sound.id) {
                     s.copy(volume = volume)
@@ -150,7 +150,7 @@ class HomeViewModel(
     }
 
     private fun setTimer(duration: Duration?) {
-        updateState { it.copy(timerDuration = duration) }
+        setState { it.copy(timerDuration = duration) }
 
         duration?.let {
             timer.start(it) {
@@ -164,9 +164,9 @@ class HomeViewModel(
             try {
                 val activeSounds = currentState.sounds.filter { it.isSelected }
                 presetRepository.savePreset(name, activeSounds)
-                updateState { it.copy(savePresetError = null) }
+                setState { it.copy(savePresetError = null) }
             } catch (e: PresetLimitExceededException) {
-                updateState { it.copy(savePresetError = e.message) }
+                setState { it.copy(savePresetError = e.message) }
                 sendEffect(Effect.ShowSnackbar(e.message ?: "프리셋 저장 오류"))
             }
         }
@@ -180,7 +180,7 @@ class HomeViewModel(
         val presetSoundMap = preset.sounds.associate { it.soundId to it.volume }
 
         // 사운드 상태 업데이트 및 재생
-        updateState { state ->
+        setState { state ->
             val updatedSounds = state.sounds.map { sound ->
                 val volume = presetSoundMap[sound.id]
                 if (volume != null) {
@@ -192,7 +192,7 @@ class HomeViewModel(
                         try {
                             audioPlayer.playSound(updatedSound)
                         } catch (e: SoundMixingLimitException) {
-                            updateState { it.copy(playError = e.message) }
+                            setState { it.copy(playError = e.message) }
                             sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
                         }
                     }
@@ -225,7 +225,7 @@ class HomeViewModel(
                     try {
                         audioPlayer.playSound(sound)
                     } catch (e: SoundMixingLimitException) {
-                        updateState { it.copy(playError = e.message) }
+                        setState { it.copy(playError = e.message) }
                         sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
                         return@launch
                     }
@@ -234,12 +234,12 @@ class HomeViewModel(
                 stopAllSounds()
             }
 
-            updateState { it.copy(isPlaying = newPlayingState) }
+            setState { it.copy(isPlaying = newPlayingState) }
         }
     }
 
     private fun dismissPremiumDialog() {
-        updateState { it.copy(showPremiumDialog = false) }
+        setState { it.copy(showPremiumDialog = false) }
     }
 
     private fun startSubscription(activity: Activity) {
@@ -258,7 +258,7 @@ class HomeViewModel(
         currentState.sounds.filter { it.isSelected }.forEach { sound ->
             audioPlayer.stopSound(sound.id)
         }
-        updateState { it.copy(isPlaying = false) }
+        setState { it.copy(isPlaying = false) }
     }
 
     override fun onCleared() {

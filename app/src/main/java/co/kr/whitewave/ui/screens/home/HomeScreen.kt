@@ -76,7 +76,7 @@ fun HomeScreen(
         SavePresetDialog(
             onDismiss = { showSavePresetDialog = false },
             onSave = { name ->
-                viewModel.processIntent(Intent.SavePreset(name))
+                viewModel.handleIntent(Intent.SavePreset(name))
                 showSavePresetDialog = false
             },
             error = state.savePresetError
@@ -85,10 +85,10 @@ fun HomeScreen(
 
     if (state.showPremiumDialog) {
         PremiumInfoDialog(
-            onDismiss = { viewModel.processIntent(Intent.DismissPremiumDialog) },
+            onDismiss = { viewModel.handleIntent(Intent.DismissPremiumDialog) },
             onSubscribe = {
                 activity?.let {
-                    viewModel.processIntent(Intent.StartSubscription(it))
+                    viewModel.handleIntent(Intent.StartSubscription(it))
                 }
             }
         )
@@ -98,7 +98,7 @@ fun HomeScreen(
         TimerPickerDialog(
             selectedDuration = state.timerDuration,
             onDurationSelect = { duration ->
-                viewModel.processIntent(Intent.SetTimer(duration))
+                viewModel.handleIntent(Intent.SetTimer(duration))
                 showTimerDialog = false
             },
             onDismiss = { showTimerDialog = false }
@@ -109,10 +109,10 @@ fun HomeScreen(
         PlayingSoundsBottomSheet(
             playingSounds = playingSounds,
             onVolumeChange = { sound, volume ->
-                viewModel.processIntent(Intent.UpdateVolume(sound, volume))
+                viewModel.handleIntent(Intent.UpdateVolume(sound, volume))
             },
             onSoundRemove = { sound ->
-                viewModel.processIntent(Intent.ToggleSound(sound))
+                viewModel.handleIntent(Intent.ToggleSound(sound))
             },
             onSavePreset = { showSavePresetDialog = true },
             onDismiss = { showPlayingSounds = false }
@@ -203,7 +203,7 @@ fun HomeScreen(
 
                     // Play/Pause button
                     Button(
-                        onClick = { viewModel.processIntent(Intent.TogglePlayback) },
+                        onClick = { viewModel.handleIntent(Intent.TogglePlayback) },
                         enabled = hasPlayingSounds // 재생할 사운드가 있을 때만 활성화
                     ) {
                         Icon(
@@ -258,10 +258,10 @@ fun HomeScreen(
             SoundGrid(
                 sounds = state.sounds,
                 onSoundSelect = { sound ->
-                    viewModel.processIntent(Intent.ToggleSound(sound))
+                    viewModel.handleIntent(Intent.ToggleSound(sound))
                 },
                 onVolumeChange = { sound, volume ->
-                    viewModel.processIntent(Intent.UpdateVolume(sound, volume))
+                    viewModel.handleIntent(Intent.UpdateVolume(sound, volume))
                 },
                 modifier = Modifier.weight(1f)
             )

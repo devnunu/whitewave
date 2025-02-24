@@ -35,33 +35,33 @@ interface UiEffect
  * @param E 사이드 이펙트 타입
  * @param initialState 초기 UI 상태
  */
-abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(initialState: S) : ViewModel() {
+abstract class BaseViewModel<STATE : UiState, INTENT : UiIntent, EFFECT : UiEffect>(initialState: STATE) : ViewModel() {
 
     // 상태 관리
     private val _state = MutableStateFlow(initialState)
-    val state: StateFlow<S> = _state.asStateFlow()
+    val state: StateFlow<STATE> = _state.asStateFlow()
 
     // 사이드 이펙트 채널
-    private val _effect = Channel<E>()
+    private val _effect = Channel<EFFECT>()
     val effect = _effect.receiveAsFlow()
 
     /**
      * 현재 상태 반환
      */
-    protected val currentState: S
+    protected val currentState: STATE
         get() = state.value
 
     /**
      * 상태 업데이트
      */
-    protected fun updateState(update: (S) -> S) {
+    protected fun setState(update: (STATE) -> STATE) {
         _state.update(update)
     }
 
     /**
      * 사이드 이펙트 전송
      */
-    protected fun sendEffect(effect: E) {
+    protected fun sendEffect(effect: EFFECT) {
         viewModelScope.launch {
             _effect.send(effect)
         }
@@ -71,5 +71,5 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(initialSta
      * 사용자 의도 처리 메서드
      * 구현 클래스에서 오버라이드 필요
      */
-    abstract fun processIntent(intent: I)
+    abstract fun handleIntent(intent: INTENT)
 }
