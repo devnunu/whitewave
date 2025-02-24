@@ -99,16 +99,26 @@ class HomeViewModel(
             return
         }
 
+        val isLastSound = sounds.value.count { it.isSelected } == 1 && sounds.value.find { it.isSelected }?.id == sound.id
+
         _sounds.value = _sounds.value.map { s ->
             if (s.id == sound.id) {
                 s.copy(isSelected = !s.isSelected).also { updated ->
                     if (updated.isSelected) {
-                        if (isPlaying.value) {
+                        // 사운드 활성화: 전체가 정지 상태였다면 자동 재생 시작
+                        if (!isPlaying.value) {
+                            _isPlaying.value = true
+                            audioPlayer.playSound(updated)
+                        } else if (isPlaying.value) {
+                            // 이미 재생 중이었다면 해당 사운드만 추가
                             audioPlayer.playSound(updated)
                         }
                     } else {
+                        // 사운드 비활성화: 해당 사운드 중지
                         audioPlayer.stopSound(updated.id)
-                        if (_sounds.value.count { it.isSelected } == 0) {
+
+                        // 마지막 사운드였다면 전체 재생 중지
+                        if (isLastSound) {
                             _isPlaying.value = false
                         }
                     }
