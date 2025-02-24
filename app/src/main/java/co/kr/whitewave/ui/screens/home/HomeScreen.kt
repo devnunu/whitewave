@@ -4,11 +4,13 @@ import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.R
@@ -44,17 +47,10 @@ import androidx.compose.ui.res.painterResource
 import co.kr.whitewave.data.ads.AdEvent
 import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.ui.components.PremiumInfoDialog
+import co.kr.whitewave.ui.components.SoundGrid
+import co.kr.whitewave.ui.components.TimerPickerDialog
 import org.koin.compose.koinInject
 
-val md_theme_light_primary = Color(0xFF006C4C)
-val md_theme_light_background = Color(0xFFFBFDF8)
-val md_theme_light_surface = Color(0xFFFBFDF8)
-
-val md_theme_dark_primary = Color(0xFF67DBB3)
-val md_theme_dark_background = Color(0xFF191C1A)
-val md_theme_dark_surface = Color(0xFF191C1A)
-
-// ui/screens/home/HomeScreen.kt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -68,10 +64,12 @@ fun HomeScreen(
     val activity = context as? Activity
     val showPremiumDialog by viewModel.showPremiumDialog.collectAsState()
     var showSavePresetDialog by remember { mutableStateOf(false) }
+    var showTimerDialog by remember { mutableStateOf(false) }
     val sounds by viewModel.sounds.collectAsState()
     val timerDuration by viewModel.timerDuration.collectAsState()
     val remainingTime by viewModel.remainingTime.collectAsState()
     val savePresetError by viewModel.savePresetError.collectAsState()
+    val isPlaying by viewModel.isPlaying.collectAsState()
 
     val playError by viewModel.playError.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -86,7 +84,7 @@ fun HomeScreen(
             error = savePresetError
         )
     }
-    // 프리미엄 다이얼로그
+
     if (showPremiumDialog) {
         PremiumInfoDialog(
             onDismiss = viewModel::dismissPremiumDialog,
@@ -94,6 +92,17 @@ fun HomeScreen(
                 viewModel.startSubscription(context as Activity)
                 viewModel.dismissPremiumDialog()
             }
+        )
+    }
+
+    if (showTimerDialog) {
+        TimerPickerDialog(
+            selectedDuration = timerDuration,
+            onDurationSelect = { duration ->
+                viewModel.setTimer(duration)
+                showTimerDialog = false
+            },
+            onDismiss = { showTimerDialog = false }
         )
     }
 
@@ -112,6 +121,7 @@ fun HomeScreen(
             }
         }
     }
+
     LaunchedEffect(playError) {
         playError?.let {
             snackbarHostState.showSnackbar(
@@ -120,6 +130,7 @@ fun HomeScreen(
             )
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -140,68 +151,81 @@ fun HomeScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Save preset button
+                Button(
+                    onClick = { showSavePresetDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Text("Save Current Mix")
+                }
+
+                // Control bar with Timer and Play button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        IconButton(
+                            onClick = { showTimerDialog = true }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_timer),
+                                contentDescription = "Timer"
+                            )
+                        }
+                        remainingTime?.let { remaining ->
+                            Text(
+                                text = remaining.formatForDisplay(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = { viewModel.togglePlayback() }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                if (isPlaying) R.drawable.ic_pause
+                                else R.drawable.ic_play,
+                            ),
+                            contentDescription = if (isPlaying) "Pause" else "Play"
+                        )
+                        Text(
+                            text = if (isPlaying) "정지" else "재생",
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        }
     ) { paddingValues ->
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Timer section with card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    TimerPicker(
-                        duration = timerDuration,
-                        onDurationSelect = viewModel::setTimer
-                    )
-                    remainingTime?.let { remaining ->
-                        Text(
-                            text = "Remaining: ${remaining.formatForDisplay()}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-                }
-            }
-
-            // Sound list
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(sounds) { sound ->
-                    SoundItem(
-                        sound = sound,
-                        onPlayToggle = viewModel::toggleSound,
-                        onVolumeChange = viewModel::updateVolume
-                    )
-                }
-            }
-
-            // Save preset button
-            Button(
-                onClick = { showSavePresetDialog = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Save Current Mix")
-            }
+            // Sound grid
+            SoundGrid(
+                sounds = sounds,
+                onSoundSelect = viewModel::toggleSound,
+                onVolumeChange = viewModel::updateVolume,
+                modifier = Modifier.weight(1f)
+            )
         }
-    }
-
-    if (showSavePresetDialog) {
-        SavePresetDialog(
-            onDismiss = { showSavePresetDialog = false },
-            onSave = { name ->
-                viewModel.savePreset(name)
-            }
-        )
     }
 }

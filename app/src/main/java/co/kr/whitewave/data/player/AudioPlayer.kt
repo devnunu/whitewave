@@ -45,7 +45,10 @@ class AudioPlayer(
     private fun canPlayMoreSounds(): Boolean {
         return when (subscriptionManager.subscriptionTier.value) {
             is SubscriptionTier.Premium -> true
-            is SubscriptionTier.Free -> players.size < FREE_MIXING_LIMIT
+            is SubscriptionTier.Free -> {
+                val selectedCount = playingSounds.value.size
+                selectedCount < FREE_MIXING_LIMIT
+            }
         }
     }
 
@@ -70,7 +73,6 @@ class AudioPlayer(
                 play()
                 originalVolumes[sound.id] = sound.volume
                 fadeIn(sound.id, sound.volume)
-                _playingSounds.value = _playingSounds.value + (sound.id to sound)
             }
         }
     }
@@ -161,9 +163,8 @@ class AudioPlayer(
         fadeJobs[soundId]?.cancel()
         coroutineScope.launch(Dispatchers.Main) {
             players[soundId]?.volume = volume
-            _playingSounds.value[soundId]?.let { sound ->
-                _playingSounds.value = _playingSounds.value + (soundId to sound.copy(volume = volume))
-            }
+            // volume 업데이트 시 originalVolumes도 업데이트
+            originalVolumes[soundId] = volume
         }
     }
 
