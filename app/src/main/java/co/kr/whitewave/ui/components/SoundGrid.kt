@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.R
+import co.kr.whitewave.data.model.Sound
 
 @Composable
 fun SoundGrid(
@@ -31,6 +31,10 @@ fun SoundGrid(
     onVolumeChange: (Sound, Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // 프리미엄 사운드를 뒤로 배치하기 위한 정렬
+    // 별도 섹션으로 분리하지 않고 연속적으로 표시
+    val sortedSounds = sounds.sortedBy { it.isPremium }
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         contentPadding = PaddingValues(16.dp),
@@ -38,7 +42,7 @@ fun SoundGrid(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        items(sounds) { sound ->
+        items(sortedSounds) { sound ->
             SoundGridItem(
                 sound = sound,
                 onSelect = onSoundSelect,

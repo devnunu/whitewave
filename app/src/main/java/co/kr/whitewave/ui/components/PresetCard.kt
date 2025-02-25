@@ -147,14 +147,8 @@ fun PresetCard(
                 }
             }
 
-            // 프리미엄 뱃지 (프리미엄 사운드가 포함된 경우)
-            val hasPremiumSound = preset.sounds.any {
-                // 실제 사운드 모델과 연동해야 함
-                // 여기서는 임시로 "forest"와 "cafe"를 프리미엄으로 가정
-                it.soundId == "forest" || it.soundId == "cafe"
-            }
-
-            if (hasPremiumSound) {
+            // 프리미엄 뱃지
+            if (preset.preset.isPremium) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)

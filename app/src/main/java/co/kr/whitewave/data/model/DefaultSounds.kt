@@ -2,6 +2,7 @@ package co.kr.whitewave.data.model
 
 // data/model/DefaultSounds.kt
 object DefaultSounds {
+    // 모든 사운드 목록
     val ALL = listOf(
         Sound(
             id = "rain",
@@ -39,4 +40,13 @@ object DefaultSounds {
             icon = SoundIcons.getIconForSound("cafe")
         )
     )
+
+    // 무료 사운드 먼저, 그 다음 프리미엄 사운드
+    val SORTED_BY_PREMIUM = ALL.sortedBy { it.isPremium }
+
+    // 무료 사운드만 필터링
+    val FREE_SOUNDS = ALL.filter { !it.isPremium }
+
+    // 프리미엄 사운드만 필터링
+    val PREMIUM_SOUNDS = ALL.filter { it.isPremium }
 }

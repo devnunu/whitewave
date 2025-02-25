@@ -35,4 +35,7 @@ interface PresetDao {
 
     @Query("UPDATE presets SET name = :name, category = :category WHERE id = :presetId")
     suspend fun updatePreset(presetId: String, name: String, category: String)
+
+    @Query("UPDATE presets SET name = :name, category = :category, isPremium = :isPremium WHERE id = :presetId")
+    suspend fun updatePresetWithPremium(presetId: String, name: String, category: String, isPremium: Boolean)
 }

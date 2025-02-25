@@ -109,7 +109,8 @@ class HomeViewModel(
     }
 
     private fun loadSounds() {
-        setState { it.copy(sounds = DefaultSounds.ALL) }
+        // 무료 사운드를 먼저, 그 다음 프리미엄 사운드로 정렬하여 로드
+        setState { it.copy(sounds = DefaultSounds.SORTED_BY_PREMIUM) }
     }
 
     private fun toggleSound(sound: Sound) {

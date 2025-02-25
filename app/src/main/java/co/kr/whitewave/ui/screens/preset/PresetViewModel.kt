@@ -28,10 +28,26 @@ class PresetViewModel(
             selectedCategoryFlow
         ) { allPresets, selectedCategory ->
             setState { state ->
+                // 사용자 커스텀 프리셋과 기본 프리셋 분리
+                val customPresets = allPresets.filter { !it.preset.isDefault }
+                val defaultPresets = allPresets.filter { it.preset.isDefault }
+
+                // 선택된 카테고리에 따라 필터링
                 val filteredPresets = when (selectedCategory) {
-                    PresetCategories.ALL -> allPresets
-                    PresetCategories.CUSTOM -> allPresets.filter { !it.preset.isDefault }
-                    else -> allPresets.filter { it.preset.category == selectedCategory }
+                    PresetCategories.ALL -> {
+                        // 모든 프리셋: 커스텀 프리셋을 앞에 배치하고 최신순 정렬, 기본 프리셋은 뒤에 배치
+                        customPresets + defaultPresets
+                    }
+                    PresetCategories.CUSTOM -> {
+                        // 커스텀 프리셋만: 최신순 정렬
+                        customPresets
+                    }
+                    else -> {
+                        // 특정 카테고리: 해당 카테고리 내에서 커스텀 프리셋을 앞에 배치하고, 기본 프리셋은 뒤에 배치
+                        val filteredCustom = customPresets.filter { it.preset.category == selectedCategory }
+                        val filteredDefault = defaultPresets.filter { it.preset.category == selectedCategory }
+                        filteredCustom + filteredDefault
+                    }
                 }
 
                 state.copy(
