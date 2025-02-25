@@ -5,14 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -43,8 +39,8 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onBackClick: () -> Unit,
-    onNotificationSettingClick: () -> Unit,
+    onBackClick: () -> Unit = {},
+    onNotificationSettingClick: () -> Unit = {},
     viewModel: SettingsViewModel = koinViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -104,15 +100,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("설정") },
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.handleIntent(Intent.NavigateBack) }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "뒤로 가기"
-                        )
-                    }
-                }
+                title = { Text("설정") }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -167,7 +155,7 @@ fun SettingsScreen(
                 },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.Notifications,
+                        painter = painterResource(id = R.drawable.ic_notification),
                         contentDescription = null
                     )
                 },
@@ -177,6 +165,22 @@ fun SettingsScreen(
                 modifier = Modifier.clickable {
                     viewModel.handleIntent(Intent.OpenNotificationSettings)
                 }
+            )
+
+            HorizontalDivider()
+
+            ListItem(
+                headlineContent = { Text("앱 정보") },
+                supportingContent = { Text("버전 1.0.0") },
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_info),
+                        contentDescription = null
+                    )
+                },
+                colors = ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     }

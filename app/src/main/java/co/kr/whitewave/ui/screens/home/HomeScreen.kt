@@ -1,8 +1,5 @@
-// app/ui/screens/home/HomeScreen.kt
 package co.kr.whitewave.ui.screens.home
 
-import android.app.Activity
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,12 +47,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = koinViewModel(),
-    onPresetClick: () -> Unit,
-    onSettingsClick: () -> Unit,
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-    val activity = context as? Activity
+    val activity = context as? android.app.Activity
 
     // MVI State 수집
     val state by viewModel.state.collectAsState()
@@ -152,21 +147,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("WhiteWave") },
-                actions = {
-                    IconButton(onClick = onPresetClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_preset),
-                            contentDescription = "프리셋"
-                        )
-                    }
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_settings),
-                            contentDescription = "설정"
-                        )
-                    }
-                }
+                title = { Text("WhiteWave") }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -178,7 +159,6 @@ fun HomeScreen(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Timer section

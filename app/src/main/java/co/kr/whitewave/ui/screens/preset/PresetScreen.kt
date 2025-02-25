@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,8 +45,8 @@ import org.koin.androidx.compose.koinViewModel
 fun PresetScreen(
     modifier: Modifier = Modifier,
     viewModel: PresetViewModel = koinViewModel(),
-    onPresetSelected: (PresetWithSounds) -> Unit,
-    onBackClick: () -> Unit
+    onPresetSelected: (PresetWithSounds) -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     // MVI State 수집
     val state by viewModel.state.collectAsState()
@@ -76,15 +75,7 @@ fun PresetScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Saved Presets") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
+                title = { Text("저장된 프리셋") }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -102,7 +93,7 @@ fun PresetScreen(
                 }
                 state.presets.isEmpty() -> {
                     Text(
-                        text = "No saved presets yet",
+                        text = "저장된 프리셋이 없습니다",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -157,7 +148,7 @@ private fun PresetItem(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "${preset.sounds.size} sounds",
+                    text = "${preset.sounds.size}개의 사운드",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
