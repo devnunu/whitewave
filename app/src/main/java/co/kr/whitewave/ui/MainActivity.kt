@@ -19,23 +19,30 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import co.kr.whitewave.R
 import co.kr.whitewave.ui.navigation.Screen
 import co.kr.whitewave.ui.screens.home.HomeScreen
+import co.kr.whitewave.ui.screens.home.HomeViewModel
 import co.kr.whitewave.ui.screens.preset.PresetScreen
 import co.kr.whitewave.ui.screens.setting.SettingsScreen
 import co.kr.whitewave.ui.theme.WhiteWaveTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -55,11 +62,13 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainScreen(
-                        onNotificationSettingClick = {
+                        onNotificationSettingClick={
                             // 시스템 알림 설정으로 이동
-                            startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            val context = android.app.Activity.ACTIVITY_SERVICE // 컨텍스트를 얻기 위한 임시 코드
+                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                                 putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-                            })
+                            }
+                            startActivity(intent)
                         }
                     )
                 }
@@ -90,9 +99,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(
-    onNotificationSettingClick: () -> Unit
+    onNotificationSettingClick: ()-> Unit
 ) {
     val navController = rememberNavController()
+    val homeViewModel: HomeViewModel = koinViewModel()
 
     // 바텀 네비게이션 아이템 정의
     val bottomNavItems = listOf(
@@ -152,29 +162,39 @@ fun MainScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen()
+                val presetId = it.savedStateHandle.get<String>("selected_preset_id")
+
+                // presetId가 있으면 HomeViewModel에서 처리
+                if (presetId != null) {
+                    // 홈 뷰모델에 프리셋 ID 전달하여 로드
+                    LaunchedEffect(presetId) {
+                        homeViewModel.loadPresetById(presetId)
+                        // 처리 후 SavedStateHandle에서 제거
+                        it.savedStateHandle.remove<String>("selected_preset_id")
+                    }
+                }
+
+                HomeScreen(viewModel = homeViewModel)
             }
+
             composable(Screen.Presets.route) {
                 PresetScreen(
-                    onPresetSelected = { preset ->
-                        // 프리셋을 선택하고 홈 화면으로 네비게이션
+                    onPresetSelected = { presetId ->
+                        // 프리셋 ID만 저장
                         navController.previousBackStackEntry
                             ?.savedStateHandle
-                            ?.set("selected_preset", preset)
+                            ?.set("selected_preset_id", presetId)
                         navController.navigate(Screen.Home.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
                         }
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
                     }
                 )
             }
+
             composable(Screen.Settings.route) {
                 SettingsScreen(
-                    onBackClick = { navController.navigateUp() },
                     onNotificationSettingClick = onNotificationSettingClick
                 )
             }

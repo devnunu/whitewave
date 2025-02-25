@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.data.local.PresetWithSounds
+import co.kr.whitewave.data.model.DefaultPresets
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.player.AudioPlayer
@@ -19,6 +20,7 @@ import co.kr.whitewave.ui.screens.home.HomeContract.Intent
 import co.kr.whitewave.ui.screens.home.HomeContract.State
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
@@ -58,6 +60,37 @@ class HomeViewModel(
 
         // 초기 데이터 로드
         handleIntent(Intent.LoadSounds)
+    }
+
+    // ID로 프리셋 로드하는 함수 추가
+    fun loadPresetById(presetId: String) {
+        viewModelScope.launch {
+            try {
+                // 기본 프리셋 확인
+                val defaultPreset = DefaultPresets.ALL_PRESETS.find {
+                    it.preset.id == presetId
+                }
+
+                // 기본 프리셋이 있으면 로드
+                if (defaultPreset != null) {
+                    loadPreset(defaultPreset)
+                    return@launch
+                }
+
+                // 사용자 프리셋 확인
+                val userPresets = presetRepository.getAllPresets().firstOrNull() ?: emptyList()
+                val userPreset = userPresets.find { it.preset.id == presetId }
+
+                // 사용자 프리셋이 있으면 로드
+                if (userPreset != null) {
+                    loadPreset(userPreset)
+                } else {
+                    sendEffect(Effect.ShowSnackbar("프리셋을 찾을 수 없습니다"))
+                }
+            } catch (e: Exception) {
+                sendEffect(Effect.ShowSnackbar("프리셋을 로드하는 중 오류가 발생했습니다"))
+            }
+        }
     }
 
     override fun handleIntent(intent: Intent) {
@@ -165,6 +198,7 @@ class HomeViewModel(
                 val activeSounds = currentState.sounds.filter { it.isSelected }
                 presetRepository.savePreset(name, activeSounds)
                 setState { it.copy(savePresetError = null) }
+                sendEffect(Effect.ShowSnackbar("프리셋이 저장되었습니다"))
             } catch (e: PresetLimitExceededException) {
                 setState { it.copy(savePresetError = e.message) }
                 sendEffect(Effect.ShowSnackbar(e.message ?: "프리셋 저장 오류"))
@@ -209,6 +243,9 @@ class HomeViewModel(
                 isPlaying = true
             )
         }
+
+        // 프리셋 로드 성공 메시지
+        sendEffect(Effect.ShowSnackbar("\"${preset.preset.name}\" 프리셋을 불러왔습니다"))
     }
 
     private fun togglePlayback() {

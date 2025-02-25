@@ -16,8 +16,12 @@ object PresetContract {
      */
     data class State(
         val presets: List<PresetWithSounds> = emptyList(),
+        val categories: List<String> = emptyList(),
+        val selectedCategory: String = "모두",
         val isLoading: Boolean = false,
-        val error: String? = null
+        val error: String? = null,
+        val editMode: Boolean = false,
+        val currentEditPreset: PresetWithSounds? = null
     ) : UiState
 
     /**
@@ -25,9 +29,18 @@ object PresetContract {
      */
     sealed class Intent : UiIntent {
         object LoadPresets : Intent()
-        data class SavePreset(val name: String, val sounds: List<Sound>) : Intent()
+        data class SelectCategory(val category: String) : Intent()
+        data class SavePreset(val name: String, val sounds: List<Sound>, val category: String) : Intent()
+        data class UpdatePreset(
+            val presetId: String,
+            val name: String,
+            val sounds: List<Sound>,
+            val category: String
+        ) : Intent()
         data class DeletePreset(val presetId: String) : Intent()
         data class SelectPreset(val preset: PresetWithSounds) : Intent()
+        data class StartEditPreset(val preset: PresetWithSounds) : Intent()
+        object CancelEditPreset : Intent()
     }
 
     /**
@@ -35,7 +48,9 @@ object PresetContract {
      */
     sealed class Effect : UiEffect {
         data class ShowSnackbar(val message: String) : Effect()
-        data class PresetSelected(val preset: PresetWithSounds) : Effect()
+        // 프리셋 자체가 아닌 ID만 전달하도록 변경
+        data class PresetSelected(val presetId: String) : Effect()
         object NavigateBack : Effect()
+        data class ShowDialog(val title: String, val message: String) : Effect()
     }
 }
