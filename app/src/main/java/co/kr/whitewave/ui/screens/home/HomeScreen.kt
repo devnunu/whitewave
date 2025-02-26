@@ -32,11 +32,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.R
-import co.kr.whitewave.ui.components.PlayingSoundsBottomSheet
+import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.ui.components.PremiumInfoDialog
-import co.kr.whitewave.ui.components.SavePresetDialog
-import co.kr.whitewave.ui.components.SoundGrid
-import co.kr.whitewave.ui.components.TimerPickerDialog
+import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
+import co.kr.whitewave.ui.screens.home.components.SoundGrid
+import co.kr.whitewave.ui.screens.home.components.TimerPickerDialog
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.ui.screens.home.HomeContract.Intent
 import co.kr.whitewave.utils.formatForDisplay

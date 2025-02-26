@@ -1,5 +1,5 @@
 // ui/components/TimerPickerDialog.kt
-package co.kr.whitewave.ui.components
+package co.kr.whitewave.ui.screens.home.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons

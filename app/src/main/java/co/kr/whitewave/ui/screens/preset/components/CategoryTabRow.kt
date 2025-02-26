@@ -1,4 +1,4 @@
-package co.kr.whitewave.ui.components
+package co.kr.whitewave.ui.screens.preset.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

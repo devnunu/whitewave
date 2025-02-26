@@ -31,9 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.data.model.DefaultSounds
-import co.kr.whitewave.ui.components.CategoryTabRow
-import co.kr.whitewave.ui.components.PresetCard
-import co.kr.whitewave.ui.components.PresetEditDialog
+import co.kr.whitewave.ui.screens.preset.components.CategoryTabRow
+import co.kr.whitewave.ui.screens.preset.components.PresetCard
+import co.kr.whitewave.ui.screens.preset.components.PresetEditDialog
 import co.kr.whitewave.ui.screens.preset.PresetContract.Effect
 import co.kr.whitewave.ui.screens.preset.PresetContract.Intent
 import kotlinx.coroutines.flow.collectLatest

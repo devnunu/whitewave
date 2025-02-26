@@ -1,4 +1,4 @@
-package co.kr.whitewave.ui.components
+package co.kr.whitewave.ui.screens.home.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
