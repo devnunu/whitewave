@@ -1,5 +1,6 @@
 package co.kr.whitewave.ui.screens.preset
 
+import android.app.Activity
 import android.content.Intent
 import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Arrangement
@@ -35,11 +36,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
 import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.preset.components.CategoryTabRow
 import co.kr.whitewave.ui.screens.preset.components.PresetCard
@@ -58,6 +61,9 @@ fun PresetScreen(
     navController: NavController,
     onBackClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     // MVI State 수집
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -93,6 +99,10 @@ fun PresetScreen(
                     alertMessage = effect.message
                     showAlertDialog = true
                 }
+
+                is Effect.ShowPremiumDialog -> {
+                    viewModel.handleViewEvent(ViewEvent.ShowPremiumDialog)
+                }
             }
         }
     }
@@ -106,6 +116,18 @@ fun PresetScreen(
             confirmButton = {
                 TextButton(onClick = { showAlertDialog = false }) {
                     Text("확인")
+                }
+            }
+        )
+    }
+
+    // 프리미엄 다이얼로그 추가
+    if (state.showPremiumDialog) {
+        PremiumInfoDialog(
+            onDismiss = { viewModel.handleViewEvent(ViewEvent.DismissPremiumDialog) },
+            onSubscribe = {
+                activity?.let {
+                    viewModel.handleViewEvent(ViewEvent.StartSubscription(it))
                 }
             }
         )
@@ -198,7 +220,6 @@ fun PresetScreen(
                                     viewModel.handleViewEvent(ViewEvent.SelectPreset(preset))
                                 },
                                 onEdit = {
-                                    // 수정된 부분: 기본 프리셋이 아닌 경우에만 편집 화면으로 이동
                                     if (!preset.preset.isDefault) {
                                         navController.navigateForResult<ActivityResult?>(
                                             route = NavRoute.PresetEdit(preset.preset.id),

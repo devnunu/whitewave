@@ -8,23 +8,12 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import co.kr.whitewave.ui.navigation.NavRoute
-import co.kr.whitewave.ui.screens.home.HomeScreen
-import co.kr.whitewave.ui.screens.home.HomeViewModel
-import co.kr.whitewave.ui.screens.preset.PresetScreen
-import co.kr.whitewave.ui.screens.setting.SettingsScreen
 import co.kr.whitewave.ui.theme.WhiteWaveTheme
-import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 

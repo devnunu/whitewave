@@ -2,6 +2,7 @@ package co.kr.whitewave.ui.screens.preset
 
 import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.Sound
+import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.ui.mvi.UiEffect
 import co.kr.whitewave.ui.mvi.UiViewEvent
 import co.kr.whitewave.ui.mvi.UiState
@@ -21,7 +22,9 @@ object PresetContract {
         val isLoading: Boolean = false,
         val error: String? = null,
         val editMode: Boolean = false,
-        val currentEditPreset: PresetWithSounds? = null
+        val currentEditPreset: PresetWithSounds? = null,
+        val showPremiumDialog: Boolean = false,
+        val subscriptionTier: SubscriptionTier = SubscriptionTier.Free
     ) : UiState
 
     /**
@@ -43,6 +46,10 @@ object PresetContract {
         object CancelEditPreset : ViewEvent()
         data class ShowSnackbarMessage(val message: String) : ViewEvent()
         data class ShowDialog(val title: String, val message: String) : ViewEvent()
+        // 프리미엄 관련 이벤트
+        object ShowPremiumDialog : ViewEvent()
+        object DismissPremiumDialog : ViewEvent()
+        data class StartSubscription(val activity: android.app.Activity) : ViewEvent()
     }
 
     /**
@@ -54,5 +61,7 @@ object PresetContract {
         data class PresetSelected(val presetId: String) : Effect()
         object NavigateBack : Effect()
         data class ShowDialog(val title: String, val message: String) : Effect()
+        // 프리미엄 관련 이펙트
+        object ShowPremiumDialog : Effect()
     }
 }

@@ -28,7 +28,12 @@ val appModule = module {
             adManager = get()
         )
     }
-    viewModel { PresetViewModel(get()) }
+    viewModel {
+        PresetViewModel(
+            presetRepository = get(),
+            subscriptionManager = get()
+        )
+    }
     viewModel {
         PresetEditViewModel(
             audioPlayer = get(),

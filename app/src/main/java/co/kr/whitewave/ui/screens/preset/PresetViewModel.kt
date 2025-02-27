@@ -1,10 +1,13 @@
 package co.kr.whitewave.ui.screens.preset
 
+import android.app.Activity
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.model.PresetCategories
 import co.kr.whitewave.data.repository.DefaultPresetDeletionException
 import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
+import co.kr.whitewave.data.subscription.SubscriptionManager
+import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.ui.mvi.BaseViewModel
 import co.kr.whitewave.ui.screens.preset.PresetContract.Effect
 import co.kr.whitewave.ui.screens.preset.PresetContract.ViewEvent
@@ -15,7 +18,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class PresetViewModel(
-    private val presetRepository: PresetRepository
+    private val presetRepository: PresetRepository,
+    private val subscriptionManager: SubscriptionManager  // 구독 매니저 추가
 ) : BaseViewModel<State, ViewEvent, Effect>(
     State(categories = PresetCategories.LIST)
 ) {
@@ -25,8 +29,9 @@ class PresetViewModel(
         // 카테고리 선택에 따라 프리셋 목록 필터링
         combine(
             presetRepository.getAllPresets(),
-            selectedCategoryFlow
-        ) { allPresets, selectedCategory ->
+            selectedCategoryFlow,
+            subscriptionManager.subscriptionTier  // 구독 상태 추가
+        ) { allPresets, selectedCategory, subscriptionTier ->
             setState { state ->
                 // 사용자 커스텀 프리셋과 기본 프리셋 분리
                 val customPresets = allPresets.filter { !it.preset.isDefault }
@@ -53,6 +58,7 @@ class PresetViewModel(
                 state.copy(
                     presets = filteredPresets,
                     selectedCategory = selectedCategory,
+                    subscriptionTier = subscriptionTier,  // 구독 상태 업데이트
                     isLoading = false
                 )
             }
@@ -79,6 +85,11 @@ class PresetViewModel(
             is ViewEvent.CancelEditPreset -> cancelEditPreset()
             is ViewEvent.ShowSnackbarMessage -> sendEffect(Effect.ShowSnackbar(viewEvent.message))
             is ViewEvent.ShowDialog -> sendEffect(Effect.ShowDialog(viewEvent.title, viewEvent.message))
+
+            // 프리미엄 관련 이벤트 처리 추가
+            is ViewEvent.ShowPremiumDialog -> setState { it.copy(showPremiumDialog = true) }
+            is ViewEvent.DismissPremiumDialog -> setState { it.copy(showPremiumDialog = false) }
+            is ViewEvent.StartSubscription -> startSubscription(viewEvent.activity)
         }
     }
 
@@ -142,6 +153,13 @@ class PresetViewModel(
     }
 
     private fun selectPreset(preset: co.kr.whitewave.data.local.PresetWithSounds) {
+        // 프리미엄 프리셋인 경우 구독 상태 확인
+        if (preset.preset.isPremium && currentState.subscriptionTier is SubscriptionTier.Free) {
+            // 무료 사용자가 프리미엄 프리셋 선택 시 구독 다이얼로그 표시
+            setState { it.copy(showPremiumDialog = true) }
+            return
+        }
+
         // 프리셋 객체 대신 ID만 전달
         sendEffect(Effect.PresetSelected(preset.preset.id))
     }
@@ -161,5 +179,18 @@ class PresetViewModel(
 
     private fun cancelEditPreset() {
         setState { it.copy(editMode = false, currentEditPreset = null) }
+    }
+
+    // 구독 시작 기능 추가
+    private fun startSubscription(activity: Activity) {
+        viewModelScope.launch {
+            try {
+                subscriptionManager.startSubscription(activity)
+                // 구독 프로세스가 시작됨을 알림
+                setState { it.copy(showPremiumDialog = false) }
+            } catch (e: Exception) {
+                sendEffect(Effect.ShowSnackbar("구독 시작 중 오류가 발생했습니다: ${e.message}"))
+            }
+        }
     }
 }
