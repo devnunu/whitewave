@@ -1,5 +1,6 @@
 package co.kr.whitewave.ui.screens.home
 
+import android.app.Activity
 import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,11 +37,14 @@ import androidx.navigation.NavController
 import co.kr.whitewave.R
 import co.kr.whitewave.data.model.result.IntentParamKey
 import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
 import co.kr.whitewave.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
+import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
+import co.kr.whitewave.ui.screens.home.components.TimerPickerDialog
 import co.kr.whitewave.utils.formatForDisplay
 import co.kr.whitewave.utils.navigateForResult
 import kotlinx.coroutines.flow.collectLatest
@@ -54,7 +58,7 @@ fun HomeScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val activity = context as? android.app.Activity
+    val activity = context as? Activity
 
     // MVI State 수집
     val state by viewModel.state.collectAsState()
@@ -63,7 +67,6 @@ fun HomeScreen(
     var showSavePresetDialog by remember { mutableStateOf(false) }
     var showTimerDialog by remember { mutableStateOf(false) }
     var showPlayingSounds by remember { mutableStateOf(false) }
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     // 필터링된 데이터
@@ -82,7 +85,41 @@ fun HomeScreen(
         )
     }
 
-    // 나머지 다이얼로그 처리 (기존 코드 유지)
+    if (state.showPremiumDialog) {
+        PremiumInfoDialog(
+            onDismiss = { viewModel.handleViewEvent(ViewEvent.DismissPremiumDialog) },
+            onSubscribe = {
+                activity?.let {
+                    viewModel.handleViewEvent(ViewEvent.StartSubscription(it))
+                }
+            }
+        )
+    }
+
+    if (showTimerDialog) {
+        TimerPickerDialog(
+            selectedDuration = state.timerDuration,
+            onDurationSelect = { duration ->
+                viewModel.handleViewEvent(ViewEvent.SetTimer(duration))
+                showTimerDialog = false
+            },
+            onDismiss = { showTimerDialog = false }
+        )
+    }
+
+    if (showPlayingSounds) {
+        PlayingSoundsBottomSheet(
+            playingSounds = playingSounds,
+            onVolumeChange = { sound, volume ->
+                viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
+            },
+            onSoundRemove = { sound ->
+                viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
+            },
+            onSavePreset = { showSavePresetDialog = true },
+            onDismiss = { showPlayingSounds = false }
+        )
+    }
 
     // Effect 처리 (기존 코드)
     LaunchedEffect(viewModel) {
@@ -143,7 +180,7 @@ fun HomeScreen(
 
                     // 설정 아이콘
                     IconButton(onClick = {
-                        navController?.navigate(NavRoute.Settings)
+                        navController.navigate(NavRoute.Settings)
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_settings),
