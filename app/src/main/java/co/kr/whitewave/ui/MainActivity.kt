@@ -99,105 +99,41 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(
-    onNotificationSettingClick: ()-> Unit
+    onNotificationSettingClick: () -> Unit
 ) {
     val navController = rememberNavController()
     val homeViewModel: HomeViewModel = koinViewModel()
 
-    // 바텀 네비게이션 아이템 정의
-    val bottomNavItems = listOf(
-        BottomNavItem(
-            route = Screen.Presets.route,
-            title = "프리셋",
-            iconResId = R.drawable.ic_preset
-        ),
-        BottomNavItem(
-            route = Screen.Home.route,
-            title = "사운드",
-            iconResId = R.drawable.ic_music_note
-        ),
-        BottomNavItem(
-            route = Screen.Settings.route,
-            title = "설정",
-            iconResId = R.drawable.ic_settings
-        )
-    )
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                bottomNavItems.forEach { item ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = item.iconResId),
-                                contentDescription = item.title
-                            )
-                        },
-                        label = { Text(item.title) },
-                        selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                // 바텀 네비게이션 사이 이동 시 백스택 쌓이지 않도록 설정
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                // 같은 아이템 재선택 시 인스턴스 재생성 방지
-                                launchSingleTop = true
-                                // 상태 저장
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            }
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Home.route,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        composable(Screen.Home.route) {
+            HomeScreen(
+                viewModel = homeViewModel,
+                onNavigateToPresets = { navController.navigate(Screen.Presets.route) },
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+            )
         }
-    ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            composable(Screen.Home.route) {
-                val presetId = it.savedStateHandle.get<String>("selected_preset_id")
 
-                // presetId가 있으면 HomeViewModel에서 처리
-                if (presetId != null) {
-                    // 홈 뷰모델에 프리셋 ID 전달하여 로드
-                    LaunchedEffect(presetId) {
-                        homeViewModel.loadPresetById(presetId)
-                        // 처리 후 SavedStateHandle에서 제거
-                        it.savedStateHandle.remove<String>("selected_preset_id")
-                    }
-                }
+        composable(Screen.Presets.route) {
+            PresetScreen(
+                onPresetSelected = { presetId ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_preset_id", presetId)
+                    navController.popBackStack()
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
 
-                HomeScreen(viewModel = homeViewModel)
-            }
-
-            composable(Screen.Presets.route) {
-                PresetScreen(
-                    onPresetSelected = { presetId ->
-                        // 프리셋 ID만 저장
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("selected_preset_id", presetId)
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                        }
-                    }
-                )
-            }
-
-            composable(Screen.Settings.route) {
-                SettingsScreen(
-                    onNotificationSettingClick = onNotificationSettingClick
-                )
-            }
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onNotificationSettingClick = onNotificationSettingClick,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }
