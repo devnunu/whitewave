@@ -40,11 +40,13 @@ import androidx.navigation.NavController
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
 import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.preset.components.CategoryTabRow
 import co.kr.whitewave.ui.screens.preset.components.PresetCard
 import co.kr.whitewave.ui.screens.preset.components.PresetEditDialog
 import co.kr.whitewave.ui.screens.preset.PresetContract.Effect
 import co.kr.whitewave.ui.screens.preset.PresetContract.ViewEvent
+import co.kr.whitewave.utils.navigateForResult
 import co.kr.whitewave.utils.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -196,7 +198,26 @@ fun PresetScreen(
                                     viewModel.handleViewEvent(ViewEvent.SelectPreset(preset))
                                 },
                                 onEdit = {
-                                    viewModel.handleViewEvent(ViewEvent.StartEditPreset(preset))
+                                    // 수정된 부분: 기본 프리셋이 아닌 경우에만 편집 화면으로 이동
+                                    if (!preset.preset.isDefault) {
+                                        navController.navigateForResult<ActivityResult?>(
+                                            route = NavRoute.PresetEdit(preset.preset.id),
+                                            navResultCallback = { result ->
+                                                if (result?.resultCode == ResultCode.SUCCESS) {
+                                                    // 전달된 메시지가 있으면 스낵바로 표시
+                                                    val message = result.data?.getStringExtra("message")
+                                                    if (!message.isNullOrEmpty()) {
+                                                        viewModel.handleViewEvent(ViewEvent.ShowSnackbarMessage(message))
+                                                    }
+                                                }
+                                            }
+                                        )
+                                    } else {
+                                        viewModel.handleViewEvent(ViewEvent.ShowDialog(
+                                            "편집 불가",
+                                            "기본 프리셋은 편집할 수 없습니다."
+                                        ))
+                                    }
                                 },
                                 onDelete = {
                                     viewModel.handleViewEvent(ViewEvent.DeletePreset(preset.preset.id))

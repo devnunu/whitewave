@@ -41,6 +41,8 @@ object PresetContract {
         data class SelectPreset(val preset: PresetWithSounds) : ViewEvent()
         data class StartEditPreset(val preset: PresetWithSounds) : ViewEvent()
         object CancelEditPreset : ViewEvent()
+        data class ShowSnackbarMessage(val message: String) : ViewEvent()
+        data class ShowDialog(val title: String, val message: String) : ViewEvent()
     }
 
     /**

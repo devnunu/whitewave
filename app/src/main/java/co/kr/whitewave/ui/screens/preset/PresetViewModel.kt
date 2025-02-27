@@ -77,6 +77,8 @@ class PresetViewModel(
             is ViewEvent.SelectPreset -> selectPreset(viewEvent.preset)
             is ViewEvent.StartEditPreset -> startEditPreset(viewEvent.preset)
             is ViewEvent.CancelEditPreset -> cancelEditPreset()
+            is ViewEvent.ShowSnackbarMessage -> sendEffect(Effect.ShowSnackbar(viewEvent.message))
+            is ViewEvent.ShowDialog -> sendEffect(Effect.ShowDialog(viewEvent.title, viewEvent.message))
         }
     }
 

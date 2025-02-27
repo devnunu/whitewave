@@ -10,6 +10,7 @@ import co.kr.whitewave.data.subscription.SubscriptionManager
 import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.ui.screens.home.HomeViewModel
 import co.kr.whitewave.ui.screens.preset.PresetViewModel
+import co.kr.whitewave.ui.screens.presetedit.PresetEditViewModel
 import co.kr.whitewave.ui.screens.setting.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,12 @@ val appModule = module {
         )
     }
     viewModel { PresetViewModel(get()) }
+    viewModel {
+        PresetEditViewModel(
+            audioPlayer = get(),
+            presetRepository = get()
+        )
+    }
     viewModel { SettingsViewModel(get()) }
 
     // Use cases

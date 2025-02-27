@@ -16,4 +16,8 @@ sealed class NavRoute {
     @Serializable
     @SerialName("Settings")
     object Settings : NavRoute()
+
+    @Serializable
+    @SerialName("PresetEdit")
+    data class PresetEdit(val presetId: String) : NavRoute()
 }
