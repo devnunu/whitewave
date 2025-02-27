@@ -3,7 +3,7 @@ package co.kr.whitewave.ui.screens.setting
 import android.app.Activity
 import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.ui.mvi.UiEffect
-import co.kr.whitewave.ui.mvi.UiIntent
+import co.kr.whitewave.ui.mvi.UiViewEvent
 import co.kr.whitewave.ui.mvi.UiState
 
 /**
@@ -22,12 +22,12 @@ object SettingContract {
     /**
      * SettingScreen에서 발생할 수 있는 사용자 의도/액션
      */
-    sealed class Intent : UiIntent {
-        data class StartSubscription(val activity: Activity) : Intent()
-        data class CheckNotificationPermission(val activity: Activity) : Intent()
-        object OpenNotificationSettings : Intent()
-        object ShowPremiumInfo : Intent()
-        object NavigateBack : Intent()
+    sealed class ViewEvent : UiViewEvent {
+        data class StartSubscription(val activity: Activity) : ViewEvent()
+        data class CheckNotificationPermission(val activity: Activity) : ViewEvent()
+        object OpenNotificationSettings : ViewEvent()
+        object ShowPremiumInfo : ViewEvent()
+        object NavigateBack : ViewEvent()
     }
 
     /**

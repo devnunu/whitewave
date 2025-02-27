@@ -1,6 +1,6 @@
 package co.kr.whitewave.ui.screens.home
 
-import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,14 +34,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.kr.whitewave.R
-import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
-import co.kr.whitewave.ui.components.PremiumInfoDialog
+import co.kr.whitewave.data.model.result.IntentParamKey
+import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
 import co.kr.whitewave.ui.screens.home.components.SoundGrid
-import co.kr.whitewave.ui.screens.home.components.TimerPickerDialog
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
-import co.kr.whitewave.ui.screens.home.HomeContract.Intent
+import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.utils.formatForDisplay
+import co.kr.whitewave.utils.navigateForResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -50,9 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToPresets: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {},
-    navController: NavController? = null
+    navController: NavController
 ) {
     val context = LocalContext.current
     val activity = context as? android.app.Activity
@@ -71,26 +70,12 @@ fun HomeScreen(
     val playingSounds = state.sounds.filter { it.isSelected }
     val hasPlayingSounds = playingSounds.isNotEmpty()
 
-    // 프리셋 ID 처리 (수정된 코드)
-    navController?.let { nav ->
-        // 현재 백스택 엔트리의 savedStateHandle에서 presetId 가져오기
-        val presetId = nav.currentBackStackEntry?.savedStateHandle?.get<String>("selected_preset_id")
-
-        LaunchedEffect(presetId) {
-            if (presetId != null) {
-                viewModel.loadPresetById(presetId)
-                // 처리 후 삭제
-                nav.currentBackStackEntry?.savedStateHandle?.remove<String>("selected_preset_id")
-            }
-        }
-    }
-
     // 다이얼로그 처리 (기존 코드)
     if (showSavePresetDialog) {
         SavePresetDialog(
             onDismiss = { showSavePresetDialog = false },
             onSave = { name ->
-                viewModel.handleIntent(Intent.SavePreset(name))
+                viewModel.handleViewEvent(ViewEvent.SavePreset(name))
                 showSavePresetDialog = false
             },
             error = state.savePresetError
@@ -109,9 +94,11 @@ fun HomeScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+
                 is Effect.ShowAd -> {
                     activity?.let { viewModel.onAdClosed() }
                 }
+
                 is Effect.NavigateTo -> {
                     // 네비게이션 처리 (필요시)
                 }
@@ -135,7 +122,19 @@ fun HomeScreen(
                 title = { Text("WhiteWave") },
                 actions = {
                     // 프리셋 아이콘
-                    IconButton(onClick = onNavigateToPresets) {
+                    IconButton(onClick = {
+                        navController.navigateForResult<ActivityResult?>(
+                            route = NavRoute.Presets,
+                            navResultCallback = { result ->
+                                if (result?.resultCode == ResultCode.SUCCESS) {
+                                    val presetId =
+                                        result.data?.getStringExtra(IntentParamKey.PRESET_ID)
+                                            .orEmpty()
+                                    viewModel.loadPresetById(presetId)
+                                }
+                            }
+                        )
+                    }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_preset),
                             contentDescription = "프리셋"
@@ -143,7 +142,9 @@ fun HomeScreen(
                     }
 
                     // 설정 아이콘
-                    IconButton(onClick = onNavigateToSettings) {
+                    IconButton(onClick = {
+                        navController?.navigate(NavRoute.Settings)
+                    }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_settings),
                             contentDescription = "설정"
@@ -185,7 +186,7 @@ fun HomeScreen(
 
                     // Play/Pause button (기존 코드)
                     Button(
-                        onClick = { viewModel.handleIntent(Intent.TogglePlayback) },
+                        onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
                         enabled = hasPlayingSounds
                     ) {
                         Icon(
@@ -240,10 +241,10 @@ fun HomeScreen(
             SoundGrid(
                 sounds = state.sounds,
                 onSoundSelect = { sound ->
-                    viewModel.handleIntent(Intent.ToggleSound(sound))
+                    viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
                 },
                 onVolumeChange = { sound, volume ->
-                    viewModel.handleIntent(Intent.UpdateVolume(sound, volume))
+                    viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
                 },
                 modifier = Modifier.weight(1f)
             )

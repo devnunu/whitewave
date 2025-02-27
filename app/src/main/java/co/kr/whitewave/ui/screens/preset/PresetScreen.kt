@@ -1,5 +1,7 @@
 package co.kr.whitewave.ui.screens.preset
 
+import android.content.Intent
+import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +12,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,21 +36,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import co.kr.whitewave.data.model.DefaultSounds
+import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
+import co.kr.whitewave.data.model.result.ResultCode
 import co.kr.whitewave.ui.screens.preset.components.CategoryTabRow
 import co.kr.whitewave.ui.screens.preset.components.PresetCard
 import co.kr.whitewave.ui.screens.preset.components.PresetEditDialog
 import co.kr.whitewave.ui.screens.preset.PresetContract.Effect
-import co.kr.whitewave.ui.screens.preset.PresetContract.Intent
+import co.kr.whitewave.ui.screens.preset.PresetContract.ViewEvent
+import co.kr.whitewave.utils.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PresetScreen(
-    modifier: Modifier = Modifier,
     viewModel: PresetViewModel = koinViewModel(),
-    onPresetSelected: (String) -> Unit = {}, // 프리셋 ID만 전달받도록 변경
+    navController: NavController,
     onBackClick: () -> Unit = {}
 ) {
     // MVI State 수집
@@ -71,12 +75,17 @@ fun PresetScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+
                 is Effect.PresetSelected -> {
-                    onPresetSelected(effect.presetId) // 프리셋 ID만 전달
+                    val intent = Intent().apply { putExtra(PRESET_ID, effect.presetId) }
+                    val result = ActivityResult(ResultCode.SUCCESS, intent)
+                    navController.popBackStackWithResult(result)
                 }
+
                 is Effect.NavigateBack -> {
                     onBackClick()
                 }
+
                 is Effect.ShowDialog -> {
                     alertTitle = effect.title
                     alertMessage = effect.message
@@ -106,8 +115,8 @@ fun PresetScreen(
             preset = state.currentEditPreset,
             availableSounds = DefaultSounds.ALL,
             onSave = { name, sounds, category ->
-                viewModel.handleIntent(
-                    Intent.UpdatePreset(
+                viewModel.handleViewEvent(
+                    ViewEvent.UpdatePreset(
                         presetId = state.currentEditPreset!!.preset.id,
                         name = name,
                         sounds = sounds,
@@ -116,7 +125,7 @@ fun PresetScreen(
                 )
             },
             onDismiss = {
-                viewModel.handleIntent(Intent.CancelEditPreset)
+                viewModel.handleViewEvent(ViewEvent.CancelEditPreset)
             },
             error = state.error
         )
@@ -142,7 +151,7 @@ fun PresetScreen(
                     categories = state.categories,
                     selectedCategory = state.selectedCategory,
                     onCategorySelected = { category ->
-                        viewModel.handleIntent(Intent.SelectCategory(category))
+                        viewModel.handleViewEvent(ViewEvent.SelectCategory(category))
                     }
                 )
             }
@@ -160,6 +169,7 @@ fun PresetScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 state.presets.isEmpty() -> {
                     Text(
                         text = if (state.selectedCategory == "커스텀")
@@ -170,6 +180,7 @@ fun PresetScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 else -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
@@ -182,13 +193,13 @@ fun PresetScreen(
                             PresetCard(
                                 preset = preset,
                                 onClick = {
-                                    viewModel.handleIntent(Intent.SelectPreset(preset))
+                                    viewModel.handleViewEvent(ViewEvent.SelectPreset(preset))
                                 },
                                 onEdit = {
-                                    viewModel.handleIntent(Intent.StartEditPreset(preset))
+                                    viewModel.handleViewEvent(ViewEvent.StartEditPreset(preset))
                                 },
                                 onDelete = {
-                                    viewModel.handleIntent(Intent.DeletePreset(preset.preset.id))
+                                    viewModel.handleViewEvent(ViewEvent.DeletePreset(preset.preset.id))
                                 }
                             )
                         }

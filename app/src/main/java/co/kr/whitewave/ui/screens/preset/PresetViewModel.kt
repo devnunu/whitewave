@@ -7,7 +7,7 @@ import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.ui.mvi.BaseViewModel
 import co.kr.whitewave.ui.screens.preset.PresetContract.Effect
-import co.kr.whitewave.ui.screens.preset.PresetContract.Intent
+import co.kr.whitewave.ui.screens.preset.PresetContract.ViewEvent
 import co.kr.whitewave.ui.screens.preset.PresetContract.State
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class PresetViewModel(
     private val presetRepository: PresetRepository
-) : BaseViewModel<State, Intent, Effect>(
+) : BaseViewModel<State, ViewEvent, Effect>(
     State(categories = PresetCategories.LIST)
 ) {
     private val selectedCategoryFlow = MutableStateFlow(PresetCategories.ALL)
@@ -59,24 +59,24 @@ class PresetViewModel(
         }.launchIn(viewModelScope)
 
         // 초기 프리셋 로드
-        handleIntent(Intent.LoadPresets)
+        handleViewEvent(ViewEvent.LoadPresets)
     }
 
-    override fun handleIntent(intent: Intent) {
-        when (intent) {
-            is Intent.LoadPresets -> loadPresets()
-            is Intent.SelectCategory -> selectCategory(intent.category)
-            is Intent.SavePreset -> savePreset(intent.name, intent.sounds, intent.category)
-            is Intent.UpdatePreset -> updatePreset(
-                intent.presetId,
-                intent.name,
-                intent.sounds,
-                intent.category
+    override fun handleViewEvent(viewEvent: ViewEvent) {
+        when (viewEvent) {
+            is ViewEvent.LoadPresets -> loadPresets()
+            is ViewEvent.SelectCategory -> selectCategory(viewEvent.category)
+            is ViewEvent.SavePreset -> savePreset(viewEvent.name, viewEvent.sounds, viewEvent.category)
+            is ViewEvent.UpdatePreset -> updatePreset(
+                viewEvent.presetId,
+                viewEvent.name,
+                viewEvent.sounds,
+                viewEvent.category
             )
-            is Intent.DeletePreset -> deletePreset(intent.presetId)
-            is Intent.SelectPreset -> selectPreset(intent.preset)
-            is Intent.StartEditPreset -> startEditPreset(intent.preset)
-            is Intent.CancelEditPreset -> cancelEditPreset()
+            is ViewEvent.DeletePreset -> deletePreset(viewEvent.presetId)
+            is ViewEvent.SelectPreset -> selectPreset(viewEvent.preset)
+            is ViewEvent.StartEditPreset -> startEditPreset(viewEvent.preset)
+            is ViewEvent.CancelEditPreset -> cancelEditPreset()
         }
     }
 

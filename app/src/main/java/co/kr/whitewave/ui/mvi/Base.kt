@@ -20,7 +20,7 @@ interface UiState
 /**
  * 사용자 의도(액션)를 나타내는 인터페이스
  */
-interface UiIntent
+interface UiViewEvent
 
 /**
  * 일회성 이벤트(사이드 이펙트)를 나타내는 인터페이스
@@ -35,7 +35,7 @@ interface UiEffect
  * @param E 사이드 이펙트 타입
  * @param initialState 초기 UI 상태
  */
-abstract class BaseViewModel<STATE : UiState, INTENT : UiIntent, EFFECT : UiEffect>(initialState: STATE) : ViewModel() {
+abstract class BaseViewModel<STATE : UiState, INTENT : UiViewEvent, EFFECT : UiEffect>(initialState: STATE) : ViewModel() {
 
     // 상태 관리
     private val _state = MutableStateFlow(initialState)
@@ -71,5 +71,5 @@ abstract class BaseViewModel<STATE : UiState, INTENT : UiIntent, EFFECT : UiEffe
      * 사용자 의도 처리 메서드
      * 구현 클래스에서 오버라이드 필요
      */
-    abstract fun handleIntent(intent: INTENT)
+    abstract fun handleViewEvent(intent: INTENT)
 }

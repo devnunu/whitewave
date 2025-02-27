@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +35,7 @@ import co.kr.whitewave.R
 import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.screens.setting.SettingContract.Effect
-import co.kr.whitewave.ui.screens.setting.SettingContract.Intent
+import co.kr.whitewave.ui.screens.setting.SettingContract.ViewEvent
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -61,7 +60,7 @@ fun SettingsScreen(
     // 컴포넌트가 처음 표시될 때 알림 권한 확인
     LaunchedEffect(Unit) {
         activity?.let {
-            viewModel.handleIntent(Intent.CheckNotificationPermission(it))
+            viewModel.handleViewEvent(ViewEvent.CheckNotificationPermission(it))
         }
     }
 
@@ -94,7 +93,7 @@ fun SettingsScreen(
             onDismiss = { showPremiumDialog = false },
             onSubscribe = {
                 activity?.let {
-                    viewModel.handleIntent(Intent.StartSubscription(it))
+                    viewModel.handleViewEvent(ViewEvent.StartSubscription(it))
                 }
                 showPremiumDialog = false
             }
@@ -142,7 +141,7 @@ fun SettingsScreen(
                 trailingContent = {
                     if (state.subscriptionTier is SubscriptionTier.Free) {
                         Button(
-                            onClick = { viewModel.handleIntent(Intent.ShowPremiumInfo) }
+                            onClick = { viewModel.handleViewEvent(ViewEvent.ShowPremiumInfo) }
                         ) {
                             Text("구독하기")
                         }
@@ -151,7 +150,7 @@ fun SettingsScreen(
                 modifier = Modifier.clickable(
                     enabled = state.subscriptionTier is SubscriptionTier.Free
                 ) {
-                    viewModel.handleIntent(Intent.ShowPremiumInfo)
+                    viewModel.handleViewEvent(ViewEvent.ShowPremiumInfo)
                 }
             )
 
@@ -175,7 +174,7 @@ fun SettingsScreen(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
                 modifier = Modifier.clickable {
-                    viewModel.handleIntent(Intent.OpenNotificationSettings)
+                    viewModel.handleViewEvent(ViewEvent.OpenNotificationSettings)
                 }
             )
 

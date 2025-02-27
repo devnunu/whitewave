@@ -3,7 +3,7 @@ package co.kr.whitewave.ui.screens.preset
 import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.ui.mvi.UiEffect
-import co.kr.whitewave.ui.mvi.UiIntent
+import co.kr.whitewave.ui.mvi.UiViewEvent
 import co.kr.whitewave.ui.mvi.UiState
 
 /**
@@ -27,20 +27,20 @@ object PresetContract {
     /**
      * PresetScreen에서 발생할 수 있는 사용자 의도/액션
      */
-    sealed class Intent : UiIntent {
-        object LoadPresets : Intent()
-        data class SelectCategory(val category: String) : Intent()
-        data class SavePreset(val name: String, val sounds: List<Sound>, val category: String) : Intent()
+    sealed class ViewEvent : UiViewEvent {
+        object LoadPresets : ViewEvent()
+        data class SelectCategory(val category: String) : ViewEvent()
+        data class SavePreset(val name: String, val sounds: List<Sound>, val category: String) : ViewEvent()
         data class UpdatePreset(
             val presetId: String,
             val name: String,
             val sounds: List<Sound>,
             val category: String
-        ) : Intent()
-        data class DeletePreset(val presetId: String) : Intent()
-        data class SelectPreset(val preset: PresetWithSounds) : Intent()
-        data class StartEditPreset(val preset: PresetWithSounds) : Intent()
-        object CancelEditPreset : Intent()
+        ) : ViewEvent()
+        data class DeletePreset(val presetId: String) : ViewEvent()
+        data class SelectPreset(val preset: PresetWithSounds) : ViewEvent()
+        data class StartEditPreset(val preset: PresetWithSounds) : ViewEvent()
+        object CancelEditPreset : ViewEvent()
     }
 
     /**

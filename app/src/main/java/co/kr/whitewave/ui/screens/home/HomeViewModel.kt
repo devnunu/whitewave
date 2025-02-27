@@ -16,7 +16,7 @@ import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.ui.mvi.BaseViewModel
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
-import co.kr.whitewave.ui.screens.home.HomeContract.Intent
+import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.ui.screens.home.HomeContract.State
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
@@ -30,7 +30,7 @@ class HomeViewModel(
     private val presetRepository: PresetRepository,
     private val subscriptionManager: SubscriptionManager,
     private val adManager: AdManager
-) : BaseViewModel<State, Intent, Effect>(State()) {
+) : BaseViewModel<State, ViewEvent, Effect>(State()) {
 
     private val timer = SoundTimer()
 
@@ -59,7 +59,7 @@ class HomeViewModel(
         }
 
         // 초기 데이터 로드
-        handleIntent(Intent.LoadSounds)
+        handleViewEvent(ViewEvent.LoadSounds)
     }
 
     // ID로 프리셋 로드하는 함수 추가
@@ -93,18 +93,18 @@ class HomeViewModel(
         }
     }
 
-    override fun handleIntent(intent: Intent) {
-        when (intent) {
-            is Intent.LoadSounds -> loadSounds()
-            is Intent.ToggleSound -> toggleSound(intent.sound)
-            is Intent.UpdateVolume -> updateVolume(intent.sound, intent.volume)
-            is Intent.SetTimer -> setTimer(intent.duration)
-            is Intent.SavePreset -> savePreset(intent.name)
-            is Intent.LoadPreset -> loadPreset(intent.preset)
-            is Intent.TogglePlayback -> togglePlayback()
-            is Intent.DismissPremiumDialog -> dismissPremiumDialog()
-            is Intent.StartSubscription -> startSubscription(intent.activity)
-            is Intent.OnAdClosed -> onAdClosed()
+    override fun handleViewEvent(viewEvent: ViewEvent) {
+        when (viewEvent) {
+            is ViewEvent.LoadSounds -> loadSounds()
+            is ViewEvent.ToggleSound -> toggleSound(viewEvent.sound)
+            is ViewEvent.UpdateVolume -> updateVolume(viewEvent.sound, viewEvent.volume)
+            is ViewEvent.SetTimer -> setTimer(viewEvent.duration)
+            is ViewEvent.SavePreset -> savePreset(viewEvent.name)
+            is ViewEvent.LoadPreset -> loadPreset(viewEvent.preset)
+            is ViewEvent.TogglePlayback -> togglePlayback()
+            is ViewEvent.DismissPremiumDialog -> dismissPremiumDialog()
+            is ViewEvent.StartSubscription -> startSubscription(viewEvent.activity)
+            is ViewEvent.OnAdClosed -> onAdClosed()
         }
     }
 

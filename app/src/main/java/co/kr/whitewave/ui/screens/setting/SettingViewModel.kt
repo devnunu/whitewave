@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.subscription.SubscriptionManager
 import co.kr.whitewave.ui.mvi.BaseViewModel
 import co.kr.whitewave.ui.screens.setting.SettingContract.Effect
-import co.kr.whitewave.ui.screens.setting.SettingContract.Intent
+import co.kr.whitewave.ui.screens.setting.SettingContract.ViewEvent
 import co.kr.whitewave.ui.screens.setting.SettingContract.State
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val subscriptionManager: SubscriptionManager
-) : BaseViewModel<State, Intent, Effect>(State()) {
+) : BaseViewModel<State, ViewEvent, Effect>(State()) {
 
     init {
         // 구독 상태 모니터링
@@ -29,13 +29,13 @@ class SettingsViewModel(
             .launchIn(viewModelScope)
     }
 
-    override fun handleIntent(intent: Intent) {
-        when (intent) {
-            is Intent.StartSubscription -> startSubscription(intent.activity)
-            is Intent.CheckNotificationPermission -> checkNotificationPermission(intent.activity)
-            is Intent.OpenNotificationSettings -> sendEffect(Effect.NavigateToNotificationSettings)
-            is Intent.ShowPremiumInfo -> sendEffect(Effect.ShowPremiumDialog)
-            is Intent.NavigateBack -> sendEffect(Effect.NavigateBack)
+    override fun handleViewEvent(viewEvent: ViewEvent) {
+        when (viewEvent) {
+            is ViewEvent.StartSubscription -> startSubscription(viewEvent.activity)
+            is ViewEvent.CheckNotificationPermission -> checkNotificationPermission(viewEvent.activity)
+            is ViewEvent.OpenNotificationSettings -> sendEffect(Effect.NavigateToNotificationSettings)
+            is ViewEvent.ShowPremiumInfo -> sendEffect(Effect.ShowPremiumDialog)
+            is ViewEvent.NavigateBack -> sendEffect(Effect.NavigateBack)
         }
     }
 

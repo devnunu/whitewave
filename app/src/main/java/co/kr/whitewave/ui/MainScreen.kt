@@ -21,19 +21,13 @@ fun MainScreen(
     ) {
         composable<NavRoute.Home> {
             HomeScreen(
-                onNavigateToPresets = { navController.navigate(NavRoute.Presets) },
-                onNavigateToSettings = { navController.navigate(NavRoute.Settings) }
+                navController = navController
             )
         }
 
         composable<NavRoute.Presets> {
             PresetScreen(
-                onPresetSelected = { presetId ->
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("selected_preset_id", presetId)
-                    navController.popBackStack()
-                },
+                navController = navController,
                 onBackClick = { navController.popBackStack() }
             )
         }
