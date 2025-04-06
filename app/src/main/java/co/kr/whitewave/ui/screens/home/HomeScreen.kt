@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,14 +31,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -177,28 +175,26 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            // 프리셋 아이콘
-            TopAppBar(
+            SmallTopAppBar(
                 title = {
-                    Text
-
-                    // 설정 아이콘
-                    (
-                            text = "WhiteWave",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
+                    Text(
+                        text = "WhiteWave",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
-                actions = fun RowScope.() {
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                actions = {
                     // 프리셋 아이콘
                     IconButton(onClick = {
                         navController.navigateForResult<ActivityResult?>(
                             route = NavRoute.Presets,
                             navResultCallback = { result ->
                                 if (result?.resultCode == ResultCode.SUCCESS) {
-                                    val presetId =
-                                        result.data?.getStringExtra(IntentParamKey.PRESET_ID)
-                                            .orEmpty()
+                                    val presetId = result.data?.getStringExtra(IntentParamKey.PRESET_ID).orEmpty()
                                     viewModel.loadPresetById(presetId)
                                 }
                             }
@@ -219,16 +215,7 @@ fun HomeScreen(
                             contentDescription = "설정"
                         )
                     }
-                }, colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.applyTonalElevation(
-                        backgroundColor = containerColor,
-                        elevation = TopAppBarSmallTokens.OnScrollContainerElevation
-                    ),
-                    navigationIconContentColor = TopAppBarSmallTokens.LeadingIconColor.value,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    actionIconContentColor = TopAppBarSmallTokens.TrailingIconColor.value
-                )
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
