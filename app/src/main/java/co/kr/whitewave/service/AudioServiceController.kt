@@ -9,6 +9,9 @@ import android.os.IBinder
 class AudioServiceController(
     private val applicationContext: Context
 ) {
+    // 서비스가 연결될 때 보류 중인 작업 실행
+    private val pendingActions = mutableListOf<(AudioService) -> Unit>()
+
     private var audioService: AudioService? = null
     private var serviceConnection: ServiceConnection? = null
 
@@ -17,6 +20,9 @@ class AudioServiceController(
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 if (service is AudioService.AudioServiceBinder) {
                     audioService = service.getService()
+                    // 보류 중인 작업 실행
+                    pendingActions.forEach { it(audioService!!) }
+                    pendingActions.clear()
                     onServiceConnected(service.getService())
                 }
             }
@@ -35,7 +41,13 @@ class AudioServiceController(
     }
 
     fun updateRemainingTime(time: String?) {
-        audioService?.updateRemainingTime(time)
+        // 서비스가 연결된 경우에만 호출
+        if (audioService != null) {
+            audioService?.updateRemainingTime(time)
+        } else {
+            // 서비스가 연결되지 않은 경우를 처리하기 위한 보류 중인 작업 목록 추가
+            pendingActions.add { service -> service.updateRemainingTime(time) }
+        }
     }
 
     fun unbind() {

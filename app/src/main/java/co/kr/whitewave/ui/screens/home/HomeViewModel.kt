@@ -16,8 +16,8 @@ import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.service.AudioServiceController
 import co.kr.whitewave.ui.mvi.BaseViewModel
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
-import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.ui.screens.home.HomeContract.State
+import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
 import kotlinx.coroutines.flow.firstOrNull
@@ -189,6 +189,8 @@ class HomeViewModel(
         duration?.let {
             timer.start(it) {
                 stopAllSounds()
+                // 타이머 완료 시 서비스에 명시적으로 알리기
+                audioServiceController.updateRemainingTime(null)
             }
         } ?: timer.cancel()
     }

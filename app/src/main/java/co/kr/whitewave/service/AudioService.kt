@@ -106,6 +106,14 @@ class AudioService : Service() {
 
     fun updateRemainingTime(time: String?) {
         remainingTime = time
+
+        // 타이머가 완료되면 (time이 null이면) 재생 상태 변경
+        if (time == null && isPlaying) {
+            // 타이머가 완료되면 모든 사운드 재생 중지
+            stopAllSounds()
+            isPlaying = false
+        }
+
         updateNotification()
     }
 

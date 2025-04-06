@@ -2,25 +2,44 @@ package co.kr.whitewave.ui.screens.home
 
 import android.app.Activity
 import androidx.activity.result.ActivityResult
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Badge
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,8 +49,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.kr.whitewave.R
@@ -39,11 +61,11 @@ import co.kr.whitewave.data.model.result.IntentParamKey
 import co.kr.whitewave.data.model.result.ResultCode
 import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.navigation.NavRoute
-import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
-import co.kr.whitewave.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
+import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
+import co.kr.whitewave.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.ui.screens.home.components.TimerPickerDialog
 import co.kr.whitewave.utils.formatForDisplay
 import co.kr.whitewave.utils.navigateForResult
@@ -73,7 +95,7 @@ fun HomeScreen(
     val playingSounds = state.sounds.filter { it.isSelected }
     val hasPlayingSounds = playingSounds.isNotEmpty()
 
-    // 다이얼로그 처리 (기존 코드)
+    // 다이얼로그 처리
     if (showSavePresetDialog) {
         SavePresetDialog(
             onDismiss = { showSavePresetDialog = false },
@@ -121,7 +143,7 @@ fun HomeScreen(
         )
     }
 
-    // Effect 처리 (기존 코드)
+    // Effect 처리
     LaunchedEffect(viewModel) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
@@ -143,7 +165,7 @@ fun HomeScreen(
         }
     }
 
-    // 에러 메시지 스낵바 표시 (기존 코드)
+    // 에러 메시지 스낵바 표시
     LaunchedEffect(state.playError) {
         state.playError?.let {
             snackbarHostState.showSnackbar(
@@ -155,9 +177,19 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
+            // 프리셋 아이콘
             TopAppBar(
-                title = { Text("WhiteWave") },
-                actions = {
+                title = {
+                    Text
+
+                    // 설정 아이콘
+                    (
+                            text = "WhiteWave",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                    )
+                },
+                actions = fun RowScope.() {
                     // 프리셋 아이콘
                     IconButton(onClick = {
                         navController.navigateForResult<ActivityResult?>(
@@ -187,81 +219,161 @@ fun HomeScreen(
                             contentDescription = "설정"
                         )
                     }
-                }
+                }, colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.applyTonalElevation(
+                        backgroundColor = containerColor,
+                        elevation = TopAppBarSmallTokens.OnScrollContainerElevation
+                    ),
+                    navigationIconContentColor = TopAppBarSmallTokens.LeadingIconColor.value,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = TopAppBarSmallTokens.TrailingIconColor.value
+                )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.0f),
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                            )
+                        )
+                    )
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
-                    // Timer section (기존 코드)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
+                    // 타이머 상태 표시 (있을 경우)
+                    AnimatedVisibility(
+                        visible = state.remainingTime != null,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
                     ) {
-                        IconButton(onClick = { showTimerDialog = true }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_timer),
-                                contentDescription = "Timer"
-                            )
-                        }
                         state.remainingTime?.let { remaining ->
-                            Text(
-                                text = remaining.formatForDisplay(),
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Surface(
+                                    shape = MaterialTheme.shapes.small,
+                                    color = MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_timer),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = remaining.formatForDisplay(),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    // Play/Pause button (기존 코드)
-                    Button(
-                        onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
-                        enabled = hasPlayingSounds
+                    // 재생 컨트롤 행
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            painter = painterResource(
-                                if (state.isPlaying) R.drawable.ic_pause
-                                else R.drawable.ic_play
-                            ),
-                            contentDescription = if (state.isPlaying) "Pause" else "Play"
-                        )
-                        Text(
-                            text = if (state.isPlaying) "정지" else "재생",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    // Playing sounds button (기존 코드)
-                    Box(
-                        modifier = Modifier.padding(start = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = { showPlayingSounds = true },
-                            enabled = hasPlayingSounds
+                        // 타이머 버튼
+                        FilledTonalIconButton(
+                            onClick = { showTimerDialog = true },
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                            )
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_music_note),
-                                contentDescription = "Playing sounds",
-                                tint = if (hasPlayingSounds)
-                                    LocalContentColor.current
-                                else
-                                    LocalContentColor.current.copy(alpha = 0.38f)
+                                painter = painterResource(id = R.drawable.ic_timer),
+                                contentDescription = "타이머 설정"
                             )
                         }
-                        if (hasPlayingSounds) {
-                            Badge(
-                                modifier = Modifier.align(Alignment.TopEnd)
+
+                        // 재생/정지 버튼
+                        Button(
+                            onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
+                            enabled = hasPlayingSounds,
+                            shape = MaterialTheme.shapes.medium,
+                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(
+                                        if (state.isPlaying) R.drawable.ic_pause
+                                        else R.drawable.ic_play
+                                    ),
+                                    contentDescription = if (state.isPlaying) "일시정지" else "재생"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = if (state.isPlaying) "일시정지" else "재생",
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
+
+                        // 재생 중인 사운드 버튼
+                        Box {
+                            FilledIconButton(
+                                onClick = { showPlayingSounds = true },
+                                enabled = hasPlayingSounds,
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = if (hasPlayingSounds)
+                                        MaterialTheme.colorScheme.tertiaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = if (hasPlayingSounds)
+                                        MaterialTheme.colorScheme.onTertiaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             ) {
-                                Text(playingSounds.size.toString())
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_music_note),
+                                    contentDescription = "재생 중인 사운드"
+                                )
+                            }
+
+                            if (hasPlayingSounds) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 4.dp, y = (-4).dp)
+                                        .size(18.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.error),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = playingSounds.size.toString(),
+                                        color = MaterialTheme.colorScheme.onError,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
                             }
                         }
                     }
@@ -274,7 +386,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Sound grid (기존 코드)
+            // Sound grid
             SoundGrid(
                 sounds = state.sounds,
                 onSoundSelect = { sound ->
