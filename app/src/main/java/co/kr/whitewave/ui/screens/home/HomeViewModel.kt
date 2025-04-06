@@ -1,6 +1,7 @@
 package co.kr.whitewave.ui.screens.home
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.ads.AdManager
 import co.kr.whitewave.data.local.PresetWithSounds
@@ -37,17 +38,24 @@ class HomeViewModel(
     init {
         // AudioService 연결
         audioServiceController.bind { service ->
+            // 여기서 초기 타이머 상태 전달
             timer.remainingTime.value?.formatForDisplay()?.let { time ->
                 service.updateRemainingTime(time)
             }
         }
 
-        // 타이머 상태 모니터링
+        // 타이머 상태 모니터링 - 이 부분이 중요
         viewModelScope.launch {
             timer.remainingTime.collect { duration ->
+                // 상태 업데이트
                 setState { it.copy(remainingTime = duration) }
+
+                // 서비스에 타이머 시간 전달 - 이 부분이 중요
                 val formattedTime = duration?.formatForDisplay()
                 audioServiceController.updateRemainingTime(formattedTime)
+
+                // 로그 추가
+                Log.d("HomeViewModel", "Timer updated: $formattedTime")
             }
         }
 
@@ -188,8 +196,9 @@ class HomeViewModel(
 
         duration?.let {
             timer.start(it) {
+                // 타이머 완료 시 모든 사운드 중지
                 stopAllSounds()
-                // 타이머 완료 시 서비스에 명시적으로 알리기
+                // 타이머 표시 초기화
                 audioServiceController.updateRemainingTime(null)
             }
         } ?: timer.cancel()
