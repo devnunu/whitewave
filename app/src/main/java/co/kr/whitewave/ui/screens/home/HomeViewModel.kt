@@ -192,16 +192,16 @@ class HomeViewModel(
     }
 
     private fun setTimer(duration: Duration?) {
-        setState { it.copy(timerDuration = duration) }
+        // 타이머 시간만 상태에 저장
+        setState { it.copy(
+            timerDuration = duration,
+            remainingTime = duration  // remainingTime도 함께 업데이트
+        ) }
 
-        duration?.let {
-            timer.start(it) {
-                // 타이머 완료 시 모든 사운드 중지
-                stopAllSounds()
-                // 타이머 표시 초기화
-                audioServiceController.updateRemainingTime(null)
-            }
-        } ?: timer.cancel()
+        // 타이머가 없어지면 취소
+        if (duration == null) {
+            timer.cancel()
+        }
     }
 
     private fun savePreset(name: String) {
@@ -218,6 +218,7 @@ class HomeViewModel(
         }
     }
 
+    // 프리셋 로드 함수 수정 (필요 시)
     private fun loadPreset(preset: PresetWithSounds) {
         // 현재 재생 중인 모든 사운드 중지
         stopAllSounds()
@@ -250,6 +251,13 @@ class HomeViewModel(
                 }
             }
 
+            // 타이머가 설정되어 있다면 타이머 시작
+            currentState.timerDuration?.let { duration ->
+                timer.start(duration) {
+                    stopAllSounds()
+                }
+            }
+
             state.copy(
                 sounds = updatedSounds,
                 isPlaying = true
@@ -270,6 +278,7 @@ class HomeViewModel(
                     return@launch
                 }
 
+                // 사운드 재생 시작
                 currentState.sounds.filter { it.isSelected }.forEach { sound ->
                     try {
                         audioPlayer.playSound(sound)
@@ -279,8 +288,20 @@ class HomeViewModel(
                         return@launch
                     }
                 }
+
+                // 타이머가 설정되어 있다면 타이머 시작
+                currentState.timerDuration?.let { duration ->
+                    timer.start(duration) {
+                        stopAllSounds()
+                    }
+                }
             } else {
+                // 재생 정지 시 타이머도 취소
                 stopAllSounds()
+                timer.cancel()
+
+                // 타이머가 정지되었을 때 remainingTime을 timerDuration으로 복원
+                setState { it.copy(remainingTime = it.timerDuration) }
             }
 
             setState { it.copy(isPlaying = newPlayingState) }
