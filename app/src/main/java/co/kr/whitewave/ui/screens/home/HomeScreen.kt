@@ -61,10 +61,10 @@ import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
+import co.kr.whitewave.ui.screens.home.components.CustomTimerDialog
 import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
 import co.kr.whitewave.ui.screens.home.components.SoundGrid
-import co.kr.whitewave.ui.screens.home.components.TimerPickerDialog
 import co.kr.whitewave.utils.formatForDisplay
 import co.kr.whitewave.utils.navigateForResult
 import kotlinx.coroutines.flow.collectLatest
@@ -117,13 +117,11 @@ fun HomeScreen(
     }
 
     if (showTimerDialog) {
-        TimerPickerDialog(
-            selectedDuration = state.timerDuration,
-            onDurationSelect = { duration ->
+        CustomTimerDialog( // TimerPickerDialog 대신 CustomTimerDialog 사용
+            onDismiss = { showTimerDialog = false },
+            onSetTimer = { duration ->
                 viewModel.handleViewEvent(ViewEvent.SetTimer(duration))
-                showTimerDialog = false
-            },
-            onDismiss = { showTimerDialog = false }
+            }
         )
     }
 
@@ -194,7 +192,9 @@ fun HomeScreen(
                             route = NavRoute.Presets,
                             navResultCallback = { result ->
                                 if (result?.resultCode == ResultCode.SUCCESS) {
-                                    val presetId = result.data?.getStringExtra(IntentParamKey.PRESET_ID).orEmpty()
+                                    val presetId =
+                                        result.data?.getStringExtra(IntentParamKey.PRESET_ID)
+                                            .orEmpty()
                                     viewModel.loadPresetById(presetId)
                                 }
                             }
@@ -258,7 +258,10 @@ fun HomeScreen(
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                        modifier = Modifier.padding(
+                                            horizontal = 12.dp,
+                                            vertical = 6.dp
+                                        )
                                     ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_timer),
@@ -287,7 +290,9 @@ fun HomeScreen(
                         FilledTonalIconButton(
                             onClick = { showTimerDialog = true },
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                    alpha = 0.7f
+                                )
                             )
                         ) {
                             Icon(
