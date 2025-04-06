@@ -2,7 +2,6 @@ package co.kr.whitewave.data.player
 
 // data/player/AudioPlayer.kt
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -62,17 +61,32 @@ class AudioPlayer(
         }
 
         coroutineScope.launch(Dispatchers.Main) {
-            players.getOrPut(sound.id) {
-                ExoPlayer.Builder(context).build().apply {
-                    setMediaItem(MediaItem.fromUri("asset:///${sound.assetPath}"))
-                    repeatMode = Player.REPEAT_MODE_ALL
-                    prepare()
-                    volume = 0f
-                }
-            }.apply {
-                play()
+            // 이미 재생 중인 사운드인지 확인
+            val existingPlayer = players[sound.id]
+            if (existingPlayer != null && existingPlayer.isPlaying) {
+                // 이미 재생 중인 사운드면 볼륨만 조정
                 originalVolumes[sound.id] = sound.volume
-                fadeIn(sound.id, sound.volume)
+                existingPlayer.volume = sound.volume
+
+                // _playingSounds 상태 업데이트
+                _playingSounds.value = _playingSounds.value + (sound.id to sound)
+            } else {
+                // 새로운 사운드 또는 정지된 사운드면 새로 시작
+                players.getOrPut(sound.id) {
+                    ExoPlayer.Builder(context).build().apply {
+                        setMediaItem(MediaItem.fromUri("asset:///${sound.assetPath}"))
+                        repeatMode = Player.REPEAT_MODE_ALL
+                        prepare()
+                        volume = 0f
+                    }
+                }.apply {
+                    play()
+                    originalVolumes[sound.id] = sound.volume
+                    fadeIn(sound.id, sound.volume)
+
+                    // _playingSounds 상태 업데이트
+                    _playingSounds.value = _playingSounds.value + (sound.id to sound)
+                }
             }
         }
     }
