@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.ads
+package co.kr.whitewave.data.model.ads
 
 sealed class AdEvent {
     data object ShowAd : AdEvent()

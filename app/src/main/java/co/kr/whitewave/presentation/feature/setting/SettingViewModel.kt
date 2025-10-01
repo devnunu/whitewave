@@ -7,11 +7,11 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.subscription.SubscriptionManager
+import co.kr.whitewave.data.manager.SubscriptionManager
 import co.kr.whitewave.presentation.base.BaseViewModel
 import co.kr.whitewave.presentation.feature.setting.SettingContract.Effect
-import co.kr.whitewave.presentation.feature.setting.SettingContract.ViewEvent
 import co.kr.whitewave.presentation.feature.setting.SettingContract.State
+import co.kr.whitewave.presentation.feature.setting.SettingContract.ViewEvent
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

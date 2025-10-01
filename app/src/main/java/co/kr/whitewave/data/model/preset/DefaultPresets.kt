@@ -1,7 +1,7 @@
-package co.kr.whitewave.data.model
+package co.kr.whitewave.data.model.preset
 
 import co.kr.whitewave.data.local.PresetWithSounds
-import co.kr.whitewave.data.model.DefaultSounds.ALL
+import co.kr.whitewave.data.model.sound.DefaultSounds.ALL
 
 /**
  * 앱에서 기본으로 제공하는 프리셋 목록

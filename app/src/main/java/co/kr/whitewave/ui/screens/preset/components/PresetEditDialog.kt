@@ -20,8 +20,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.data.local.PresetWithSounds
-import co.kr.whitewave.data.model.PresetCategories
-import co.kr.whitewave.data.model.Sound
+import co.kr.whitewave.data.model.preset.PresetCategories
+import co.kr.whitewave.data.model.sound.Sound
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

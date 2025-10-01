@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.model
+package co.kr.whitewave.data.model.preset
 
 object PresetCategories {
     const val ALL = "모두"

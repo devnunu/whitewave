@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.model
+package co.kr.whitewave.data.model.sound
 
 data class Sound(
     val id: String,

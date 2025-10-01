@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.player
+package co.kr.whitewave.data.manager
 
 import android.content.Context
 import android.media.AudioManager

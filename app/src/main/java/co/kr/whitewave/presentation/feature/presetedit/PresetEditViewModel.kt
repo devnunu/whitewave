@@ -1,9 +1,9 @@
 package co.kr.whitewave.presentation.feature.presetedit
 
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.model.DefaultSounds
-import co.kr.whitewave.data.model.Sound
-import co.kr.whitewave.data.player.AudioPlayer
+import co.kr.whitewave.data.model.player.AudioPlayer
+import co.kr.whitewave.data.model.sound.DefaultSounds
+import co.kr.whitewave.data.model.sound.Sound
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.firstOrNull

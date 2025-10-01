@@ -1,10 +1,9 @@
-package co.kr.whitewave.data.ads
+package co.kr.whitewave.data.manager
 
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import co.kr.whitewave.data.subscription.SubscriptionManager
-import co.kr.whitewave.data.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.subscription.SubscriptionTier
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback

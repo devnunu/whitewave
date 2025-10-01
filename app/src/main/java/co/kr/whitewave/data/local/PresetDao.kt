@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import co.kr.whitewave.data.model.Preset
-import co.kr.whitewave.data.model.PresetSound
+import co.kr.whitewave.data.model.preset.Preset
+import co.kr.whitewave.data.model.preset.PresetSound
 import kotlinx.coroutines.flow.Flow
 
 @Dao

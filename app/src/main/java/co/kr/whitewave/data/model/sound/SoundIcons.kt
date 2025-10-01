@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.model
+package co.kr.whitewave.data.model.sound
 
 import co.kr.whitewave.R
 

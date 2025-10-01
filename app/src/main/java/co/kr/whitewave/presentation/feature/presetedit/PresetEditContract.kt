@@ -1,7 +1,7 @@
 package co.kr.whitewave.presentation.feature.presetedit
 
 import co.kr.whitewave.data.local.PresetWithSounds
-import co.kr.whitewave.data.model.Sound
+import co.kr.whitewave.data.model.sound.Sound
 import co.kr.whitewave.presentation.base.UiEffect
 import co.kr.whitewave.presentation.base.UiState
 import co.kr.whitewave.presentation.base.UiViewEvent

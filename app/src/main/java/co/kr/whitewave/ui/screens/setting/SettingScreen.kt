@@ -57,11 +57,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.BuildConfig
 import co.kr.whitewave.R
-import co.kr.whitewave.data.subscription.SubscriptionTier
-import co.kr.whitewave.ui.components.PremiumInfoDialog
+import co.kr.whitewave.data.model.subscription.SubscriptionTier
 import co.kr.whitewave.presentation.feature.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.feature.setting.SettingContract.ViewEvent
 import co.kr.whitewave.presentation.feature.setting.SettingsViewModel
+import co.kr.whitewave.ui.components.PremiumInfoDialog
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 

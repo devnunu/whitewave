@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.R
 import co.kr.whitewave.data.local.PresetWithSounds
-import co.kr.whitewave.data.model.PresetCategories
+import co.kr.whitewave.data.model.preset.PresetCategories
 
 /**
  * 프리셋 카드 UI 컴포넌트

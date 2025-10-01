@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import co.kr.whitewave.data.player.AudioPlayer
+import co.kr.whitewave.data.model.player.AudioPlayer
 import co.kr.whitewave.ui.screens.main.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

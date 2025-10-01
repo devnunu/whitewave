@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.model
+package co.kr.whitewave.data.model.preset
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

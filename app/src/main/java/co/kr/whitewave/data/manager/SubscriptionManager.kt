@@ -1,5 +1,5 @@
 // data/subscription/SubscriptionManager.kt
-package co.kr.whitewave.data.subscription
+package co.kr.whitewave.data.manager
 
 import android.app.Activity
 import android.content.Context
@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import co.kr.whitewave.data.model.subscription.SubscriptionTier
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
