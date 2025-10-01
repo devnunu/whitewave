@@ -1,11 +1,12 @@
-package co.kr.whitewave.ui.screens.preset
+package co.kr.whitewave.presentation.feature.preset
 
+import android.app.Activity
 import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.subscription.SubscriptionTier
-import co.kr.whitewave.ui.mvi.UiEffect
-import co.kr.whitewave.ui.mvi.UiViewEvent
-import co.kr.whitewave.ui.mvi.UiState
+import co.kr.whitewave.presentation.base.UiEffect
+import co.kr.whitewave.presentation.base.UiViewEvent
+import co.kr.whitewave.presentation.base.UiState
 
 /**
  * PresetScreen의 MVI 계약
@@ -49,7 +50,7 @@ object PresetContract {
         // 프리미엄 관련 이벤트
         object ShowPremiumDialog : ViewEvent()
         object DismissPremiumDialog : ViewEvent()
-        data class StartSubscription(val activity: android.app.Activity) : ViewEvent()
+        data class StartSubscription(val activity: Activity) : ViewEvent()
     }
 
     /**

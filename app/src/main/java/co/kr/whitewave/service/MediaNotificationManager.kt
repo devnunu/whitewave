@@ -9,7 +9,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import co.kr.whitewave.R
-import co.kr.whitewave.ui.MainActivity
+import co.kr.whitewave.ui.screens.main.MainActivity
 
 
 class MediaNotificationManager(

@@ -1,10 +1,10 @@
-package co.kr.whitewave.ui.screens.setting
+package co.kr.whitewave.presentation.feature.setting
 
 import android.app.Activity
 import co.kr.whitewave.data.subscription.SubscriptionTier
-import co.kr.whitewave.ui.mvi.UiEffect
-import co.kr.whitewave.ui.mvi.UiViewEvent
-import co.kr.whitewave.ui.mvi.UiState
+import co.kr.whitewave.presentation.base.UiEffect
+import co.kr.whitewave.presentation.base.UiViewEvent
+import co.kr.whitewave.presentation.base.UiState
 
 /**
  * SettingScreen의 MVI 계약

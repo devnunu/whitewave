@@ -1,4 +1,4 @@
-package co.kr.whitewave.ui.screens.home
+package co.kr.whitewave.presentation.feature.home
 
 import android.app.Activity
 import android.util.Log
@@ -15,10 +15,10 @@ import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.data.subscription.SubscriptionManager
 import co.kr.whitewave.data.subscription.SubscriptionTier
 import co.kr.whitewave.service.AudioServiceController
-import co.kr.whitewave.ui.mvi.BaseViewModel
-import co.kr.whitewave.ui.screens.home.HomeContract.Effect
-import co.kr.whitewave.ui.screens.home.HomeContract.State
-import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
+import co.kr.whitewave.presentation.base.BaseViewModel
+import co.kr.whitewave.presentation.feature.home.HomeContract.Effect
+import co.kr.whitewave.presentation.feature.home.HomeContract.State
+import co.kr.whitewave.presentation.feature.home.HomeContract.ViewEvent
 import co.kr.whitewave.utils.SoundTimer
 import co.kr.whitewave.utils.formatForDisplay
 import kotlinx.coroutines.flow.collectLatest

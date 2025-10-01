@@ -59,8 +59,9 @@ import co.kr.whitewave.data.model.result.IntentParamKey
 import co.kr.whitewave.data.model.result.ResultCode
 import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.navigation.NavRoute
-import co.kr.whitewave.ui.screens.home.HomeContract.Effect
-import co.kr.whitewave.ui.screens.home.HomeContract.ViewEvent
+import co.kr.whitewave.presentation.feature.home.HomeContract.Effect
+import co.kr.whitewave.presentation.feature.home.HomeContract.ViewEvent
+import co.kr.whitewave.presentation.feature.home.HomeViewModel
 import co.kr.whitewave.ui.screens.home.components.CustomTimerDialog
 import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.ui.screens.home.components.SavePresetDialog

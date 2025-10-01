@@ -1,29 +1,28 @@
-package co.kr.whitewave.ui.screens.presetedit
+package co.kr.whitewave.presentation.feature.presetedit
 
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.Sound
 import co.kr.whitewave.data.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.ui.mvi.BaseViewModel
-import co.kr.whitewave.ui.screens.presetedit.PresetEditContract.Effect
-import co.kr.whitewave.ui.screens.presetedit.PresetEditContract.State
-import co.kr.whitewave.ui.screens.presetedit.PresetEditContract.ViewEvent
+import co.kr.whitewave.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class PresetEditViewModel(
     private val audioPlayer: AudioPlayer,
     private val presetRepository: PresetRepository
-) : BaseViewModel<State, ViewEvent, Effect>(State()) {
+) : BaseViewModel<PresetEditContract.State, PresetEditContract.ViewEvent, PresetEditContract.Effect>(
+    PresetEditContract.State()
+) {
 
-    override fun handleViewEvent(viewEvent: ViewEvent) {
+    override fun handleViewEvent(viewEvent: PresetEditContract.ViewEvent) {
         when (viewEvent) {
-            is ViewEvent.LoadPreset -> loadPreset(viewEvent.presetId)
-            is ViewEvent.ToggleSound -> toggleSound(viewEvent.sound)
-            is ViewEvent.UpdateVolume -> updateVolume(viewEvent.sound, viewEvent.volume)
-            is ViewEvent.SavePreset -> savePreset()
-            is ViewEvent.NavigateBack -> sendEffect(Effect.NavigateBack)
+            is PresetEditContract.ViewEvent.LoadPreset -> loadPreset(viewEvent.presetId)
+            is PresetEditContract.ViewEvent.ToggleSound -> toggleSound(viewEvent.sound)
+            is PresetEditContract.ViewEvent.UpdateVolume -> updateVolume(viewEvent.sound, viewEvent.volume)
+            is PresetEditContract.ViewEvent.SavePreset -> savePreset()
+            is PresetEditContract.ViewEvent.NavigateBack -> sendEffect(PresetEditContract.Effect.NavigateBack)
         }
     }
 
@@ -80,13 +79,13 @@ class PresetEditViewModel(
                     }
                 } else {
                     setState { it.copy(isLoading = false, error = "프리셋을 찾을 수 없습니다") }
-                    sendEffect(Effect.ShowSnackbar("프리셋을 찾을 수 없습니다"))
-                    sendEffect(Effect.NavigateBack)
+                    sendEffect(PresetEditContract.Effect.ShowSnackbar("프리셋을 찾을 수 없습니다"))
+                    sendEffect(PresetEditContract.Effect.NavigateBack)
                 }
             } catch (e: Exception) {
                 setState { it.copy(isLoading = false, error = e.message) }
-                sendEffect(Effect.ShowSnackbar("프리셋 로드 중 오류가 발생했습니다: ${e.message}"))
-                sendEffect(Effect.NavigateBack)
+                sendEffect(PresetEditContract.Effect.ShowSnackbar("프리셋 로드 중 오류가 발생했습니다: ${e.message}"))
+                sendEffect(PresetEditContract.Effect.NavigateBack)
             }
         }
     }
@@ -137,7 +136,7 @@ class PresetEditViewModel(
                 val selectedSounds = currentState.sounds.filter { it.isSelected }
 
                 if (selectedSounds.isEmpty()) {
-                    sendEffect(Effect.ShowSnackbar("최소 하나 이상의 사운드를 선택해주세요"))
+                    sendEffect(PresetEditContract.Effect.ShowSnackbar("최소 하나 이상의 사운드를 선택해주세요"))
                     return@launch
                 }
 
@@ -150,9 +149,9 @@ class PresetEditViewModel(
                 )
 
                 // 성공 메시지를 포함하여 저장 완료 이벤트 전달
-                sendEffect(Effect.PresetSaved("프리셋이 업데이트 되었습니다"))
+                sendEffect(PresetEditContract.Effect.PresetSaved("프리셋이 업데이트 되었습니다"))
             } catch (e: Exception) {
-                sendEffect(Effect.ShowSnackbar("프리셋 저장 중 오류가 발생했습니다: ${e.message}"))
+                sendEffect(PresetEditContract.Effect.ShowSnackbar("프리셋 저장 중 오류가 발생했습니다: ${e.message}"))
             }
         }
     }

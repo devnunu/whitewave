@@ -42,13 +42,14 @@ import androidx.navigation.NavController
 import co.kr.whitewave.data.model.DefaultSounds
 import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
 import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.presentation.feature.preset.PresetViewModel
 import co.kr.whitewave.ui.components.PremiumInfoDialog
 import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.preset.components.CategoryTabRow
 import co.kr.whitewave.ui.screens.preset.components.PresetCard
 import co.kr.whitewave.ui.screens.preset.components.PresetEditDialog
-import co.kr.whitewave.ui.screens.preset.PresetContract.Effect
-import co.kr.whitewave.ui.screens.preset.PresetContract.ViewEvent
+import co.kr.whitewave.presentation.feature.preset.PresetContract.Effect
+import co.kr.whitewave.presentation.feature.preset.PresetContract.ViewEvent
 import co.kr.whitewave.utils.navigateForResult
 import co.kr.whitewave.utils.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest

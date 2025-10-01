@@ -1,6 +1,5 @@
 package co.kr.whitewave.ui.screens.presetedit
 
-import android.app.Activity
 import android.content.Intent
 import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Box
@@ -35,9 +34,10 @@ import androidx.navigation.NavController
 import co.kr.whitewave.data.model.result.IntentParamKey.MESSAGE
 import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
 import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.presentation.feature.presetedit.PresetEditViewModel
 import co.kr.whitewave.ui.screens.home.components.SoundGrid
-import co.kr.whitewave.ui.screens.presetedit.PresetEditContract.Effect
-import co.kr.whitewave.ui.screens.presetedit.PresetEditContract.ViewEvent
+import co.kr.whitewave.presentation.feature.presetedit.PresetEditContract.Effect
+import co.kr.whitewave.presentation.feature.presetedit.PresetEditContract.ViewEvent
 import co.kr.whitewave.utils.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel

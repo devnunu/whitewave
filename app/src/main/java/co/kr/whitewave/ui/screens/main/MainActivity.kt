@@ -1,4 +1,4 @@
-package co.kr.whitewave.ui
+package co.kr.whitewave.ui.screens.main
 
 import android.Manifest
 import android.content.Intent
@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
+import co.kr.whitewave.ui.MainScreen
 import co.kr.whitewave.ui.theme.WhiteWaveTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,11 +30,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             WhiteWaveTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.Companion.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainScreen(
-                        onNotificationSettingClick={
+                        onNotificationSettingClick = {
                             // 시스템 알림 설정으로 이동
                             val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                                 putExtra(Settings.EXTRA_APP_PACKAGE, packageName)

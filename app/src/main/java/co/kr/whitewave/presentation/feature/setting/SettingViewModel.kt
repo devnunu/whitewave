@@ -1,4 +1,4 @@
-package co.kr.whitewave.ui.screens.setting
+package co.kr.whitewave.presentation.feature.setting
 
 import android.Manifest
 import android.app.Activity
@@ -8,10 +8,10 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.subscription.SubscriptionManager
-import co.kr.whitewave.ui.mvi.BaseViewModel
-import co.kr.whitewave.ui.screens.setting.SettingContract.Effect
-import co.kr.whitewave.ui.screens.setting.SettingContract.ViewEvent
-import co.kr.whitewave.ui.screens.setting.SettingContract.State
+import co.kr.whitewave.presentation.base.BaseViewModel
+import co.kr.whitewave.presentation.feature.setting.SettingContract.Effect
+import co.kr.whitewave.presentation.feature.setting.SettingContract.ViewEvent
+import co.kr.whitewave.presentation.feature.setting.SettingContract.State
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
