@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import co.kr.whitewave.R
+import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -87,14 +88,14 @@ fun CustomTimerDialog(
     // 애니메이션 효과 리셋
     LaunchedEffect(isHoursAnimating.value) {
         if (isHoursAnimating.value) {
-            kotlinx.coroutines.delay(150) // 애니메이션 시간 단축
+            delay(150) // 애니메이션 시간 단축
             isHoursAnimating.value = false
         }
     }
 
     LaunchedEffect(isMinutesAnimating.value) {
         if (isMinutesAnimating.value) {
-            kotlinx.coroutines.delay(150) // 애니메이션 시간 단축
+            delay(150) // 애니메이션 시간 단축
             isMinutesAnimating.value = false
         }
     }

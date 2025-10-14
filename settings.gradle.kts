@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "WhiteWave"
 include(":app")
+include(":ui")

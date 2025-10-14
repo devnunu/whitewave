@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import co.kr.whitewave.ui.MainScreen
+import co.kr.whitewave.ui.common.IntentActions
 import co.kr.whitewave.ui.theme.WhiteWaveTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,8 +22,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 종료 액션 처리
-        if (intent?.action == "ACTION_SHUTDOWN") {
-            finishAndRemoveTask()  // finish() 대신 finishAndRemoveTask() 사용
+        if (intent?.action == IntentActions.ACTION_SHUTDOWN) {
+            finishAndRemoveTask()
             return
         }
 

@@ -1,13 +1,13 @@
 plugins {
-    alias(libs.plugins.whitewave.application.compose)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.whitewave.library.compose)
     kotlin("plugin.serialization") version "1.9.0"
 }
 
-dependencies {
-    // Modules
-    implementation(project(":ui"))
+android {
+    namespace = "co.kr.whitewave.ui"
+}
 
+dependencies {
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -27,30 +27,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
-    // Media3
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.session)
-    implementation(libs.androidx.media)
-
-    // Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-
-    // billing
-    implementation(libs.android.billingclient)
-
-    // ads
-    implementation(libs.play.service.ads)
-
-    // Test
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.compose.ui.test.junit4)
-    debugImplementation(libs.compose.ui.test.manifest)
 }

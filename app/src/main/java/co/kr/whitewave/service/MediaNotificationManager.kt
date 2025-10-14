@@ -9,7 +9,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import co.kr.whitewave.R
-import co.kr.whitewave.ui.screens.main.MainActivity
+import co.kr.whitewave.ui.common.IntentActions
 
 
 class MediaNotificationManager(
@@ -49,11 +49,11 @@ class MediaNotificationManager(
         remainingTime: String?,
         activeSounds: List<String>
     ): Notification {
-        // Intent for opening the app
+        // Intent for opening the app - Intent Action 사용
         val contentIntent = PendingIntent.getActivity(
             context,
             0,
-            Intent(context, MainActivity::class.java).apply {
+            Intent(IntentActions.ACTION_OPEN_MAIN).apply {
                 flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

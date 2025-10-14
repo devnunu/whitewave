@@ -227,18 +227,25 @@ fun PresetScreen(
                                             navResultCallback = { result ->
                                                 if (result?.resultCode == ResultCode.SUCCESS) {
                                                     // 전달된 메시지가 있으면 스낵바로 표시
-                                                    val message = result.data?.getStringExtra("message")
+                                                    val message =
+                                                        result.data?.getStringExtra("message")
                                                     if (!message.isNullOrEmpty()) {
-                                                        viewModel.handleViewEvent(ViewEvent.ShowSnackbarMessage(message))
+                                                        viewModel.handleViewEvent(
+                                                            ViewEvent.ShowSnackbarMessage(
+                                                                message
+                                                            )
+                                                        )
                                                     }
                                                 }
                                             }
                                         )
                                     } else {
-                                        viewModel.handleViewEvent(ViewEvent.ShowDialog(
-                                            "편집 불가",
-                                            "기본 프리셋은 편집할 수 없습니다."
-                                        ))
+                                        viewModel.handleViewEvent(
+                                            ViewEvent.ShowDialog(
+                                                "편집 불가",
+                                                "기본 프리셋은 편집할 수 없습니다."
+                                            )
+                                        )
                                     }
                                 },
                                 onDelete = {

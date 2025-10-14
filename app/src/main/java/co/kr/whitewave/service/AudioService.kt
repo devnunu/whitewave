@@ -6,7 +6,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import co.kr.whitewave.data.model.player.AudioPlayer
-import co.kr.whitewave.ui.screens.main.MainActivity
+import co.kr.whitewave.ui.common.IntentActions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -73,12 +73,10 @@ class AudioService : Service() {
                 stopForeground(true)
                 stopSelf()
 
-                // MainActivity 종료
-                Intent(this, MainActivity::class.java).also {
-                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    it.action = "ACTION_SHUTDOWN"
-                    startActivity(it)
-                }
+                // MainActivity 종료 - Intent Action 사용
+                val shutdownIntent = Intent(IntentActions.ACTION_SHUTDOWN)
+                shutdownIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(shutdownIntent)
             }
         }
 
