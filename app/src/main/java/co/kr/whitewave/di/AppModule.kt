@@ -1,51 +1,17 @@
 package co.kr.whitewave.di
 
-import android.content.Context
 import androidx.room.Room
 import co.kr.whitewave.data.local.PresetDatabase
 import co.kr.whitewave.data.manager.AdManager
 import co.kr.whitewave.data.manager.SubscriptionManager
 import co.kr.whitewave.data.model.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.presentation.feature.home.HomeViewModel
-import co.kr.whitewave.presentation.feature.preset.PresetViewModel
-import co.kr.whitewave.presentation.feature.presetedit.PresetEditViewModel
-import co.kr.whitewave.presentation.feature.setting.SettingsViewModel
-import co.kr.whitewave.service.AudioServiceController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModel {
-        HomeViewModel(
-            audioPlayer = get(),
-            audioServiceController = get(),
-            presetRepository = get(),
-            subscriptionManager = get(),
-            adManager = get()
-        )
-    }
-    viewModel {
-        PresetViewModel(
-            presetRepository = get(),
-            subscriptionManager = get()
-        )
-    }
-    viewModel {
-        PresetEditViewModel(
-            audioPlayer = get(),
-            presetRepository = get()
-        )
-    }
-    viewModel { SettingsViewModel(get()) }
-
-    // Use cases
-    single {
-        AudioServiceController(get<Context>().applicationContext)
-    }
 
     single {
         AudioPlayer(

@@ -20,7 +20,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name="co.kr.whitewave.ui.screens.main.MainActivity"
+            android:name="co.kr.whitewave.presentation.ui.screens.main.MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
@@ -35,7 +35,7 @@
         </activity>
 
         <service
-            android:name=".service.AudioService"
+            android:name=".presentation.service.AudioService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false">
             <intent-filter>

@@ -5,8 +5,7 @@ plugins {
 }
 
 dependencies {
-    // Modules
-    implementation(project(":ui"))
+    implementation(project(":presentation"))
 
     // AndroidX
     implementation(libs.androidx.core.ktx)
