@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -34,10 +35,10 @@ import androidx.navigation.NavController
 import co.kr.whitewave.data.model.result.IntentParamKey.MESSAGE
 import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
 import co.kr.whitewave.data.model.result.ResultCode
-import co.kr.whitewave.presentation.feature.presetedit.PresetEditViewModel
-import co.kr.whitewave.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.presentation.feature.presetedit.PresetEditContract.Effect
 import co.kr.whitewave.presentation.feature.presetedit.PresetEditContract.ViewEvent
+import co.kr.whitewave.presentation.feature.presetedit.PresetEditViewModel
+import co.kr.whitewave.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.utils.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -107,6 +108,7 @@ fun PresetEditScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding() // 물리 네비게이션 바 침범 방지
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,11 +58,11 @@ import androidx.navigation.NavController
 import co.kr.whitewave.R
 import co.kr.whitewave.data.model.result.IntentParamKey
 import co.kr.whitewave.data.model.result.ResultCode
-import co.kr.whitewave.ui.components.PremiumInfoDialog
-import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.presentation.feature.home.HomeContract.Effect
 import co.kr.whitewave.presentation.feature.home.HomeContract.ViewEvent
 import co.kr.whitewave.presentation.feature.home.HomeViewModel
+import co.kr.whitewave.ui.components.PremiumInfoDialog
+import co.kr.whitewave.ui.navigation.NavRoute
 import co.kr.whitewave.ui.screens.home.components.CustomTimerDialog
 import co.kr.whitewave.ui.screens.home.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.ui.screens.home.components.SavePresetDialog
@@ -236,6 +237,7 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .navigationBarsPadding() // 물리 네비게이션 바 침범 방지
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     // 타이머 상태 표시 (있을 경우)
