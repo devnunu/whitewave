@@ -1,9 +1,9 @@
 package co.kr.whitewave.presentation.ui.screens.home
 
 import android.app.Activity
-import co.kr.whitewave.data.local.PresetWithSounds
-import co.kr.whitewave.data.model.sound.Sound
-import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
+import co.kr.whitewave.data.model.sound.SoundEntity
+import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.presentation.ui.base.UiEffect
 import co.kr.whitewave.presentation.ui.base.UiState
 import co.kr.whitewave.presentation.ui.base.UiViewEvent
@@ -18,14 +18,14 @@ object HomeContract {
      * HomeScreen의 UI 상태
      */
     data class State(
-        val sounds: List<Sound> = emptyList(),
+        val sounds: List<SoundEntity> = emptyList(),
         val isPlaying: Boolean = false,
         val timerDuration: Duration? = null,
         val remainingTime: Duration? = null,
         val savePresetError: String? = null,
         val playError: String? = null,
         val showPremiumDialog: Boolean = false,
-        val subscriptionTier: SubscriptionTier = SubscriptionTier.Free
+        val subscriptionTier: SubscriptionTierEntity = SubscriptionTierEntity.Free
     ) : UiState
 
     /**
@@ -33,11 +33,11 @@ object HomeContract {
      */
     sealed class ViewEvent : UiViewEvent {
         object LoadSounds : ViewEvent()
-        data class ToggleSound(val sound: Sound) : ViewEvent()
-        data class UpdateVolume(val sound: Sound, val volume: Float) : ViewEvent()
+        data class ToggleSound(val sound: SoundEntity) : ViewEvent()
+        data class UpdateVolume(val sound: SoundEntity, val volume: Float) : ViewEvent()
         data class SetTimer(val duration: Duration?) : ViewEvent()
         data class SavePreset(val name: String) : ViewEvent()
-        data class LoadPreset(val preset: PresetWithSounds) : ViewEvent()
+        data class LoadPreset(val preset: PresetWithSoundsEntity) : ViewEvent()
         object TogglePlayback : ViewEvent()
         object DismissPremiumDialog : ViewEvent()
         data class StartSubscription(val activity: Activity) : ViewEvent()

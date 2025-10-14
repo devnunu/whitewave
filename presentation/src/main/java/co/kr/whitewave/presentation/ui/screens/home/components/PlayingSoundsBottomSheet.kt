@@ -40,16 +40,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.data.model.sound.Sound
+import co.kr.whitewave.data.model.sound.SoundEntity
 import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.util.getIconForSound
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayingSoundsBottomSheet(
-    playingSounds: List<Sound>,
-    onVolumeChange: (Sound, Float) -> Unit,
-    onSoundRemove: (Sound) -> Unit,
+    playingSounds: List<SoundEntity>,
+    onVolumeChange: (SoundEntity, Float) -> Unit,
+    onSoundRemove: (SoundEntity) -> Unit,
     onSavePreset: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -138,8 +138,8 @@ fun PlayingSoundsBottomSheet(
 
 @Composable
 private fun PlayingSoundItem(
-    sound: Sound,
-    onVolumeChange: (Sound, Float) -> Unit,
+    sound: SoundEntity,
+    onVolumeChange: (SoundEntity, Float) -> Unit,
     onRemove: () -> Unit
 ) {
     var sliderPosition by remember { mutableStateOf(sound.volume) }

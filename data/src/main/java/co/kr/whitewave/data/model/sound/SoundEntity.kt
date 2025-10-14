@@ -1,6 +1,6 @@
 package co.kr.whitewave.data.model.sound
 
-data class Sound(
+data class SoundEntity(
     val id: String,
     val name: String,
     val assetPath: String,

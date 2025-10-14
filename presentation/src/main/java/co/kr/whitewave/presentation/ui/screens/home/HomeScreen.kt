@@ -55,9 +55,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import co.kr.whitewave.data.model.result.IntentParamKey
-import co.kr.whitewave.data.model.result.ResultCode
 import co.kr.whitewave.presentation.R
+import co.kr.whitewave.presentation.model.result.IntentParamKey
+import co.kr.whitewave.presentation.model.result.ResultCode
 import co.kr.whitewave.presentation.navigation.NavRoute
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect

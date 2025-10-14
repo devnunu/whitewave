@@ -1,9 +1,9 @@
 package co.kr.whitewave.presentation.ui.screens.preset
 
 import android.app.Activity
-import co.kr.whitewave.data.local.PresetWithSounds
-import co.kr.whitewave.data.model.sound.Sound
-import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
+import co.kr.whitewave.data.model.sound.SoundEntity
+import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.presentation.ui.base.UiEffect
 import co.kr.whitewave.presentation.ui.base.UiState
 import co.kr.whitewave.presentation.ui.base.UiViewEvent
@@ -17,15 +17,15 @@ object PresetContract {
      * PresetScreen의 UI 상태
      */
     data class State(
-        val presets: List<PresetWithSounds> = emptyList(),
+        val presets: List<PresetWithSoundsEntity> = emptyList(),
         val categories: List<String> = emptyList(),
         val selectedCategory: String = "모두",
         val isLoading: Boolean = false,
         val error: String? = null,
         val editMode: Boolean = false,
-        val currentEditPreset: PresetWithSounds? = null,
+        val currentEditPreset: PresetWithSoundsEntity? = null,
         val showPremiumDialog: Boolean = false,
-        val subscriptionTier: SubscriptionTier = SubscriptionTier.Free
+        val subscriptionTier: SubscriptionTierEntity = SubscriptionTierEntity.Free
     ) : UiState
 
     /**
@@ -34,16 +34,16 @@ object PresetContract {
     sealed class ViewEvent : UiViewEvent {
         object LoadPresets : ViewEvent()
         data class SelectCategory(val category: String) : ViewEvent()
-        data class SavePreset(val name: String, val sounds: List<Sound>, val category: String) : ViewEvent()
+        data class SavePreset(val name: String, val sounds: List<SoundEntity>, val category: String) : ViewEvent()
         data class UpdatePreset(
             val presetId: String,
             val name: String,
-            val sounds: List<Sound>,
+            val sounds: List<SoundEntity>,
             val category: String
         ) : ViewEvent()
         data class DeletePreset(val presetId: String) : ViewEvent()
-        data class SelectPreset(val preset: PresetWithSounds) : ViewEvent()
-        data class StartEditPreset(val preset: PresetWithSounds) : ViewEvent()
+        data class SelectPreset(val preset: PresetWithSoundsEntity) : ViewEvent()
+        data class StartEditPreset(val preset: PresetWithSoundsEntity) : ViewEvent()
         object CancelEditPreset : ViewEvent()
         data class ShowSnackbarMessage(val message: String) : ViewEvent()
         data class ShowDialog(val title: String, val message: String) : ViewEvent()

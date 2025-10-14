@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -61,7 +61,7 @@ class AdManager(
     }
 
     fun shouldShowAd(): Boolean {
-        if (subscriptionManager.subscriptionTier.value is SubscriptionTier.Premium) {
+        if (subscriptionManager.subscriptionTier.value is SubscriptionTierEntity.Premium) {
             return false
         }
 

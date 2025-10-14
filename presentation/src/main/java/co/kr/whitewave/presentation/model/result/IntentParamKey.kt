@@ -1,4 +1,4 @@
-package co.kr.whitewave.data.model.result
+package co.kr.whitewave.presentation.model.result
 
 object IntentParamKey {
     const val PRESET_ID = "presetId"

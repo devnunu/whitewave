@@ -1,7 +1,7 @@
 package co.kr.whitewave.presentation.ui.screens.setting
 
 import android.app.Activity
-import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.presentation.ui.base.UiEffect
 import co.kr.whitewave.presentation.ui.base.UiState
 import co.kr.whitewave.presentation.ui.base.UiViewEvent
@@ -15,7 +15,7 @@ object SettingContract {
      * SettingScreen의 UI 상태
      */
     data class State(
-        val subscriptionTier: SubscriptionTier = SubscriptionTier.Free,
+        val subscriptionTier: SubscriptionTierEntity = SubscriptionTierEntity.Free,
         val hasNotificationPermission: Boolean = false
     ) : UiState
 

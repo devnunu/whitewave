@@ -9,6 +9,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":data"))
+
     // AndroidX
     implementation(libs.androidx.datastore.preferences)
 
@@ -16,16 +18,13 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
-    // Media3
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.session)
-    implementation(libs.androidx.media)
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-
-    // billing
-    implementation(libs.android.billingclient)
 
 }

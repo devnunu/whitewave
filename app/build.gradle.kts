@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":local"))
     implementation(project(":data"))
     implementation(project(":presentation"))
 

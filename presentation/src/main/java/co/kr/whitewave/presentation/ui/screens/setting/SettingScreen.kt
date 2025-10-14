@@ -55,7 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
@@ -216,10 +216,10 @@ fun SettingsScreen(
 
 @Composable
 private fun SubscriptionStatusCard(
-    tier: SubscriptionTier,
+    tier: SubscriptionTierEntity,
     onUpgradeClick: () -> Unit
 ) {
-    val isPremium = tier is SubscriptionTier.Premium
+    val isPremium = tier is SubscriptionTierEntity.Premium
 
     Card(
         modifier = Modifier

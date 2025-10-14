@@ -1,8 +1,8 @@
 package co.kr.whitewave.presentation.ui.screens.presetedit
 
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.model.sound.DefaultSounds
-import co.kr.whitewave.data.model.sound.Sound
+import co.kr.whitewave.data.model.sound.DefaultSoundsEntity
+import co.kr.whitewave.data.model.sound.SoundEntity
 import co.kr.whitewave.data.repository.PresetRepository
 import co.kr.whitewave.presentation.manager.AudioPlayer
 import co.kr.whitewave.presentation.ui.base.BaseViewModel
@@ -38,7 +38,7 @@ class PresetEditViewModel(
                 }
 
                 // 전체 사운드 목록 가져오기
-                val allSounds = DefaultSounds.ALL.map { it.copy(isSelected = false, volume = 1.0f) }
+                val allSounds = DefaultSoundsEntity.ALL.map { it.copy(isSelected = false, volume = 1.0f) }
 
                 // 프리셋 찾기
                 val allPresets = presetRepository.getAllPresets().firstOrNull() ?: emptyList()
@@ -90,7 +90,7 @@ class PresetEditViewModel(
         }
     }
 
-    private fun toggleSound(sound: Sound) {
+    private fun toggleSound(sound: SoundEntity) {
         setState { currentState ->
             val updatedSounds = currentState.sounds.map { s ->
                 if (s.id == sound.id) {
@@ -115,7 +115,7 @@ class PresetEditViewModel(
         }
     }
 
-    private fun updateVolume(sound: Sound, volume: Float) {
+    private fun updateVolume(sound: SoundEntity, volume: Float) {
         // 오디오 플레이어 볼륨 업데이트
         audioPlayer.updateVolume(sound.id, volume)
 

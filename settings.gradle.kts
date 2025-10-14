@@ -24,3 +24,4 @@ rootProject.name = "WhiteWave"
 include(":app")
 include(":presentation")
 include(":data")
+include(":local")

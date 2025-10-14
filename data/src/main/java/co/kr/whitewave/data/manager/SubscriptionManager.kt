@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -45,15 +45,15 @@ class SubscriptionManager(
         .enablePendingPurchases()
         .build()
 
-    private val _subscriptionTier = MutableStateFlow<SubscriptionTier>(SubscriptionTier.Free)
-    val subscriptionTier: StateFlow<SubscriptionTier> = _subscriptionTier.asStateFlow()
+    private val _subscriptionTier = MutableStateFlow<SubscriptionTierEntity>(SubscriptionTierEntity.Free)
+    val subscriptionTier: StateFlow<SubscriptionTierEntity> = _subscriptionTier.asStateFlow()
 
     init {
         coroutineScope.launch {
             // 캐시된 구독 상태 로드
             dataStore.data.firstOrNull()?.let { preferences ->
                 if (preferences[SUBSCRIPTION_STATUS_KEY] == true) {
-                    _subscriptionTier.value = SubscriptionTier.Premium
+                    _subscriptionTier.value = SubscriptionTierEntity.Premium
                 }
             }
 
@@ -135,7 +135,7 @@ class SubscriptionManager(
     }
 
     private suspend fun updateSubscriptionStatus(isPremium: Boolean) {
-        _subscriptionTier.value = if (isPremium) SubscriptionTier.Premium else SubscriptionTier.Free
+        _subscriptionTier.value = if (isPremium) SubscriptionTierEntity.Premium else SubscriptionTierEntity.Free
         cacheSubscriptionStatus(isPremium)
     }
 

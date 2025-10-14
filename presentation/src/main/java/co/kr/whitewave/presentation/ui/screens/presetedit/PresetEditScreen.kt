@@ -32,9 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import co.kr.whitewave.data.model.result.IntentParamKey.MESSAGE
-import co.kr.whitewave.data.model.result.IntentParamKey.PRESET_ID
-import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.presentation.model.result.IntentParamKey.MESSAGE
+import co.kr.whitewave.presentation.model.result.IntentParamKey.PRESET_ID
+import co.kr.whitewave.presentation.model.result.ResultCode
 import co.kr.whitewave.presentation.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditContract.Effect
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditContract.ViewEvent

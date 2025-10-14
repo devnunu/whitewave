@@ -1,6 +1,6 @@
 package co.kr.whitewave.data.model.preset
 
-object PresetCategories {
+object PresetCategoriesEntity {
     const val ALL = "모두"
     const val CUSTOM = "커스텀"
     const val SLEEP = "수면"

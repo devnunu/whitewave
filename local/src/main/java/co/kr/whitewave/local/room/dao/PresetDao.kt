@@ -1,28 +1,29 @@
-package co.kr.whitewave.data.local
+package co.kr.whitewave.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import co.kr.whitewave.data.model.preset.Preset
-import co.kr.whitewave.data.model.preset.PresetSound
+import co.kr.whitewave.local.model.PresetLocal
+import co.kr.whitewave.local.model.PresetSoundLocal
+import co.kr.whitewave.local.model.PresetWithSoundsLocal
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PresetDao {
     @Transaction
     @Query("SELECT * FROM presets WHERE isDefault = 0 ORDER BY createdAt DESC")
-    fun getAllPresets(): Flow<List<PresetWithSounds>>
+    fun getAllPresets(): Flow<List<PresetWithSoundsLocal>>
 
     @Transaction
     @Query("SELECT * FROM presets WHERE id = :presetId")
-    suspend fun getPresetById(presetId: String): Preset?
+    suspend fun getPresetById(presetId: String): PresetLocal?
 
     @Insert
-    suspend fun insertPreset(preset: Preset)
+    suspend fun insertPreset(preset: PresetLocal)
 
     @Insert
-    suspend fun insertPresetSounds(presetSounds: List<PresetSound>)
+    suspend fun insertPresetSounds(presetSounds: List<PresetSoundLocal>)
 
     @Query("DELETE FROM presets WHERE id = :presetId")
     suspend fun deletePreset(presetId: String)
