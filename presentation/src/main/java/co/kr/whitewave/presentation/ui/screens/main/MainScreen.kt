@@ -1,4 +1,4 @@
-package co.kr.whitewave.presentation.ui
+package co.kr.whitewave.presentation.ui.screens.main
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost

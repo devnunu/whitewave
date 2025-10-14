@@ -1,4 +1,4 @@
-package co.kr.whitewave.presentation.ui.screens.main
+package co.kr.whitewave.presentation.ui
 
 import android.Manifest
 import android.content.Intent
@@ -13,8 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
-import co.kr.whitewave.presentation.theme.WhiteWaveTheme
-import co.kr.whitewave.presentation.ui.MainScreen
+import co.kr.whitewave.presentation.ui.screens.main.MainScreen
+import co.kr.whitewave.presentation.ui.theme.WhiteWaveTheme
 
 class MainActivity : ComponentActivity() {
 

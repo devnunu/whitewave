@@ -2,6 +2,7 @@ package co.kr.whitewave
 
 import android.app.Application
 import co.kr.whitewave.data.di.repositoryModule
+import co.kr.whitewave.presentation.di.presentationManagerModule
 import co.kr.whitewave.presentation.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
@@ -13,7 +14,8 @@ class WhiteWaveApplication : Application() {
             androidContext(this@WhiteWaveApplication)
             modules(
                 repositoryModule,
-                viewModelModule
+                presentationManagerModule,
+                viewModelModule,
             )
         }
     }

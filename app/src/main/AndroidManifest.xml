@@ -20,7 +20,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name="co.kr.whitewave.presentation.ui.screens.main.MainActivity"
+            android:name="co.kr.whitewave.presentation.ui.MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>

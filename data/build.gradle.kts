@@ -33,7 +33,4 @@ dependencies {
     // billing
     implementation(libs.android.billingclient)
 
-    // ads
-    implementation(libs.play.service.ads)
-
 }

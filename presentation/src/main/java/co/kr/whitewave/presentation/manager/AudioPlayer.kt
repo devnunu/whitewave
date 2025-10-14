@@ -1,11 +1,10 @@
-package co.kr.whitewave.data.model.player
+package co.kr.whitewave.presentation.manager
 
 // data/player/AudioPlayer.kt
 import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import co.kr.whitewave.data.manager.AudioFocusManager
 import co.kr.whitewave.data.manager.SubscriptionManager
 import co.kr.whitewave.data.model.sound.Sound
 import co.kr.whitewave.data.model.subscription.SubscriptionTier

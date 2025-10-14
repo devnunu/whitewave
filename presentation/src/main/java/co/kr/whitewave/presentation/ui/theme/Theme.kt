@@ -1,4 +1,4 @@
-package co.kr.whitewave.presentation.theme
+package co.kr.whitewave.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

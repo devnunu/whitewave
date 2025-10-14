@@ -1,8 +1,9 @@
-package co.kr.whitewave.data.manager
+package co.kr.whitewave.presentation.manager
 
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import co.kr.whitewave.data.manager.SubscriptionManager
 import co.kr.whitewave.data.model.subscription.SubscriptionTier
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest

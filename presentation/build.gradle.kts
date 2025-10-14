@@ -37,4 +37,7 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    // ads
+    implementation(libs.play.service.ads)
 }

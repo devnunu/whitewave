@@ -2,9 +2,7 @@ package co.kr.whitewave.data.di
 
 import androidx.room.Room
 import co.kr.whitewave.data.local.PresetDatabase
-import co.kr.whitewave.data.manager.AdManager
 import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.player.AudioPlayer
 import co.kr.whitewave.data.repository.PresetRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,13 +11,6 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single {
-        AudioPlayer(
-            context = get(),
-            coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
-            subscriptionManager = get()
-        )
-    }
     single { PresetRepository(get(), get()) }
 
     // DAO
@@ -41,14 +32,6 @@ val repositoryModule = module {
         SubscriptionManager(
             context = get(),
             coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-        )
-    }
-
-    // Ad
-    single {
-        AdManager(
-            context = get(),
-            subscriptionManager = get()
         )
     }
 }
