@@ -3,6 +3,7 @@ agp = "8.8.0"
 kotlin = "1.9.24"
 core-ktx = "1.10.1"
 compose-bom = "2024.02.00"
+compose-compiler = "1.5.14"
 koin = "3.5.0"
 media3 = "1.2.1"
 room = "2.6.1"
@@ -22,8 +23,14 @@ kotlin-serialization = "1.6.0"
 junit = "4.13.2"
 androidx-junit = "1.1.5"
 espresso = "3.5.1"
+appcompat = "1.6.1"
+material = "1.10.0"
 
 [libraries]
+# Build
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+
 # AndroidX
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -70,8 +77,17 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "a
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
+# WhiteWave Convention Plugins
+whitewave-application = { id = "co.kr.whitewave.plugin.application", version = "unspecified" }
+whitewave-application-compose = { id = "co.kr.whitewave.plugin.application.compose", version = "unspecified" }
+whitewave-library = { id = "co.kr.whitewave.plugin.library", version = "unspecified" }
+whitewave-library-compose = { id = "co.kr.whitewave.plugin.library.compose", version = "unspecified" }
