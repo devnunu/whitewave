@@ -32,7 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.R
+import co.kr.whitewave.presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -55,9 +55,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import co.kr.whitewave.R
 import co.kr.whitewave.data.model.result.IntentParamKey
 import co.kr.whitewave.data.model.result.ResultCode
+import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.navigation.NavRoute
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
@@ -66,8 +66,8 @@ import co.kr.whitewave.presentation.ui.screens.home.components.CustomTimerDialog
 import co.kr.whitewave.presentation.ui.screens.home.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.presentation.ui.screens.home.components.SavePresetDialog
 import co.kr.whitewave.presentation.ui.screens.home.components.SoundGrid
-import co.kr.whitewave.utils.formatForDisplay
-import co.kr.whitewave.utils.navigateForResult
+import co.kr.whitewave.presentation.util.formatForDisplay
+import co.kr.whitewave.presentation.util.navigateForResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 

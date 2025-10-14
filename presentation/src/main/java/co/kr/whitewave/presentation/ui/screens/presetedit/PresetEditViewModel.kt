@@ -5,7 +5,7 @@ import co.kr.whitewave.data.model.player.AudioPlayer
 import co.kr.whitewave.data.model.sound.DefaultSounds
 import co.kr.whitewave.data.model.sound.Sound
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.presentation.base.BaseViewModel
+import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 

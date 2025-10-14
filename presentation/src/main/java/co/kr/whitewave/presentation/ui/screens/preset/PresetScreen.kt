@@ -49,8 +49,8 @@ import co.kr.whitewave.presentation.ui.screens.preset.PresetContract.ViewEvent
 import co.kr.whitewave.presentation.ui.screens.preset.components.CategoryTabRow
 import co.kr.whitewave.presentation.ui.screens.preset.components.PresetCard
 import co.kr.whitewave.presentation.ui.screens.preset.components.PresetEditDialog
-import co.kr.whitewave.utils.navigateForResult
-import co.kr.whitewave.utils.popBackStackWithResult
+import co.kr.whitewave.presentation.util.navigateForResult
+import co.kr.whitewave.presentation.util.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 

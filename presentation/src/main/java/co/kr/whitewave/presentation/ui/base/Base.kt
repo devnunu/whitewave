@@ -1,4 +1,4 @@
-package co.kr.whitewave.presentation.base
+package co.kr.whitewave.presentation.ui.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

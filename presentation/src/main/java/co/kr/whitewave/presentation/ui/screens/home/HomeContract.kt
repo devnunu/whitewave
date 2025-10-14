@@ -4,9 +4,9 @@ import android.app.Activity
 import co.kr.whitewave.data.local.PresetWithSounds
 import co.kr.whitewave.data.model.sound.Sound
 import co.kr.whitewave.data.model.subscription.SubscriptionTier
-import co.kr.whitewave.presentation.base.UiEffect
-import co.kr.whitewave.presentation.base.UiState
-import co.kr.whitewave.presentation.base.UiViewEvent
+import co.kr.whitewave.presentation.ui.base.UiEffect
+import co.kr.whitewave.presentation.ui.base.UiState
+import co.kr.whitewave.presentation.ui.base.UiViewEvent
 import kotlin.time.Duration
 
 /**

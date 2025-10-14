@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":data"))
 
     // AndroidX
     implementation(libs.androidx.core.ktx)
@@ -15,6 +16,19 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
+
+    // Compose
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    debugImplementation(libs.compose.ui.tooling)
+
+    // Media3
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.session)
+    implementation(libs.androidx.media)
 
     // Koin
     implementation(libs.koin.android)

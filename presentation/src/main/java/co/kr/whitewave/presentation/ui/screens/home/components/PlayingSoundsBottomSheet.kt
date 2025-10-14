@@ -33,14 +33,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.R
 import co.kr.whitewave.data.model.sound.Sound
+import co.kr.whitewave.presentation.R
+import co.kr.whitewave.presentation.util.getIconForSound
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -169,7 +171,7 @@ private fun PlayingSoundItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = sound.icon),
+                    painter = painterResource(id = getIconForSound(sound)),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)

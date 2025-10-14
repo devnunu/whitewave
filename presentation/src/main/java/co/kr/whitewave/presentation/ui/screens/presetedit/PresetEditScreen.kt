@@ -38,7 +38,7 @@ import co.kr.whitewave.data.model.result.ResultCode
 import co.kr.whitewave.presentation.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditContract.Effect
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditContract.ViewEvent
-import co.kr.whitewave.utils.popBackStackWithResult
+import co.kr.whitewave.presentation.util.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 

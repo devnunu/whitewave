@@ -10,7 +10,7 @@ import co.kr.whitewave.data.model.subscription.SubscriptionTier
 import co.kr.whitewave.data.repository.DefaultPresetDeletionException
 import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.presentation.base.BaseViewModel
+import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn

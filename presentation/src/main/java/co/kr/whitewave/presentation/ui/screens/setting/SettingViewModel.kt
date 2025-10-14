@@ -8,7 +8,7 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.presentation.base.BaseViewModel
+import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.State
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.ViewEvent

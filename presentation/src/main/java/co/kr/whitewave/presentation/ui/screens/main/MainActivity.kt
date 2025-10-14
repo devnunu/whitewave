@@ -15,15 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import co.kr.whitewave.presentation.theme.WhiteWaveTheme
 import co.kr.whitewave.presentation.ui.MainScreen
-import co.kr.whitewave.ui.common.IntentActions
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 종료 액션 처리
-        if (intent?.action == IntentActions.ACTION_SHUTDOWN) {
-            finishAndRemoveTask()
+        if (intent?.action == "ACTION_SHUTDOWN") {
+            finishAndRemoveTask()  // finish() 대신 finishAndRemoveTask() 사용
             return
         }
 

@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":data"))
     implementation(project(":presentation"))
 
     // AndroidX

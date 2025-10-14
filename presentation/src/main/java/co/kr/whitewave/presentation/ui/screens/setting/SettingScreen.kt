@@ -55,9 +55,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.BuildConfig
-import co.kr.whitewave.R
 import co.kr.whitewave.data.model.subscription.SubscriptionTier
+import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.ViewEvent
@@ -198,7 +197,7 @@ fun SettingsScreen(
                 SettingItem(
                     icon = R.drawable.ic_info,
                     title = "앱 정보",
-                    subtitle = "버전 ${BuildConfig.VERSION_NAME}",
+                    subtitle = "버전 : 준비중",
                     onClick = { /* 앱 정보 화면으로 이동 */ }
                 )
 

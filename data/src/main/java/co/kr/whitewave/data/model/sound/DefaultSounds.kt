@@ -8,36 +8,31 @@ object DefaultSounds {
             id = "rain",
             name = "Rain",
             assetPath = "sounds/rain.mp3",
-            isPremium = false,
-            icon = SoundIcons.getIconForSound("rain")
+            isPremium = false
         ),
         Sound(
             id = "ocean",
             name = "Ocean Waves",
             assetPath = "sounds/ocean.mp3",
-            isPremium = false,
-            icon = SoundIcons.getIconForSound("ocean")
+            isPremium = false
         ),
         Sound(
             id = "fireplace",
             name = "Fireplace",
             assetPath = "sounds/fireplace.mp3",
-            isPremium = false,
-            icon = SoundIcons.getIconForSound("fireplace")
+            isPremium = false
         ),
         Sound(
             id = "forest",
             name = "Forest",
             assetPath = "sounds/forest.mp3",
-            isPremium = true,
-            icon = SoundIcons.getIconForSound("forest")
+            isPremium = true
         ),
         Sound(
             id = "cafe",
             name = "Cafe",
             assetPath = "sounds/cafe.mp3",
-            isPremium = true,
-            icon = SoundIcons.getIconForSound("cafe")
+            isPremium = true
         )
     )
 

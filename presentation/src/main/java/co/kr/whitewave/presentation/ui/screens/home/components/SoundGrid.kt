@@ -38,8 +38,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.R
 import co.kr.whitewave.data.model.sound.Sound
+import co.kr.whitewave.presentation.R
+import co.kr.whitewave.presentation.util.getIconForSound
 
 @Composable
 fun SoundGrid(
@@ -121,7 +122,7 @@ private fun SoundGridItem(
                     .padding(12.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = sound.icon),
+                    painter = painterResource(id = getIconForSound(sound)),
                     contentDescription = sound.name,
                     tint = contentColor,
                     modifier = Modifier

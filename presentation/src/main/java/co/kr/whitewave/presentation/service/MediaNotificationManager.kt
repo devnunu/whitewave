@@ -8,8 +8,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.media.app.NotificationCompat.MediaStyle
-import co.kr.whitewave.R
-import co.kr.whitewave.ui.screens.main.MainActivity
+import co.kr.whitewave.presentation.R
+import co.kr.whitewave.presentation.ui.screens.main.MainActivity
 
 
 class MediaNotificationManager(
@@ -54,7 +54,7 @@ class MediaNotificationManager(
             context,
             0,
             Intent(context, MainActivity::class.java).apply {
-                Intent.setFlags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -65,8 +65,8 @@ class MediaNotificationManager(
             context,
             0,
             Intent(context, AudioService::class.java).apply {
-                Intent.setAction = if (isPlaying) ACTION_PAUSE else ACTION_PLAY
-                Intent.setFlags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                action = if (isPlaying) ACTION_PAUSE else ACTION_PLAY
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -75,8 +75,8 @@ class MediaNotificationManager(
             context,
             0,
             Intent(context, AudioService::class.java).apply {
-                Intent.setAction = ACTION_STOP
-                Intent.setFlags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                action = ACTION_STOP
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -108,7 +108,7 @@ class MediaNotificationManager(
                     context,
                     0,
                     Intent(context, AudioService::class.java).apply {
-                        Intent.setAction = ACTION_STOP
+                        action = ACTION_STOP
                     },
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )

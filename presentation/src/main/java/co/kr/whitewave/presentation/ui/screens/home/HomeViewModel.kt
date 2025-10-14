@@ -14,8 +14,8 @@ import co.kr.whitewave.data.model.sound.Sound
 import co.kr.whitewave.data.model.subscription.SubscriptionTier
 import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.data.repository.PresetRepository
-import co.kr.whitewave.presentation.base.BaseViewModel
 import co.kr.whitewave.presentation.service.AudioServiceController
+import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.State
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.ViewEvent

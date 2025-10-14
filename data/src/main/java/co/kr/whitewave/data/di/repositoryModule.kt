@@ -1,4 +1,4 @@
-package co.kr.whitewave.di
+package co.kr.whitewave.data.di
 
 import androidx.room.Room
 import co.kr.whitewave.data.local.PresetDatabase
@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 
-val appModule = module {
+val repositoryModule = module {
 
     single {
         AudioPlayer(
