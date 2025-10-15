@@ -5,13 +5,9 @@ import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 
 sealed class SubscriptionTierEntity: DataMapper<SubscriptionTier> {
     data object Free : SubscriptionTierEntity() {
-        override fun toDomain(): SubscriptionTier {
-            TODO("Not yet implemented")
-        }
+        override fun toDomain(): SubscriptionTier = SubscriptionTier.Free
     }
     data object Premium : SubscriptionTierEntity() {
-        override fun toDomain(): SubscriptionTier {
-            TODO("Not yet implemented")
-        }
+        override fun toDomain(): SubscriptionTier = SubscriptionTier.Premium
     }
 }

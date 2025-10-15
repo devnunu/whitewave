@@ -12,14 +12,14 @@ val presentationManagerModule = module {
         AudioPlayer(
             context = get(),
             coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
-            subscriptionManager = get()
+            subscriptionRepository = get(),
         )
     }
 
     single {
         AdManager(
             context = get(),
-            subscriptionManager = get()
+            subscriptionRepository = get()
         )
     }
 }

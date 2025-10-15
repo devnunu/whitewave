@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.whitewave.library.compose)
+    alias(libs.plugins.whitewave.library)
     alias(libs.plugins.ksp)
     kotlin("plugin.serialization") version "1.9.0"
 }
@@ -26,8 +26,5 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-
-    // billing
-    implementation(libs.android.billingclient)
 
 }

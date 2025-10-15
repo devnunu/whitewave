@@ -47,6 +47,3 @@ class PresetRepositoryImpl(
         presetLocalDataSource.deletePreset(presetId = presetId)
     }
 }
-
-class PresetLimitExceededException : Exception("Free users can only save up to 3 presets")
-class DefaultPresetDeletionException : Exception("Default presets cannot be deleted")

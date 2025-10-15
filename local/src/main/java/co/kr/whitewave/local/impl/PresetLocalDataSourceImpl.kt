@@ -1,14 +1,14 @@
 package co.kr.whitewave.local.impl
 
+import co.kr.whitewave.common.DefaultPresetDeletionException
+import co.kr.whitewave.common.PresetLimitExceededException
 import co.kr.whitewave.data.local.PresetLocalDataSource
-import co.kr.whitewave.data.manager.SubscriptionManager
+import co.kr.whitewave.data.local.SubscriptionLocalDataSource
 import co.kr.whitewave.data.model.preset.PresetEntity
 import co.kr.whitewave.data.model.preset.PresetSoundEntity
 import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
 import co.kr.whitewave.data.model.sound.SoundEntity
 import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
-import co.kr.whitewave.data.repository.DefaultPresetDeletionException
-import co.kr.whitewave.data.repository.PresetLimitExceededException
 import co.kr.whitewave.local.model.DefaultPresetsLocal
 import co.kr.whitewave.local.model.toLocal
 import co.kr.whitewave.local.room.dao.PresetDao
@@ -18,12 +18,12 @@ import kotlinx.coroutines.flow.map
 
 class PresetLocalDataSourceImpl(
     private val presetDao: PresetDao,
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionLocalDataSource: SubscriptionLocalDataSource
 ) : PresetLocalDataSource {
 
     // 저장 가능한지 체크하는 함수 추가
     suspend fun canSavePreset(): Boolean {
-        return when (subscriptionManager.subscriptionTier.value) {
+        return when (subscriptionLocalDataSource.subscriptionTier.value) {
             is SubscriptionTierEntity.Premium -> true
             is SubscriptionTierEntity.Free -> {
                 val currentPresetCount = presetDao.getCustomPresetCount()

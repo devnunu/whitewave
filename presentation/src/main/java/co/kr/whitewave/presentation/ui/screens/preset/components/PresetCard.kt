@@ -37,8 +37,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.data.model.preset.PresetCategoriesEntity
-import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
+import co.kr.whitewave.domain.model.preset.PresetCategories
+import co.kr.whitewave.domain.model.preset.PresetWithSounds
 import co.kr.whitewave.presentation.R
 
 /**
@@ -46,7 +46,7 @@ import co.kr.whitewave.presentation.R
  */
 @Composable
 fun PresetCard(
-    preset: PresetWithSoundsEntity,
+    preset: PresetWithSounds,
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -54,23 +54,23 @@ fun PresetCard(
 ) {
     // 카테고리에 따른 배경 이미지와 색상 결정
     val (backgroundResId, gradientColors) = when (preset.preset.category) {
-        PresetCategoriesEntity.SLEEP -> Pair(
+        PresetCategories.SLEEP.category -> Pair(
             R.drawable.sample,  // 실제 앱에 맞는 이미지로 대체 필요
             listOf(Color(0xFF1E3B70).copy(alpha = 0.7f), Color(0xFF29539B).copy(alpha = 0.9f))
         )
-        PresetCategoriesEntity.RAIN -> Pair(
+        PresetCategories.RAIN.category -> Pair(
             R.drawable.sample,  // 실제 앱에 맞는 이미지로 대체 필요
             listOf(Color(0xFF1A4C6E).copy(alpha = 0.7f), Color(0xFF376E9A).copy(alpha = 0.9f))
         )
-        PresetCategoriesEntity.RELAX -> Pair(
+        PresetCategories.RELAX.category -> Pair(
             R.drawable.sample,  // 실제 앱에 맞는 이미지로 대체 필요
             listOf(Color(0xFF2E5D4B).copy(alpha = 0.7f), Color(0xFF347D64).copy(alpha = 0.9f))
         )
-        PresetCategoriesEntity.MEDITATION -> Pair(
+        PresetCategories.MEDITATION.category -> Pair(
             R.drawable.sample,  // 실제 앱에 맞는 이미지로 대체 필요
             listOf(Color(0xFF553C6E).copy(alpha = 0.7f), Color(0xFF7B579D).copy(alpha = 0.9f))
         )
-        PresetCategoriesEntity.WORK -> Pair(
+        PresetCategories.WORK.category -> Pair(
             R.drawable.sample,  // 실제 앱에 맞는 이미지로 대체 필요
             listOf(Color(0xFF614C38).copy(alpha = 0.7f), Color(0xFF8A6E55).copy(alpha = 0.9f))
         )

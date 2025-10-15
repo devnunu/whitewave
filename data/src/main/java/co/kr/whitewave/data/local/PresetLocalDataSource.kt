@@ -12,7 +12,7 @@ interface PresetLocalDataSource {
     suspend fun savePreset(
         name: String,
         sounds: List<SoundEntity>,
-        category: String = PresetCategoriesEntity.CUSTOM
+        category: String = PresetCategoriesEntity.CUSTOM.category
     )
 
     suspend fun updatePreset(

@@ -5,9 +5,9 @@ import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.model.subscription.SubscriptionTier
+import co.kr.whitewave.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 class AudioPlayer(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionRepository: SubscriptionRepository
 ) {
     companion object {
         private const val FREE_MIXING_LIMIT = 2
@@ -42,9 +42,9 @@ class AudioPlayer(
     val playingSounds: StateFlow<Map<String, Sound>> = _playingSounds.asStateFlow()
 
     private fun canPlayMoreSounds(): Boolean {
-        return when (subscriptionManager.subscriptionTier.value) {
-            is SubscriptionTierEntity.Premium -> true
-            is SubscriptionTierEntity.Free -> {
+        return when (subscriptionRepository.subscriptionTier.value) {
+            is SubscriptionTier.Premium -> true
+            is SubscriptionTier.Free -> {
                 val selectedCount = playingSounds.value.size
                 selectedCount < FREE_MIXING_LIMIT
             }

@@ -3,14 +3,14 @@ package co.kr.whitewave.presentation.ui.screens.home
 import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
-import co.kr.whitewave.data.repository.PresetLimitExceededException
+import co.kr.whitewave.common.PresetLimitExceededException
 import co.kr.whitewave.domain.model.preset.DefaultPresets
 import co.kr.whitewave.domain.model.preset.PresetWithSounds
 import co.kr.whitewave.domain.model.sound.DefaultSounds
 import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 import co.kr.whitewave.domain.repository.PresetRepository
+import co.kr.whitewave.domain.repository.SubscriptionRepository
 import co.kr.whitewave.presentation.manager.AdManager
 import co.kr.whitewave.presentation.manager.AudioPlayer
 import co.kr.whitewave.presentation.manager.SoundMixingLimitException
@@ -30,7 +30,7 @@ class HomeViewModel(
     private val audioPlayer: AudioPlayer,
     private val audioServiceController: AudioServiceController,
     private val presetRepository: PresetRepository,
-    private val subscriptionManager: SubscriptionManager,
+    private val subscriptionRepository: SubscriptionRepository,
     private val adManager: AdManager
 ) : BaseViewModel<State, ViewEvent, Effect>(State()) {
 
@@ -68,7 +68,7 @@ class HomeViewModel(
 
         // 구독 상태 모니터링
         viewModelScope.launch {
-            subscriptionManager.subscriptionTier.collect { tier ->
+            subscriptionRepository.subscriptionTier.collect { tier ->
                 setState { it.copy(subscriptionTier = tier) }
             }
         }
@@ -141,7 +141,7 @@ class HomeViewModel(
 
     private fun toggleSound(sound: Sound) {
         // 프리미엄 사운드 처리
-        if (sound.isPremium && currentState.subscriptionTier is SubscriptionTierEntity.Free) {
+        if (sound.isPremium && currentState.subscriptionTier is SubscriptionTier.Free) {
             setState { it.copy(showPremiumDialog = true) }
             return
         }
@@ -341,7 +341,7 @@ class HomeViewModel(
 
     private fun startSubscription(activity: Activity) {
         viewModelScope.launch {
-            subscriptionManager.startSubscription(activity)
+            subscriptionRepository.startSubscription(activity)
         }
     }
 

@@ -1,5 +1,4 @@
-// data/subscription/SubscriptionManager.kt
-package co.kr.whitewave.data.manager
+package co.kr.whitewave.local.impl
 
 import android.app.Activity
 import android.content.Context
@@ -7,6 +6,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import co.kr.whitewave.data.local.SubscriptionLocalDataSource
 import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
@@ -28,11 +28,11 @@ import kotlinx.coroutines.launch
 
 private val Context.dataStore by preferencesDataStore(name = "subscription")
 
-// data/subscription/SubscriptionManager.kt
-class SubscriptionManager(
+class SubscriptionLocalDataSourceImpl(
     private val context: Context,
     private val coroutineScope: CoroutineScope
-) {
+) : SubscriptionLocalDataSource {
+
     companion object {
         private const val SUBSCRIPTION_ID = "whitewave_premium_monthly"
         private const val SUBSCRIPTION_CHECK_INTERVAL = 3600000L // 1시간을 밀리초로 변환한 값
@@ -46,7 +46,7 @@ class SubscriptionManager(
         .build()
 
     private val _subscriptionTier = MutableStateFlow<SubscriptionTierEntity>(SubscriptionTierEntity.Free)
-    val subscriptionTier: StateFlow<SubscriptionTierEntity> = _subscriptionTier.asStateFlow()
+    override val subscriptionTier: StateFlow<SubscriptionTierEntity> = _subscriptionTier.asStateFlow()
 
     init {
         coroutineScope.launch {
@@ -87,7 +87,7 @@ class SubscriptionManager(
                 }
             })
         } catch (e: Exception) {
-            Log.e("SubscriptionManager", "Error establishing billing connection", e)
+            Log.e("SubscriptionLocalDataSource", "Error establishing billing connection", e)
         }
     }
 
@@ -105,7 +105,7 @@ class SubscriptionManager(
 
             updateSubscriptionStatus(hasValidSubscription)
         } catch (e: Exception) {
-            Log.e("SubscriptionManager", "Error querying purchases", e)
+            Log.e("SubscriptionLocalDataSource", "Error querying purchases", e)
         }
     }
 
@@ -145,7 +145,7 @@ class SubscriptionManager(
         }
     }
 
-    suspend fun startSubscription(activity: Activity) {
+    override suspend fun startSubscription(activity: Activity) {
         val productDetailsParams = QueryProductDetailsParams.newBuilder()
             .setProductList(
                 listOf(
@@ -182,7 +182,7 @@ class SubscriptionManager(
         )
     }
 
-    fun release() {
+    override fun release() {
         billingClient.endConnection()
     }
 }

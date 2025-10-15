@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.manager.SubscriptionManager
+import co.kr.whitewave.domain.repository.SubscriptionRepository
 import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.State
@@ -17,12 +17,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionRepository: SubscriptionRepository
 ) : BaseViewModel<State, ViewEvent, Effect>(State()) {
 
     init {
         // 구독 상태 모니터링
-        subscriptionManager.subscriptionTier
+        subscriptionRepository.subscriptionTier
             .onEach { tier ->
                 setState { it.copy(subscriptionTier = tier) }
             }
@@ -42,7 +42,7 @@ class SettingsViewModel(
     private fun startSubscription(activity: Activity) {
         viewModelScope.launch {
             try {
-                subscriptionManager.startSubscription(activity)
+                subscriptionRepository.startSubscription(activity)
                 sendEffect(Effect.ShowSnackbar("구독 프로세스가 시작되었습니다"))
             } catch (e: Exception) {
                 sendEffect(Effect.ShowSnackbar("구독 시작 중 오류가 발생했습니다: ${e.message}"))

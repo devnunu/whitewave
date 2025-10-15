@@ -2,14 +2,14 @@ package co.kr.whitewave.presentation.ui.screens.preset
 
 import android.app.Activity
 import androidx.lifecycle.viewModelScope
-import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.preset.PresetCategoriesEntity
-import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
-import co.kr.whitewave.data.model.sound.SoundEntity
-import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
-import co.kr.whitewave.data.repository.DefaultPresetDeletionException
-import co.kr.whitewave.data.repository.PresetLimitExceededException
-import co.kr.whitewave.data.repository.PresetRepositoryImpl
+import co.kr.whitewave.common.DefaultPresetDeletionException
+import co.kr.whitewave.common.PresetLimitExceededException
+import co.kr.whitewave.domain.model.preset.PresetCategories
+import co.kr.whitewave.domain.model.preset.PresetWithSounds
+import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.model.subscription.SubscriptionTier
+import co.kr.whitewave.domain.repository.PresetRepository
+import co.kr.whitewave.domain.repository.SubscriptionRepository
 import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,19 +17,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class PresetViewModel(
-    private val presetRepository: PresetRepositoryImpl,
-    private val subscriptionManager: SubscriptionManager  // 구독 매니저 추가
+    private val presetRepository: PresetRepository,
+    private val subscriptionRepository: SubscriptionRepository
 ) : BaseViewModel<PresetContract.State, PresetContract.ViewEvent, PresetContract.Effect>(
-    PresetContract.State(categories = PresetCategoriesEntity.LIST)
+    PresetContract.State(categories = PresetCategories.getCategoryList())
 ) {
-    private val selectedCategoryFlow = MutableStateFlow(PresetCategoriesEntity.ALL)
+    private val selectedCategoryFlow = MutableStateFlow(PresetCategories.ALL.category)
 
     init {
         // 카테고리 선택에 따라 프리셋 목록 필터링
         combine(
             presetRepository.getAllPresets(),
             selectedCategoryFlow,
-            subscriptionManager.subscriptionTier  // 구독 상태 추가
+            subscriptionRepository.subscriptionTier
         ) { allPresets, selectedCategory, subscriptionTier ->
             setState { state ->
                 // 사용자 커스텀 프리셋과 기본 프리셋 분리
@@ -38,11 +38,11 @@ class PresetViewModel(
 
                 // 선택된 카테고리에 따라 필터링
                 val filteredPresets = when (selectedCategory) {
-                    PresetCategoriesEntity.ALL -> {
+                    PresetCategories.ALL.category -> {
                         // 모든 프리셋: 커스텀 프리셋을 앞에 배치하고 최신순 정렬, 기본 프리셋은 뒤에 배치
                         customPresets + defaultPresets
                     }
-                    PresetCategoriesEntity.CUSTOM -> {
+                    PresetCategories.CUSTOM.category -> {
                         // 커스텀 프리셋만: 최신순 정렬
                         customPresets
                     }
@@ -101,7 +101,7 @@ class PresetViewModel(
         selectedCategoryFlow.value = category
     }
 
-    private fun savePreset(name: String, sounds: List<SoundEntity>, category: String) {
+    private fun savePreset(name: String, sounds: List<Sound>, category: String) {
         viewModelScope.launch {
             try {
                 presetRepository.savePreset(name, sounds, category)
@@ -119,7 +119,7 @@ class PresetViewModel(
     private fun updatePreset(
         presetId: String,
         name: String,
-        sounds: List<SoundEntity>,
+        sounds: List<Sound>,
         category: String
     ) {
         viewModelScope.launch {
@@ -152,9 +152,9 @@ class PresetViewModel(
         }
     }
 
-    private fun selectPreset(preset: PresetWithSoundsEntity) {
+    private fun selectPreset(preset: PresetWithSounds) {
         // 프리미엄 프리셋인 경우 구독 상태 확인
-        if (preset.preset.isPremium && currentState.subscriptionTier is SubscriptionTierEntity.Free) {
+        if (preset.preset.isPremium && currentState.subscriptionTier is SubscriptionTier.Free) {
             // 무료 사용자가 프리미엄 프리셋 선택 시 구독 다이얼로그 표시
             setState { it.copy(showPremiumDialog = true) }
             return
@@ -164,7 +164,7 @@ class PresetViewModel(
         sendEffect(PresetContract.Effect.PresetSelected(preset.preset.id))
     }
 
-    private fun startEditPreset(preset: PresetWithSoundsEntity) {
+    private fun startEditPreset(preset: PresetWithSounds) {
         // 기본 프리셋은 편집 불가
         if (preset.preset.isDefault) {
             sendEffect(
@@ -186,7 +186,7 @@ class PresetViewModel(
     private fun startSubscription(activity: Activity) {
         viewModelScope.launch {
             try {
-                subscriptionManager.startSubscription(activity)
+                subscriptionRepository.startSubscription(activity)
                 // 구독 프로세스가 시작됨을 알림
                 setState { it.copy(showPremiumDialog = false) }
             } catch (e: Exception) {

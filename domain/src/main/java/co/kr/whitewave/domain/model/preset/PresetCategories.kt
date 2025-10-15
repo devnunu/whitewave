@@ -9,4 +9,8 @@ enum class PresetCategories(val category: String) {
     MEDITATION("명상"),
     WORK("업무");
 
+    companion object {
+        fun getCategoryList() =
+            PresetCategories.entries.map { it.category }
+    }
 }

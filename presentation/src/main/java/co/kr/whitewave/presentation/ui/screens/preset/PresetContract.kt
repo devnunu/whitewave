@@ -1,9 +1,9 @@
 package co.kr.whitewave.presentation.ui.screens.preset
 
 import android.app.Activity
-import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.domain.model.preset.PresetWithSounds
 import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 import co.kr.whitewave.presentation.ui.base.UiEffect
 import co.kr.whitewave.presentation.ui.base.UiState
 import co.kr.whitewave.presentation.ui.base.UiViewEvent
@@ -25,7 +25,7 @@ object PresetContract {
         val editMode: Boolean = false,
         val currentEditPreset: PresetWithSounds? = null,
         val showPremiumDialog: Boolean = false,
-        val subscriptionTier: SubscriptionTierEntity = SubscriptionTierEntity.Free
+        val subscriptionTier: SubscriptionTier = SubscriptionTier.Free
     ) : UiState
 
     /**

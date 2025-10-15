@@ -19,28 +19,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.data.model.preset.PresetCategoriesEntity
-import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
-import co.kr.whitewave.data.model.sound.SoundEntity
+import co.kr.whitewave.domain.model.preset.PresetCategories
+import co.kr.whitewave.domain.model.preset.PresetWithSounds
+import co.kr.whitewave.domain.model.sound.Sound
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PresetEditDialog(
-    preset: PresetWithSoundsEntity? = null,
-    availableSounds: List<SoundEntity>,
-    onSave: (String, List<SoundEntity>, String) -> Unit,
+    preset: PresetWithSounds? = null,
+    availableSounds: List<Sound>,
+    onSave: (String, List<Sound>, String) -> Unit,
     onDismiss: () -> Unit,
     error: String? = null
 ) {
     // 초기 상태 설정
     var presetName by remember { mutableStateOf(preset?.preset?.name ?: "") }
-    var selectedCategory by remember { mutableStateOf(preset?.preset?.category ?: PresetCategoriesEntity.CUSTOM) }
+    var selectedCategory by remember { mutableStateOf(preset?.preset?.category ?: PresetCategories.CUSTOM.category) }
     var expanded by remember { mutableStateOf(false) }
 
     // 카테고리 목록 (커스텀과 모두보기 제외)
-    val categories = PresetCategoriesEntity.LIST.filter {
-        it != PresetCategoriesEntity.ALL && it != PresetCategoriesEntity.CUSTOM
-    } + PresetCategoriesEntity.CUSTOM
+    val categories = PresetCategories.getCategoryList().filter {
+        it != PresetCategories.ALL.category && it != PresetCategories.CUSTOM.category
+    } + PresetCategories.CUSTOM.category
 
     // 편집할 사운드들 (기존 프리셋의 사운드 또는 빈 리스트)
     val selectedSounds = remember {

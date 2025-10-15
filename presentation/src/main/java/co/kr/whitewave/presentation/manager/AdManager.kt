@@ -2,9 +2,9 @@ package co.kr.whitewave.presentation.manager
 
 import android.app.Activity
 import android.content.Context
-import android.telephony.SubscriptionManager
 import android.util.Log
-import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
+import co.kr.whitewave.domain.model.subscription.SubscriptionTier
+import co.kr.whitewave.domain.repository.SubscriptionRepository
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -16,10 +16,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-// data/ads/AdManager.kt
 class AdManager(
     private val context: Context,
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionRepository: SubscriptionRepository
 ) {
     companion object {
         // 전면 광고용 테스트 ID
@@ -61,7 +60,7 @@ class AdManager(
     }
 
     fun shouldShowAd(): Boolean {
-        if (subscriptionManager.subscriptionTier.value is SubscriptionTierEntity.Premium) {
+        if (subscriptionRepository.subscriptionTier.value is SubscriptionTier.Premium) {
             return false
         }
 

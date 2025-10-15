@@ -15,14 +15,14 @@ val viewModelModule = module {
             audioPlayer = get(),
             audioServiceController = get(),
             presetRepository = get(),
-            subscriptionManager = get(),
+            subscriptionRepository = get(),
             adManager = get()
         )
     }
     viewModel {
         PresetViewModel(
             presetRepository = get(),
-            subscriptionManager = get()
+            subscriptionRepository = get()
         )
     }
     viewModel {
