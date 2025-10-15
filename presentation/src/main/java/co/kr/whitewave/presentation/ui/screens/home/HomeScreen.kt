@@ -1,7 +1,6 @@
 package co.kr.whitewave.presentation.ui.screens.home
 
 import android.app.Activity
-import androidx.activity.result.ActivityResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -47,11 +46,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import co.kr.whitewave.presentation.R
-import co.kr.whitewave.presentation.model.result.IntentParamKey
-import co.kr.whitewave.presentation.model.result.ResultCode
-import co.kr.whitewave.presentation.navigation.NavRoute
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.ViewEvent
@@ -60,7 +55,6 @@ import co.kr.whitewave.presentation.ui.screens.home.components.PlayingSoundsBott
 import co.kr.whitewave.presentation.ui.screens.home.components.SavePresetDialog
 import co.kr.whitewave.presentation.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.presentation.util.formatForDisplay
-import co.kr.whitewave.presentation.util.navigateForResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -68,8 +62,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = koinViewModel(),
-    navController: NavController
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
@@ -178,38 +171,7 @@ fun HomeScreen(
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                actions = {
-                    // 프리셋 아이콘
-                    IconButton(onClick = {
-                        navController.navigateForResult<ActivityResult?>(
-                            route = NavRoute.Presets,
-                            navResultCallback = { result ->
-                                if (result?.resultCode == ResultCode.SUCCESS) {
-                                    val presetId =
-                                        result.data?.getStringExtra(IntentParamKey.PRESET_ID)
-                                            .orEmpty()
-                                    viewModel.loadPresetById(presetId)
-                                }
-                            }
-                        )
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_preset),
-                            contentDescription = "프리셋"
-                        )
-                    }
-
-                    // 설정 아이콘
-                    IconButton(onClick = {
-                        navController.navigate(NavRoute.Settings)
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_settings),
-                            contentDescription = "설정"
-                        )
-                    }
-                }
+                )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

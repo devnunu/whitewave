@@ -47,14 +47,14 @@ inline fun <reified T : Any> NavGraphBuilder.composable(
             when (screenAnim) {
                 ScreenAnim.HORIZONTAL_SLIDE -> null
                 ScreenAnim.VERTICAL_SLIDE -> null
-                ScreenAnim.FADE_IN_OUT -> null
+                ScreenAnim.FADE_IN_OUT -> fadeOut()
             }
         },
         popEnterTransition = {
             when (screenAnim) {
                 ScreenAnim.HORIZONTAL_SLIDE -> null
                 ScreenAnim.VERTICAL_SLIDE -> null
-                ScreenAnim.FADE_IN_OUT -> null
+                ScreenAnim.FADE_IN_OUT -> fadeIn()
             }
         },
         popExitTransition = {
