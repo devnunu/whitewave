@@ -1,15 +1,21 @@
 package co.kr.whitewave.presentation.ui.screens.main
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
@@ -55,7 +61,11 @@ fun MainScreen(
     WhiteWaveScaffold(
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 0.dp
             ) {
                 bottomNavItems.forEach { item ->
                     val selected = currentDestination?.hierarchy?.any {
@@ -66,10 +76,27 @@ fun MainScreen(
                         icon = {
                             Icon(
                                 painter = painterResource(id = item.icon),
-                                contentDescription = item.label
+                                contentDescription = item.label,
+                                tint = if (selected)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .padding(bottom = 2.dp)
                             )
                         },
-                        label = { Text(item.label) },
+                        label = {
+                            Text(
+                                text = item.label,
+                                color = if (selected)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1
+                            )
+                        },
                         selected = selected,
                         onClick = {
                             if (!selected) {
@@ -84,7 +111,15 @@ fun MainScreen(
                                     restoreState = true
                                 }
                             }
-                        }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = Color.Transparent // 배경 제거
+                        ),
+                        alwaysShowLabel = true
                     )
                 }
             }
