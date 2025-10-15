@@ -1,11 +1,8 @@
-package co.kr.whitewave.data.model.preset
+package co.kr.whitewave.domain.model.preset
 
-import co.kr.whitewave.data.model.sound.DefaultSoundsEntity.ALL
+import co.kr.whitewave.domain.model.sound.DefaultSounds.ALL
 
-/**
- * 앱에서 기본으로 제공하는 프리셋 목록
- */
-object DefaultPresetsEntity {
+object DefaultPresets {
 
     // 지정된 ID 집합으로 기본 프리셋 생성 (기본 볼륨 값은 1.0f)
     private fun createPresetWithSounds(
@@ -14,13 +11,13 @@ object DefaultPresetsEntity {
         category: String,
         soundIds: List<String>,
         isPremium: Boolean = false // 프리미엄 여부
-    ): PresetWithSoundsEntity {
+    ): PresetWithSounds {
         // 프리셋에 포함된 사운드 중 하나라도 프리미엄이면 프리셋도 프리미엄으로 설정
         val containsPremiumSound = soundIds.any { soundId ->
             ALL.find { it.id == soundId }?.isPremium == true
         }
 
-        val preset = PresetEntity(
+        val preset = Preset(
             id = id,
             name = name,
             category = category,
@@ -32,28 +29,28 @@ object DefaultPresetsEntity {
             val sound = ALL.find { it.id == soundId }
                 ?: throw IllegalArgumentException("Sound ID not found: $soundId")
 
-            PresetSoundEntity(
+            PresetSound(
                 presetId = preset.id,
                 soundId = sound.id,
                 volume = 1.0f
             )
         }
 
-        return PresetWithSoundsEntity(preset, presetSounds)
+        return PresetWithSounds(preset, presetSounds)
     }
 
     val SLEEP_PRESETS = listOf(
         createPresetWithSounds(
             id = "default_sleep_1",
             name = "숲속의 비",
-            category = PresetCategoriesEntity.SLEEP.category,
+            category = PresetCategories.SLEEP.category,
             soundIds = listOf("rain", "forest"), // forest는 프리미엄 사운드
             isPremium = true
         ),
         createPresetWithSounds(
             id = "default_sleep_2",
             name = "포근한 밤",
-            category = PresetCategoriesEntity.SLEEP.category,
+            category = PresetCategories.SLEEP.category,
             soundIds = listOf("rain", "fireplace")
         )
     )
@@ -62,13 +59,13 @@ object DefaultPresetsEntity {
         createPresetWithSounds(
             id = "default_rain_1",
             name = "바람",
-            category = PresetCategoriesEntity.RAIN.category,
+            category = PresetCategories.RAIN.category,
             soundIds = listOf("rain")
         ),
         createPresetWithSounds(
             id = "default_rain_2",
             name = "비와 피아노",
-            category = PresetCategoriesEntity.RAIN.category,
+            category = PresetCategories.RAIN.category,
             soundIds = listOf("rain", "cafe"), // cafe는 프리미엄 사운드
             isPremium = true
         )
@@ -78,14 +75,14 @@ object DefaultPresetsEntity {
         createPresetWithSounds(
             id = "default_relax_1",
             name = "여름 비",
-            category = PresetCategoriesEntity.RELAX.category,
+            category = PresetCategories.RELAX.category,
             soundIds = listOf("rain", "forest"), // forest는 프리미엄 사운드
             isPremium = true
         ),
         createPresetWithSounds(
             id = "default_relax_2",
             name = "평화로운 밤",
-            category = PresetCategoriesEntity.RELAX.category,
+            category = PresetCategories.RELAX.category,
             soundIds = listOf("ocean")
         )
     )
@@ -94,7 +91,7 @@ object DefaultPresetsEntity {
         createPresetWithSounds(
             id = "default_meditation_1",
             name = "자연 멜로디",
-            category = PresetCategoriesEntity.MEDITATION.category,
+            category = PresetCategories.MEDITATION.category,
             soundIds = listOf("forest", "ocean"), // forest는 프리미엄 사운드
             isPremium = true
         )
@@ -104,13 +101,13 @@ object DefaultPresetsEntity {
         createPresetWithSounds(
             id = "default_work_1",
             name = "봄비",
-            category = PresetCategoriesEntity.WORK.category,
+            category = PresetCategories.WORK.category,
             soundIds = listOf("rain")
         ),
         createPresetWithSounds(
             id = "default_work_2",
             name = "카페",
-            category = PresetCategoriesEntity.WORK.category,
+            category = PresetCategories.WORK.category,
             soundIds = listOf("cafe"), // cafe는 프리미엄 사운드
             isPremium = true
         )

@@ -1,13 +1,27 @@
 package co.kr.whitewave.data.model.preset
 
-object PresetCategoriesEntity {
-    const val ALL = "모두"
-    const val CUSTOM = "커스텀"
-    const val SLEEP = "수면"
-    const val RAIN = "비"
-    const val RELAX = "휴식"
-    const val MEDITATION = "명상"
-    const val WORK = "업무"
+import co.kr.whitewave.data.DataMapper
+import co.kr.whitewave.domain.model.preset.PresetCategories
 
-    val LIST = listOf(ALL, CUSTOM, SLEEP, RAIN, RELAX, MEDITATION, WORK)
+enum class PresetCategoriesEntity(
+    val category: String
+) : DataMapper<PresetCategories> {
+    ALL("모두"),
+    CUSTOM("커스텀"),
+    SLEEP("수면"),
+    RAIN("비"),
+    RELAX("휴식"),
+    MEDITATION("명상"),
+    WORK("업무");
+
+    override fun toDomain(): PresetCategories =
+        when (this) {
+            ALL -> PresetCategories.ALL
+            CUSTOM -> PresetCategories.CUSTOM
+            SLEEP -> PresetCategories.SLEEP
+            RAIN -> PresetCategories.RAIN
+            RELAX -> PresetCategories.RELAX
+            MEDITATION -> PresetCategories.MEDITATION
+            WORK -> PresetCategories.WORK
+        }
 }

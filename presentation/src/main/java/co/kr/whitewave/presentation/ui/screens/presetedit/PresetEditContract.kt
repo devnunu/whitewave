@@ -1,7 +1,7 @@
 package co.kr.whitewave.presentation.ui.screens.presetedit
 
-import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
-import co.kr.whitewave.data.model.sound.SoundEntity
+import co.kr.whitewave.domain.model.preset.PresetWithSounds
+import co.kr.whitewave.domain.model.sound.Sound
 import co.kr.whitewave.presentation.ui.base.UiEffect
 import co.kr.whitewave.presentation.ui.base.UiState
 import co.kr.whitewave.presentation.ui.base.UiViewEvent
@@ -17,11 +17,11 @@ object PresetEditContract {
     data class State(
         val presetId: String = "",
         val presetName: String = "",
-        val sounds: List<SoundEntity> = emptyList(),
+        val sounds: List<Sound> = emptyList(),
         val category: String = "",
         val isLoading: Boolean = true,
         val error: String? = null,
-        val originalPreset: PresetWithSoundsEntity? = null
+        val originalPreset: PresetWithSounds? = null
     ) : UiState
 
     /**
@@ -29,8 +29,8 @@ object PresetEditContract {
      */
     sealed class ViewEvent : UiViewEvent {
         data class LoadPreset(val presetId: String) : ViewEvent()
-        data class ToggleSound(val sound: SoundEntity) : ViewEvent()
-        data class UpdateVolume(val sound: SoundEntity, val volume: Float) : ViewEvent()
+        data class ToggleSound(val sound: Sound) : ViewEvent()
+        data class UpdateVolume(val sound: Sound, val volume: Float) : ViewEvent()
         object SavePreset : ViewEvent()
         object NavigateBack : ViewEvent()
     }

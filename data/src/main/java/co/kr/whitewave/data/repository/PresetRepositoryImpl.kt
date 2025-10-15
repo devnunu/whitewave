@@ -1,41 +1,49 @@
 package co.kr.whitewave.data.repository
 
 import co.kr.whitewave.data.local.PresetLocalDataSource
-import co.kr.whitewave.data.model.preset.PresetCategoriesEntity
-import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
-import co.kr.whitewave.data.model.sound.SoundEntity
+import co.kr.whitewave.data.model.sound.toEntity
+import co.kr.whitewave.data.toDomain
+import co.kr.whitewave.domain.model.preset.PresetWithSounds
+import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.repository.PresetRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class PresetRepository(
+class PresetRepositoryImpl(
     private val presetLocalDataSource: PresetLocalDataSource,
-) {
+) : PresetRepository {
 
     // 모든 프리셋을 가져오는 함수 (커스텀 -> 무료 -> 유료 순으로 정렬)
-    fun getAllPresets(): Flow<List<PresetWithSoundsEntity>> {
-        return presetLocalDataSource.getAllPresets()
+    override fun getAllPresets(): Flow<List<PresetWithSounds>> {
+        return presetLocalDataSource.getAllPresets().map { it.toDomain() }
     }
 
     // 프리셋 저장 함수
-    suspend fun savePreset(name: String, sounds: List<SoundEntity>, category: String = PresetCategoriesEntity.CUSTOM) {
+    override suspend fun savePreset(name: String, sounds: List<Sound>, category: String) {
         presetLocalDataSource.savePreset(
             name = name,
-            sounds = sounds,
+            sounds = sounds.map { it.toEntity() },
             category = category
         )
     }
 
     // 프리셋 업데이트 함수
-    suspend fun updatePreset(presetId: String, name: String, sounds: List<SoundEntity>, category: String) {
+    override suspend fun updatePreset(
+        presetId: String,
+        name: String,
+        sounds: List<Sound>,
+        category: String
+    ) {
         presetLocalDataSource.updatePreset(
             presetId = presetId,
             name = name,
-            sounds = sounds,
+            sounds = sounds.map { it.toEntity() },
             category = category
         )
     }
 
     // 프리셋 삭제 함수
-    suspend fun deletePreset(presetId: String) {
+    override suspend fun deletePreset(presetId: String) {
         presetLocalDataSource.deletePreset(presetId = presetId)
     }
 }

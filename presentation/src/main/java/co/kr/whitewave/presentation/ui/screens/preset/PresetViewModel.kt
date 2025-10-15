@@ -9,7 +9,7 @@ import co.kr.whitewave.data.model.sound.SoundEntity
 import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.data.repository.DefaultPresetDeletionException
 import co.kr.whitewave.data.repository.PresetLimitExceededException
-import co.kr.whitewave.data.repository.PresetRepository
+import co.kr.whitewave.data.repository.PresetRepositoryImpl
 import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class PresetViewModel(
-    private val presetRepository: PresetRepository,
+    private val presetRepository: PresetRepositoryImpl,
     private val subscriptionManager: SubscriptionManager  // 구독 매니저 추가
 ) : BaseViewModel<PresetContract.State, PresetContract.ViewEvent, PresetContract.Effect>(
     PresetContract.State(categories = PresetCategoriesEntity.LIST)

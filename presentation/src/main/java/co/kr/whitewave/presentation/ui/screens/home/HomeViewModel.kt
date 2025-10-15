@@ -4,13 +4,13 @@ import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.preset.DefaultPresetsEntity
-import co.kr.whitewave.data.model.preset.PresetWithSoundsEntity
-import co.kr.whitewave.data.model.sound.DefaultSoundsEntity
-import co.kr.whitewave.data.model.sound.SoundEntity
 import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
 import co.kr.whitewave.data.repository.PresetLimitExceededException
-import co.kr.whitewave.data.repository.PresetRepository
+import co.kr.whitewave.domain.model.preset.DefaultPresets
+import co.kr.whitewave.domain.model.preset.PresetWithSounds
+import co.kr.whitewave.domain.model.sound.DefaultSounds
+import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.repository.PresetRepository
 import co.kr.whitewave.presentation.manager.AdManager
 import co.kr.whitewave.presentation.manager.AudioPlayer
 import co.kr.whitewave.presentation.manager.SoundMixingLimitException
@@ -93,7 +93,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 // 기본 프리셋 확인
-                val defaultPreset = DefaultPresetsEntity.ALL_PRESETS.find {
+                val defaultPreset = DefaultPresets.ALL_PRESETS.find {
                     it.preset.id == presetId
                 }
 
@@ -136,10 +136,10 @@ class HomeViewModel(
 
     private fun loadSounds() {
         // 무료 사운드를 먼저, 그 다음 프리미엄 사운드로 정렬하여 로드
-        setState { it.copy(sounds = DefaultSoundsEntity.SORTED_BY_PREMIUM) }
+        setState { it.copy(sounds = DefaultSounds.SORTED_BY_PREMIUM) }
     }
 
-    private fun toggleSound(sound: SoundEntity) {
+    private fun toggleSound(sound: Sound) {
         // 프리미엄 사운드 처리
         if (sound.isPremium && currentState.subscriptionTier is SubscriptionTierEntity.Free) {
             setState { it.copy(showPremiumDialog = true) }
@@ -190,7 +190,7 @@ class HomeViewModel(
         }
     }
 
-    private fun updateVolume(sound: SoundEntity, volume: Float) {
+    private fun updateVolume(sound: Sound, volume: Float) {
         audioPlayer.updateVolume(sound.id, volume)
 
         setState { currentState ->
@@ -249,7 +249,7 @@ class HomeViewModel(
         }
     }
 
-    private fun loadPreset(preset: PresetWithSoundsEntity) {
+    private fun loadPreset(preset: PresetWithSounds) {
         // 현재 재생 중인 모든 사운드 중지
         stopAllSounds()
 

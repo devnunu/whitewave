@@ -6,8 +6,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import co.kr.whitewave.data.manager.SubscriptionManager
-import co.kr.whitewave.data.model.sound.SoundEntity
 import co.kr.whitewave.data.model.subscription.SubscriptionTierEntity
+import co.kr.whitewave.domain.model.sound.Sound
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,8 +38,8 @@ class AudioPlayer(
 
     private val fadeJobs = mutableMapOf<String, Job>()
 
-    private val _playingSounds = MutableStateFlow<Map<String, SoundEntity>>(emptyMap())
-    val playingSounds: StateFlow<Map<String, SoundEntity>> = _playingSounds.asStateFlow()
+    private val _playingSounds = MutableStateFlow<Map<String, Sound>>(emptyMap())
+    val playingSounds: StateFlow<Map<String, Sound>> = _playingSounds.asStateFlow()
 
     private fun canPlayMoreSounds(): Boolean {
         return when (subscriptionManager.subscriptionTier.value) {
@@ -51,7 +51,7 @@ class AudioPlayer(
         }
     }
 
-    fun playSound(sound: SoundEntity) {
+    fun playSound(sound: Sound) {
         if (!canPlayMoreSounds()) {
             throw SoundMixingLimitException()
         }

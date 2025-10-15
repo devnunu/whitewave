@@ -9,6 +9,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+
     // AndroidX
     implementation(libs.androidx.datastore.preferences)
 

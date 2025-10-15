@@ -1,5 +1,7 @@
 package co.kr.whitewave.data.model.preset
 
+import co.kr.whitewave.data.DataMapper
+import co.kr.whitewave.domain.model.preset.Preset
 import java.util.UUID
 
 data class PresetEntity(
@@ -9,4 +11,15 @@ data class PresetEntity(
     val isDefault: Boolean = false, // 기본 제공 프리셋 여부
     val isPremium: Boolean = false, // 프리미엄 프리셋 여부
     val createdAt: Long = System.currentTimeMillis()
-)
+) : DataMapper<Preset> {
+
+    override fun toDomain(): Preset =
+        Preset(
+            id = id,
+            name = name,
+            category = category,
+            isDefault = isDefault,
+            isPremium = isPremium,
+            createdAt = createdAt,
+        )
+}

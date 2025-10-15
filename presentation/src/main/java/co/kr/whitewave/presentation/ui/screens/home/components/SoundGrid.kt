@@ -38,15 +38,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.data.model.sound.SoundEntity
+import co.kr.whitewave.domain.model.sound.Sound
 import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.util.getIconForSound
 
 @Composable
 fun SoundGrid(
-    sounds: List<SoundEntity>,
-    onSoundSelect: (SoundEntity) -> Unit,
-    onVolumeChange: (SoundEntity, Float) -> Unit,
+    sounds: List<Sound>,
+    onSoundSelect: (Sound) -> Unit,
+    onVolumeChange: (Sound, Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // 프리미엄 사운드를 뒤로 배치하기 위한 정렬
@@ -72,9 +72,9 @@ fun SoundGrid(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SoundGridItem(
-    sound: SoundEntity,
-    onSelect: (SoundEntity) -> Unit,
-    onVolumeChange: (SoundEntity, Float) -> Unit,
+    sound: Sound,
+    onSelect: (Sound) -> Unit,
+    onVolumeChange: (Sound, Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // 상태에 따른 애니메이션 값

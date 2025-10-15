@@ -8,7 +8,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":data"))
+    implementation(project(":domain"))
 
     // AndroidX
     implementation(libs.androidx.core.ktx)

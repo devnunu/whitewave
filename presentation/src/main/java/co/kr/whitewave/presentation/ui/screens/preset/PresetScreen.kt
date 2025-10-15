@@ -39,7 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import co.kr.whitewave.data.model.sound.DefaultSoundsEntity
+import co.kr.whitewave.domain.model.sound.DefaultSounds
 import co.kr.whitewave.presentation.model.result.IntentParamKey.PRESET_ID
 import co.kr.whitewave.presentation.model.result.ResultCode
 import co.kr.whitewave.presentation.navigation.NavRoute
@@ -137,7 +137,7 @@ fun PresetScreen(
     if (state.editMode && state.currentEditPreset != null) {
         PresetEditDialog(
             preset = state.currentEditPreset,
-            availableSounds = DefaultSoundsEntity.ALL,
+            availableSounds = DefaultSounds.ALL,
             onSave = { name, sounds, category ->
                 viewModel.handleViewEvent(
                     ViewEvent.UpdatePreset(
