@@ -11,22 +11,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -49,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -221,151 +214,121 @@ fun HomeScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            Box(
+            // 유튜브 뮤직 스타일의 미니 플레이어
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.0f),
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
-                            )
-                        )
-                    )
+                    .navigationBarsPadding(),
+                shape = MaterialTheme.shapes.extraSmall,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                tonalElevation = 3.dp
             ) {
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .navigationBarsPadding() // 물리 네비게이션 바 침범 방지
-                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // 타이머 상태 표시 (있을 경우)
-                    AnimatedVisibility(
-                        visible = state.remainingTime != null,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
+                    // 왼쪽: 타이머 섹션
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        state.remainingTime?.let { remaining ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Surface(
-                                    shape = MaterialTheme.shapes.small,
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(
-                                            horizontal = 12.dp,
-                                            vertical = 6.dp
-                                        )
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_timer),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = remaining.formatForDisplay(),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-                                }
+                        IconButton(
+                            onClick = { showTimerDialog = true },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_timer),
+                                contentDescription = "타이머 설정",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        // 타이머 표시
+                        AnimatedVisibility(
+                            visible = state.remainingTime != null,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically()
+                        ) {
+                            state.remainingTime?.let { remaining ->
+                                Text(
+                                    text = remaining.formatForDisplay(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
                     }
 
-                    // 재생 컨트롤 행
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    // 중앙: 재생/일시정지 아이콘 버튼
+                    FilledIconButton(
+                        onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
+                        enabled = hasPlayingSounds,
+                        modifier = Modifier.size(48.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
                     ) {
-                        // 타이머 버튼
-                        FilledTonalIconButton(
-                            onClick = { showTimerDialog = true },
-                            colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
-                                    alpha = 0.7f
-                                )
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_timer),
-                                contentDescription = "타이머 설정"
-                            )
-                        }
+                        Icon(
+                            painter = painterResource(
+                                if (state.isPlaying) R.drawable.ic_pause
+                                else R.drawable.ic_play
+                            ),
+                            contentDescription = if (state.isPlaying) "일시정지" else "재생",
+                            modifier = Modifier.size(24.dp),
+                            tint = if (hasPlayingSounds)
+                                MaterialTheme.colorScheme.onPrimary
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
 
-                        // 재생/정지 버튼
-                        Button(
-                            onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
-                            enabled = hasPlayingSounds,
-                            shape = MaterialTheme.shapes.medium,
-                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    painter = painterResource(
-                                        if (state.isPlaying) R.drawable.ic_pause
-                                        else R.drawable.ic_play
-                                    ),
-                                    contentDescription = if (state.isPlaying) "일시정지" else "재생"
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = if (state.isPlaying) "일시정지" else "재생",
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                            }
-                        }
-
-                        // 재생 중인 사운드 버튼
+                    // 오른쪽: 재생 목록 섹션
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Box {
-                            FilledIconButton(
+                            IconButton(
                                 onClick = { showPlayingSounds = true },
                                 enabled = hasPlayingSounds,
-                                colors = IconButtonDefaults.filledIconButtonColors(
-                                    containerColor = if (hasPlayingSounds)
-                                        MaterialTheme.colorScheme.tertiaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant,
-                                    contentColor = if (hasPlayingSounds)
-                                        MaterialTheme.colorScheme.onTertiaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                modifier = Modifier.size(40.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_music_note),
-                                    contentDescription = "재생 중인 사운드"
+                                    painter = painterResource(id = R.drawable.ic_playlist),
+                                    contentDescription = "재생 목록",
+                                    tint = if (hasPlayingSounds)
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                    modifier = Modifier.size(22.dp)
                                 )
                             }
 
+                            // 재생 중인 사운드 개수 뱃지
                             if (hasPlayingSounds) {
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
-                                        .offset(x = 4.dp, y = (-4).dp)
-                                        .size(18.dp)
+                                        .offset(x = 4.dp, y = 4.dp)
+                                        .size(14.dp)
                                         .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.error),
+                                        .background(MaterialTheme.colorScheme.primary),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = playingSounds.size.toString(),
-                                        color = MaterialTheme.colorScheme.onError,
-                                        style = MaterialTheme.typography.labelSmall
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontSize = MaterialTheme.typography.labelSmall.fontSize * 0.75f
+                                        )
                                     )
                                 }
                             }
