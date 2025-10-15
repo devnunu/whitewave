@@ -13,7 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
-import co.kr.whitewave.presentation.ui.screens.main.MainScreen
+import co.kr.whitewave.presentation.navigation.AppNavHost
 import co.kr.whitewave.presentation.ui.theme.WhiteWaveTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.Companion.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(
+                    AppNavHost(
                         onNotificationSettingClick = {
                             // 시스템 알림 설정으로 이동
                             val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {

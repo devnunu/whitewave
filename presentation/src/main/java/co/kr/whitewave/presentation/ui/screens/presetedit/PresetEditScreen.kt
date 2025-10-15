@@ -1,7 +1,5 @@
 package co.kr.whitewave.presentation.ui.screens.presetedit
 
-import android.content.Intent
-import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -31,14 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import co.kr.whitewave.presentation.model.result.IntentParamKey.MESSAGE
-import co.kr.whitewave.presentation.model.result.IntentParamKey.PRESET_ID
-import co.kr.whitewave.presentation.model.result.ResultCode
+import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.home.components.SoundGrid
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditContract.Effect
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditContract.ViewEvent
-import co.kr.whitewave.presentation.util.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -47,7 +40,6 @@ import org.koin.androidx.compose.koinViewModel
 fun PresetEditScreen(
     modifier: Modifier = Modifier,
     viewModel: PresetEditViewModel = koinViewModel(),
-    navController: NavController,
     presetId: String,
     onBackClick: () -> Unit = {}
 ) {
@@ -76,19 +68,14 @@ fun PresetEditScreen(
                     onBackClick()
                 }
                 is Effect.PresetSaved -> {
-                    // 결과 데이터와 함께 메시지 전달
-                    val intent = Intent().apply {
-                        putExtra(PRESET_ID, state.presetId)
-                        putExtra(MESSAGE, effect.message)
-                    }
-                    val result = ActivityResult(ResultCode.SUCCESS, intent)
-                    navController.popBackStackWithResult(result)
+                    // 저장 완료 시 뒤로 가기
+                    onBackClick()
                 }
             }
         }
     }
 
-    Scaffold(
+    WhiteWaveScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(state.presetName) },

@@ -6,6 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class NavRoute {
     @Serializable
+    @SerialName("Main")
+    object Main : NavRoute()
+
+    @Serializable
     @SerialName("Home")
     object Home : NavRoute()
 

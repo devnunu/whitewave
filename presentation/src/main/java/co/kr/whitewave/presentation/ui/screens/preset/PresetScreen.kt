@@ -1,14 +1,12 @@
 package co.kr.whitewave.presentation.ui.screens.preset
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -16,7 +14,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -34,27 +31,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import co.kr.whitewave.domain.model.sound.DefaultSounds
-import co.kr.whitewave.presentation.model.result.IntentParamKey.PRESET_ID
-import co.kr.whitewave.presentation.model.result.ResultCode
-import co.kr.whitewave.presentation.navigation.NavRoute
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
+import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.preset.PresetContract.Effect
 import co.kr.whitewave.presentation.ui.screens.preset.PresetContract.ViewEvent
 import co.kr.whitewave.presentation.ui.screens.preset.components.CategoryTabRow
 import co.kr.whitewave.presentation.ui.screens.preset.components.PresetCard
 import co.kr.whitewave.presentation.ui.screens.preset.components.PresetEditDialog
-import co.kr.whitewave.presentation.util.navigateForResult
-import co.kr.whitewave.presentation.util.popBackStackWithResult
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PresetScreen(
     viewModel: PresetViewModel = koinViewModel(),
-    navController: NavController,
+    onNavigateToPresetEdit: (String) -> Unit,
     onBackClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -81,9 +74,8 @@ fun PresetScreen(
                 }
 
                 is Effect.PresetSelected -> {
-                    val intent = Intent().apply { putExtra(PRESET_ID, effect.presetId) }
-                    val result = ActivityResult(ResultCode.SUCCESS, intent)
-                    navController.popBackStackWithResult(result)
+                    // PresetEdit 대신 HomeScreen에서 프리셋 로드하도록 변경 필요
+                    // 현재는 네비게이션 구조상 직접 로드 불가
                 }
 
                 is Effect.NavigateBack -> {
@@ -151,7 +143,7 @@ fun PresetScreen(
         )
     }
 
-    Scaffold(
+    WhiteWaveScaffold(
         topBar = {
             Column {
                 TopAppBar(
@@ -169,11 +161,9 @@ fun PresetScreen(
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
+    ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier = Modifier.fillMaxSize()
         ) {
             when {
                 state.isLoading -> {
@@ -209,23 +199,7 @@ fun PresetScreen(
                                 },
                                 onEdit = {
                                     if (!preset.preset.isDefault) {
-                                        navController.navigateForResult<ActivityResult?>(
-                                            route = NavRoute.PresetEdit(preset.preset.id),
-                                            navResultCallback = { result ->
-                                                if (result?.resultCode == ResultCode.SUCCESS) {
-                                                    // 전달된 메시지가 있으면 스낵바로 표시
-                                                    val message =
-                                                        result.data?.getStringExtra("message")
-                                                    if (!message.isNullOrEmpty()) {
-                                                        viewModel.handleViewEvent(
-                                                            ViewEvent.ShowSnackbarMessage(
-                                                                message
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        )
+                                        onNavigateToPresetEdit(preset.preset.id)
                                     } else {
                                         viewModel.handleViewEvent(
                                             ViewEvent.ShowDialog(

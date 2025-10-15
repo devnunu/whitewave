@@ -1,5 +1,6 @@
 package co.kr.whitewave.presentation.ui.screens.home
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,13 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
+import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.presentation.ui.screens.home.components.CustomTimerDialog
@@ -58,6 +58,7 @@ import co.kr.whitewave.presentation.util.formatForDisplay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -158,29 +159,36 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
+    WhiteWaveScaffold(
         topBar = {
-            SmallTopAppBar(
-                title = {
-                    Text(
-                        text = "WhiteWave",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+            TopAppBar(
+                title = { Text("WhiteWave") },
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = {
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) {
+        Column(
+            modifier = modifier.fillMaxSize()
+        ) {
+            // Sound grid
+            SoundGrid(
+                sounds = state.sounds,
+                onSoundSelect = { sound ->
+                    viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
+                },
+                onVolumeChange = { sound, volume ->
+                    viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
+                },
+                modifier = Modifier.weight(1f)
+            )
+
             // 유튜브 뮤직 스타일의 미니 플레이어
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
+                modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraSmall,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 tonalElevation = 3.dp
@@ -298,24 +306,6 @@ fun HomeScreen(
                     }
                 }
             }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // Sound grid
-            SoundGrid(
-                sounds = state.sounds,
-                onSoundSelect = { sound ->
-                    viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
-                },
-                onVolumeChange = { sound, volume ->
-                    viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
-                },
-                modifier = Modifier.weight(1f)
-            )
         }
     }
 }

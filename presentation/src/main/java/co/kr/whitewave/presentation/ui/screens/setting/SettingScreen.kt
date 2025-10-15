@@ -1,5 +1,6 @@
 package co.kr.whitewave.presentation.ui.screens.setting
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -26,7 +27,6 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -55,11 +55,13 @@ import androidx.compose.ui.unit.dp
 import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
+import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.ViewEvent
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -121,7 +123,7 @@ fun SettingsScreen(
         )
     }
 
-    Scaffold(
+    WhiteWaveScaffold(
         topBar = {
             TopAppBar(
                 title = { Text("설정") },
@@ -132,12 +134,11 @@ fun SettingsScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
+    ) {
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
             // 구독 상태 섹션
