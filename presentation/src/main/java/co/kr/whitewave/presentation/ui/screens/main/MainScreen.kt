@@ -25,6 +25,7 @@ import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.navigation.NavRoute
 import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.home.HomeScreen
+import co.kr.whitewave.presentation.ui.screens.home.HomeViewModel
 import co.kr.whitewave.presentation.ui.screens.preset.PresetScreen
 import co.kr.whitewave.presentation.ui.screens.setting.SettingsScreen
 import co.kr.whitewave.presentation.util.ScreenAnim
@@ -33,7 +34,9 @@ import co.kr.whitewave.presentation.util.composable
 @Composable
 fun MainScreen(
     onNotificationSettingClick: () -> Unit,
-    onNavigateToPresetEdit: (String) -> Unit
+    onNavigateToPresetEdit: (String) -> Unit,
+    onNavigateToPlayingSounds: () -> Unit,
+    homeViewModel: HomeViewModel
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -133,7 +136,10 @@ fun MainScreen(
             composable<NavRoute.Home>(
                 screenAnim = ScreenAnim.FADE_IN_OUT
             ) {
-                HomeScreen()
+                HomeScreen(
+                    viewModel = homeViewModel,
+                    onNavigateToPlayingSounds = onNavigateToPlayingSounds
+                )
             }
 
             composable<NavRoute.Presets>(

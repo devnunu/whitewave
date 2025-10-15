@@ -7,17 +7,14 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -40,12 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.presentation.R
+import co.kr.whitewave.presentation.ui.components.MarqueeText
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
@@ -63,7 +60,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onNavigateToPlayingSounds: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
@@ -188,6 +186,7 @@ fun HomeScreen(
 
             // 유튜브 뮤직 스타일의 미니 플레이어
             Surface(
+                onClick = { if (hasPlayingSounds) onNavigateToPlayingSounds() },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraSmall,
                 color = MaterialTheme.colorScheme.surfaceVariant,
@@ -235,7 +234,32 @@ fun HomeScreen(
                         }
                     }
 
-                    // 중앙: 재생/일시정지 아이콘 버튼
+                    // 중앙: 재생 중인 사운드 텍스트
+                    Box(
+                        modifier = Modifier
+                            .weight(2f)
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (hasPlayingSounds) {
+                            val soundNames = playingSounds.joinToString(", ") { it.name }
+                            MarqueeText(
+                                text = soundNames,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                isAnimating = state.isPlaying
+                            )
+                        } else {
+                            Text(
+                                text = "재생중인 음악이 없습니다",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                maxLines = 1
+                            )
+                        }
+                    }
+
+                    // 오른쪽: 재생/일시정지 아이콘 버튼
                     FilledIconButton(
                         onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
                         enabled = hasPlayingSounds,
@@ -257,52 +281,6 @@ fun HomeScreen(
                             else
                                 MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-
-                    // 오른쪽: 재생 목록 섹션
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Box {
-                            IconButton(
-                                onClick = { showPlayingSounds = true },
-                                enabled = hasPlayingSounds,
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_playlist),
-                                    contentDescription = "재생 목록",
-                                    tint = if (hasPlayingSounds)
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    else
-                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-
-                            // 재생 중인 사운드 개수 뱃지
-                            if (hasPlayingSounds) {
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .offset(x = 4.dp, y = 4.dp)
-                                        .size(14.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.primary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = playingSounds.size.toString(),
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontSize = MaterialTheme.typography.labelSmall.fontSize * 0.75f
-                                        )
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }

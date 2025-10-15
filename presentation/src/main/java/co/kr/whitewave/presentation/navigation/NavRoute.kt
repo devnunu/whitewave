@@ -22,6 +22,10 @@ sealed class NavRoute {
     object Settings : NavRoute()
 
     @Serializable
+    @SerialName("PlayingSounds")
+    object PlayingSounds : NavRoute()
+
+    @Serializable
     @SerialName("PresetEdit")
     data class PresetEdit(val presetId: String) : NavRoute()
 }
