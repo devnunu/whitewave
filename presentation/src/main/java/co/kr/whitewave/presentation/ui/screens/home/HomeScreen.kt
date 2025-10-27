@@ -9,6 +9,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -116,13 +117,23 @@ fun HomeScreen(
     if (showPlayingSounds) {
         PlayingSoundsBottomSheet(
             playingSounds = playingSounds,
+            isPlaying = state.isPlaying,
+            remainingTime = state.remainingTime,
             onVolumeChange = { sound, volume ->
                 viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
             },
             onSoundRemove = { sound ->
                 viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
             },
-            onSavePreset = { showSavePresetDialog = true },
+            onTogglePlayback = {
+                viewModel.handleViewEvent(ViewEvent.TogglePlayback)
+            },
+            onSetTimer = { duration ->
+                viewModel.handleViewEvent(ViewEvent.SetTimer(duration))
+            },
+            onCancelTimer = {
+                viewModel.handleViewEvent(ViewEvent.SetTimer(null))
+            },
             onDismiss = { showPlayingSounds = false }
         )
     }
@@ -206,7 +217,11 @@ fun HomeScreen(
 
                 // 새로운 하단 재생 컨트롤러
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = hasPlayingSounds) {
+                            showPlayingSounds = true
+                        },
                     shape = MaterialTheme.shapes.extraSmall,
                     color = androidx.compose.ui.graphics.Color(0xFF0F1F2E),
                     tonalElevation = 0.dp
