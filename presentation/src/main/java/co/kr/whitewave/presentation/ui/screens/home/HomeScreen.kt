@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -234,19 +233,14 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // 왼쪽: 정지 버튼
-                        IconButton(
-                            onClick = {
-                                playingSounds.forEach { sound ->
-                                    viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
-                                }
-                            },
-                            enabled = hasPlayingSounds,
-                            modifier = Modifier.size(40.dp)
+                        // 왼쪽: 음표 아이콘 (비활성화된 표시용)
+                        Box(
+                            modifier = Modifier.size(40.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_stop),
-                                contentDescription = "정지",
+                                painter = painterResource(id = R.drawable.ic_music_note),
+                                contentDescription = "음표",
                                 tint = if (hasPlayingSounds)
                                     androidx.compose.ui.graphics.Color.White
                                 else
