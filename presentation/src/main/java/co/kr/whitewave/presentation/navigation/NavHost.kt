@@ -7,9 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract
+import co.kr.whitewave.presentation.ui.screens.home.HomeScreen
 import co.kr.whitewave.presentation.ui.screens.home.HomeViewModel
 import co.kr.whitewave.presentation.ui.screens.home.components.PlayingSoundsScreen
-import co.kr.whitewave.presentation.ui.screens.main.MainScreen
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditScreen
 import co.kr.whitewave.presentation.util.ScreenAnim
 import co.kr.whitewave.presentation.util.composable
@@ -17,7 +17,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppNavHost(
-    onNotificationSettingClick: () -> Unit,
     homeViewModel: HomeViewModel = koinViewModel()
 ) {
     val navController = rememberNavController()
@@ -27,19 +26,15 @@ fun AppNavHost(
         navController = navController,
         startDestination = NavRoute.Main
     ) {
-        // MainScreen - 하단 네비게이션이 있는 메인 컨테이너
+        // HomeScreen - 메인 홈 화면
         composable<NavRoute.Main>(
             screenAnim = ScreenAnim.FADE_IN_OUT
         ) {
-            MainScreen(
-                onNotificationSettingClick = onNotificationSettingClick,
-                onNavigateToPresetEdit = { presetId ->
-                    navController.navigate(NavRoute.PresetEdit(presetId))
-                },
+            HomeScreen(
+                viewModel = homeViewModel,
                 onNavigateToPlayingSounds = {
                     navController.navigate(NavRoute.PlayingSounds)
-                },
-                homeViewModel = homeViewModel
+                }
             )
         }
 

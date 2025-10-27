@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -182,7 +183,7 @@ fun HomeScreen(
                 )
             )
     ) {
-        androidx.compose.material3.Scaffold(
+        Scaffold(
             containerColor = androidx.compose.ui.graphics.Color.Transparent,
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->

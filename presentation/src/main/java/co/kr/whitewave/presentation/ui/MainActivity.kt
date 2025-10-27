@@ -1,11 +1,9 @@
 package co.kr.whitewave.presentation.ui
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,15 +31,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.Companion.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavHost(
-                        onNotificationSettingClick = {
-                            // 시스템 알림 설정으로 이동
-                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-                            }
-                            startActivity(intent)
-                        }
-                    )
+                    AppNavHost()
                 }
             }
         }
