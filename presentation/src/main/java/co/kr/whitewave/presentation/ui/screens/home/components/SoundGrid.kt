@@ -1,11 +1,6 @@
 package co.kr.whitewave.presentation.ui.screens.home.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,10 +47,10 @@ fun SoundGrid(
     val sortedSounds = sounds.sortedBy { it.isPremium }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
         items(sortedSounds) { sound ->
@@ -68,41 +62,56 @@ fun SoundGrid(
     }
 }
 
+// 사운드 이름에 따라 적절한 아이콘을 반환하는 함수
+private fun getSoundIcon(soundName: String): Int {
+    return when (soundName.lowercase()) {
+        "rain" -> R.drawable.ic_rain
+        "ocean" -> R.drawable.ic_ocean
+        "fire" -> R.drawable.ic_fire
+        "forest" -> R.drawable.ic_forest
+        "cafe", "café" -> R.drawable.ic_cafe
+        "wind" -> R.drawable.ic_wind
+        "white noise" -> R.drawable.ic_white_noise
+        "fan" -> R.drawable.ic_fan
+        else -> R.drawable.ic_sound_default
+    }
+}
+
 @Composable
 private fun SoundCard(
     sound: Sound,
     onSelect: (Sound) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val iconRes = getSoundIcon(sound.name)
+
+    // 테두리 색상 애니메이션 (네온 블루/청록색)
+    val borderColor by animateColorAsState(
+        targetValue = if (sound.isSelected)
+            androidx.compose.ui.graphics.Color(0xFF00D9FF) // 밝은 청록색
+        else
+            androidx.compose.ui.graphics.Color(0xFF1E3A5F).copy(alpha = 0.3f), // 어두운 파란색
+        animationSpec = tween(300),
+        label = "borderColor"
+    )
+
     // 배경색 애니메이션
     val backgroundColor by animateColorAsState(
         targetValue = if (sound.isSelected)
-            MaterialTheme.colorScheme.primaryContainer
+            androidx.compose.ui.graphics.Color(0xFF1A3A5A) // 어두운 청록색 배경
         else
-            MaterialTheme.colorScheme.surfaceVariant,
+            androidx.compose.ui.graphics.Color(0xFF0F2744), // 매우 어두운 배경
         animationSpec = tween(300),
         label = "backgroundColor"
     )
 
     val contentColor by animateColorAsState(
         targetValue = if (sound.isSelected)
-            MaterialTheme.colorScheme.onPrimaryContainer
+            androidx.compose.ui.graphics.Color(0xFF00D9FF) // 밝은 청록색
         else
-            MaterialTheme.colorScheme.onSurfaceVariant,
+            androidx.compose.ui.graphics.Color(0xFF4A6B8A), // 중간 밝기의 회색-파란색
         animationSpec = tween(300),
         label = "contentColor"
-    )
-
-    // 글로우 효과를 위한 애니메이션
-    val infiniteTransition = rememberInfiniteTransition(label = "glowTransition")
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "glowAlpha"
     )
 
     Box(
@@ -110,23 +119,6 @@ private fun SoundCard(
             .fillMaxWidth()
             .aspectRatio(1f) // 정사각형 형태
     ) {
-        // 글로우 효과 (재생 중일 때만)
-        if (sound.isSelected) {
-            Card(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(2.dp)
-                    .alpha(glowAlpha),
-                shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
-            ) {}
-        }
-
         // 메인 카드
         Card(
             modifier = Modifier.fillMaxSize(),
@@ -134,23 +126,50 @@ private fun SoundCard(
             colors = CardDefaults.cardColors(
                 containerColor = backgroundColor
             ),
+            border = androidx.compose.foundation.BorderStroke(
+                width = if (sound.isSelected) 2.dp else 1.dp,
+                color = borderColor
+            ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = if (sound.isSelected) 6.dp else 2.dp
+                defaultElevation = 0.dp
             )
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable { onSelect(sound) }
+                    .padding(16.dp)
             ) {
-                // 프리미엄 뱃지 (우측 상단)
-                if (sound.isPremium) {
+                // 우측 상단 일시정지 버튼 (활성화된 카드에만)
+                if (sound.isSelected) {
+                    Surface(
+                        shape = CircleShape,
+                        color = androidx.compose.ui.graphics.Color(0xFF2A4A6A),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(28.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_pause),
+                                contentDescription = "일시정지",
+                                tint = contentColor,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+
+                // 프리미엄 뱃지 (우측 상단, 일시정지 버튼이 없을 때)
+                if (sound.isPremium && !sound.isSelected) {
                     Surface(
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(8.dp)
                             .size(24.dp)
                     ) {
                         Icon(
@@ -167,29 +186,25 @@ private fun SoundCard(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    // 재생/일시정지 아이콘
+                    // 사운드 아이콘
                     Icon(
-                        painter = painterResource(
-                            id = if (sound.isSelected) R.drawable.ic_pause else R.drawable.ic_play
-                        ),
-                        contentDescription = if (sound.isSelected) "일시정지" else "재생",
+                        painter = painterResource(id = iconRes),
+                        contentDescription = sound.name,
                         tint = contentColor,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(48.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // 사운드 이름
                     Text(
                         text = sound.name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
                         color = contentColor,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()

@@ -2,19 +2,23 @@ package co.kr.whitewave.presentation.ui.screens.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -26,8 +30,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,11 +42,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.presentation.R
-import co.kr.whitewave.presentation.ui.components.MarqueeText
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
-import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.ViewEvent
 import co.kr.whitewave.presentation.ui.screens.home.components.CustomTimerDialog
@@ -157,133 +159,196 @@ fun HomeScreen(
         }
     }
 
-    WhiteWaveScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("WhiteWave") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(
+                        androidx.compose.ui.graphics.Color(0xFF0A1929),
+                        androidx.compose.ui.graphics.Color(0xFF1A2332)
+                    )
                 )
             )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
-        Column(
-            modifier = modifier.fillMaxSize()
-        ) {
-            // Sound grid
-            SoundGrid(
-                sounds = state.sounds,
-                onSoundSelect = { sound ->
-                    viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
-                },
-                onVolumeChange = { sound, volume ->
-                    viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
-                },
-                modifier = Modifier.weight(1f)
-            )
-
-            // 유튜브 뮤직 스타일의 미니 플레이어
-            Surface(
-                onClick = { if (hasPlayingSounds) onNavigateToPlayingSounds() },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.extraSmall,
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                tonalElevation = 3.dp
+        androidx.compose.material3.Scaffold(
+            containerColor = androidx.compose.ui.graphics.Color.Transparent,
+            snackbarHost = { SnackbarHost(snackbarHostState) }
+        ) { paddingValues ->
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
-                Row(
+                // 상단 타이틀
+                Text(
+                    text = "WhiteWave",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = androidx.compose.ui.graphics.Color.White,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                    textAlign = TextAlign.Center
+                )
+
+                // Sound grid
+                SoundGrid(
+                    sounds = state.sounds,
+                    onSoundSelect = { sound ->
+                        viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
+                    },
+                    onVolumeChange = { sound, volume ->
+                        viewModel.handleViewEvent(ViewEvent.UpdateVolume(sound, volume))
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+
+                // 새로운 하단 재생 컨트롤러
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.extraSmall,
+                    color = androidx.compose.ui.graphics.Color(0xFF0F1F2E),
+                    tonalElevation = 0.dp
                 ) {
-                    // 왼쪽: 타이머 섹션
                     Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.weight(1f)
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(
-                            onClick = { showTimerDialog = true },
-                            modifier = Modifier.size(40.dp)
+                        // 왼쪽: 재생/일시정지 버튼
+                        FilledIconButton(
+                            onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
+                            enabled = hasPlayingSounds,
+                            modifier = Modifier.size(40.dp),
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = androidx.compose.ui.graphics.Color.White,
+                                disabledContainerColor = androidx.compose.ui.graphics.Color(0xFF2A3A4A)
+                            )
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_timer),
-                                contentDescription = "타이머 설정",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(22.dp)
+                                painter = painterResource(
+                                    if (state.isPlaying) R.drawable.ic_pause
+                                    else R.drawable.ic_play
+                                ),
+                                contentDescription = if (state.isPlaying) "일시정지" else "재생",
+                                modifier = Modifier.size(20.dp),
+                                tint = if (hasPlayingSounds)
+                                    androidx.compose.ui.graphics.Color.Black
+                                else
+                                    androidx.compose.ui.graphics.Color(0xFF4A5A6A)
                             )
                         }
 
-                        // 타이머 표시
-                        AnimatedVisibility(
-                            visible = state.remainingTime != null,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically()
+                        // 중앙: 재생 정보 및 타이머
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 12.dp),
+                            horizontalAlignment = Alignment.Start
                         ) {
-                            state.remainingTime?.let { remaining ->
+                            if (hasPlayingSounds) {
+                                val soundNames = playingSounds.joinToString(", ") { it.name }
                                 Text(
-                                    text = remaining.formatForDisplay(),
-                                    style = MaterialTheme.typography.bodySmall,
+                                    text = "$soundNames playing",
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = androidx.compose.ui.graphics.Color.White,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                state.remainingTime?.let { remaining ->
+                                    Text(
+                                        text = remaining.formatForDisplay(),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = androidx.compose.ui.graphics.Color(0xFF8A9AAA),
+                                        modifier = Modifier.padding(top = 2.dp)
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "재생중인 음악이 없습니다",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = androidx.compose.ui.graphics.Color(0xFF4A5A6A)
+                                )
+                            }
+                        }
+
+                        // 오른쪽: 오디오 파형과 정지 버튼
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // 오디오 파형 시각화
+                            if (state.isPlaying) {
+                                AudioWaveform(
+                                    modifier = Modifier.size(width = 60.dp, height = 24.dp)
+                                )
+                            }
+
+                            // 정지 버튼
+                            IconButton(
+                                onClick = {
+                                    playingSounds.forEach { sound ->
+                                        viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
+                                    }
+                                },
+                                enabled = hasPlayingSounds,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_stop),
+                                    contentDescription = "정지",
+                                    tint = if (hasPlayingSounds)
+                                        androidx.compose.ui.graphics.Color.White
+                                    else
+                                        androidx.compose.ui.graphics.Color(0xFF4A5A6A),
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
                     }
-
-                    // 중앙: 재생 중인 사운드 텍스트
-                    Box(
-                        modifier = Modifier
-                            .weight(2f)
-                            .padding(horizontal = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (hasPlayingSounds) {
-                            val soundNames = playingSounds.joinToString(", ") { it.name }
-                            MarqueeText(
-                                text = soundNames,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                isAnimating = state.isPlaying
-                            )
-                        } else {
-                            Text(
-                                text = "재생중인 음악이 없습니다",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                                maxLines = 1
-                            )
-                        }
-                    }
-
-                    // 오른쪽: 재생/일시정지 아이콘 버튼
-                    FilledIconButton(
-                        onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
-                        enabled = hasPlayingSounds,
-                        modifier = Modifier.size(48.dp),
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                if (state.isPlaying) R.drawable.ic_pause
-                                else R.drawable.ic_play
-                            ),
-                            contentDescription = if (state.isPlaying) "일시정지" else "재생",
-                            modifier = Modifier.size(24.dp),
-                            tint = if (hasPlayingSounds)
-                                MaterialTheme.colorScheme.onPrimary
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun AudioWaveform(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "waveform")
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(12) { index ->
+            val animatedHeight by infiniteTransition.animateFloat(
+                initialValue = 0.3f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(
+                        durationMillis = (300..600).random(),
+                        easing = LinearEasing
+                    ),
+                    repeatMode = RepeatMode.Reverse,
+                    initialStartOffset = androidx.compose.animation.core.StartOffset(index * 50)
+                ),
+                label = "bar$index"
+            )
+
+            Box(
+                modifier = Modifier
+                    .width(2.dp)
+                    .fillMaxHeight(animatedHeight)
+                    .background(
+                        color = androidx.compose.ui.graphics.Color(0xFF00D9FF),
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+            )
         }
     }
 }
