@@ -234,27 +234,24 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // 왼쪽: 재생/일시정지 버튼
-                        FilledIconButton(
-                            onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
+                        // 왼쪽: 정지 버튼
+                        IconButton(
+                            onClick = {
+                                playingSounds.forEach { sound ->
+                                    viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
+                                }
+                            },
                             enabled = hasPlayingSounds,
-                            modifier = Modifier.size(40.dp),
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = androidx.compose.ui.graphics.Color.White,
-                                disabledContainerColor = androidx.compose.ui.graphics.Color(0xFF2A3A4A)
-                            )
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Icon(
-                                painter = painterResource(
-                                    if (state.isPlaying) R.drawable.ic_pause
-                                    else R.drawable.ic_play
-                                ),
-                                contentDescription = if (state.isPlaying) "일시정지" else "재생",
-                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(id = R.drawable.ic_stop),
+                                contentDescription = "정지",
                                 tint = if (hasPlayingSounds)
-                                    androidx.compose.ui.graphics.Color.Black
+                                    androidx.compose.ui.graphics.Color.White
                                 else
-                                    androidx.compose.ui.graphics.Color(0xFF4A5A6A)
+                                    androidx.compose.ui.graphics.Color(0xFF4A5A6A),
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 
@@ -292,7 +289,7 @@ fun HomeScreen(
                             }
                         }
 
-                        // 오른쪽: 오디오 파형과 정지 버튼
+                        // 오른쪽: 오디오 파형과 재생/일시정지 버튼
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -304,24 +301,27 @@ fun HomeScreen(
                                 )
                             }
 
-                            // 정지 버튼
-                            IconButton(
-                                onClick = {
-                                    playingSounds.forEach { sound ->
-                                        viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
-                                    }
-                                },
+                            // 재생/일시정지 버튼
+                            FilledIconButton(
+                                onClick = { viewModel.handleViewEvent(ViewEvent.TogglePlayback) },
                                 enabled = hasPlayingSounds,
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(40.dp),
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = androidx.compose.ui.graphics.Color.White,
+                                    disabledContainerColor = androidx.compose.ui.graphics.Color(0xFF2A3A4A)
+                                )
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_stop),
-                                    contentDescription = "정지",
+                                    painter = painterResource(
+                                        if (state.isPlaying) R.drawable.ic_pause
+                                        else R.drawable.ic_play
+                                    ),
+                                    contentDescription = if (state.isPlaying) "일시정지" else "재생",
+                                    modifier = Modifier.size(20.dp),
                                     tint = if (hasPlayingSounds)
-                                        androidx.compose.ui.graphics.Color.White
+                                        androidx.compose.ui.graphics.Color.Black
                                     else
-                                        androidx.compose.ui.graphics.Color(0xFF4A5A6A),
-                                    modifier = Modifier.size(20.dp)
+                                        androidx.compose.ui.graphics.Color(0xFF4A5A6A)
                                 )
                             }
                         }
