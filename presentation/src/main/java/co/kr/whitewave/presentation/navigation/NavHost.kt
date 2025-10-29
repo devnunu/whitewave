@@ -11,6 +11,7 @@ import co.kr.whitewave.presentation.ui.screens.home.HomeScreen
 import co.kr.whitewave.presentation.ui.screens.home.HomeViewModel
 import co.kr.whitewave.presentation.ui.screens.home.components.PlayingSoundsScreen
 import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditScreen
+import co.kr.whitewave.presentation.ui.screens.setting.SettingsScreen
 import co.kr.whitewave.presentation.util.ScreenAnim
 import co.kr.whitewave.presentation.util.composable
 import org.koin.androidx.compose.koinViewModel
@@ -34,7 +35,19 @@ fun AppNavHost(
                 viewModel = homeViewModel,
                 onNavigateToPlayingSounds = {
                     navController.navigate(NavRoute.PlayingSounds)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(NavRoute.Settings)
                 }
+            )
+        }
+
+        // Settings - 설정 화면
+        composable<NavRoute.Settings>(
+            screenAnim = ScreenAnim.HORIZONTAL_SLIDE
+        ) {
+            SettingsScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
 

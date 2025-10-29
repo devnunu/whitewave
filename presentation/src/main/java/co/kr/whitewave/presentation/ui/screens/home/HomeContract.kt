@@ -50,6 +50,7 @@ object HomeContract {
         data class SavePreset(val name: String) : ViewEvent()
         data class LoadPreset(val preset: PresetWithSounds) : ViewEvent()
         object TogglePlayback : ViewEvent()
+        object NavigateToSettings : ViewEvent()
         object DismissPremiumDialog : ViewEvent()
         data class StartSubscription(val activity: Activity) : ViewEvent()
         object OnAdClosed : ViewEvent()

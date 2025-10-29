@@ -43,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.presentation.R
@@ -65,7 +64,8 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToPlayingSounds: () -> Unit = {}
+    onNavigateToPlayingSounds: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
@@ -155,7 +155,9 @@ fun HomeScreen(
                 }
 
                 is Effect.NavigateTo -> {
-                    // 네비게이션 처리 (필요시)
+                    when (effect.route) {
+                        "settings" -> onNavigateToSettings()
+                    }
                 }
             }
         }
@@ -192,17 +194,34 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // 상단 타이틀
-                Text(
-                    text = "WhiteWave",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color.White,
+                // 상단 타이틀 바 (WhiteWave + 설정 아이콘)
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 20.dp),
-                    textAlign = TextAlign.Center
-                )
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "WhiteWave",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = androidx.compose.ui.graphics.Color.White
+                    )
+
+                    androidx.compose.material3.IconButton(
+                        onClick = {
+                            viewModel.handleViewEvent(ViewEvent.NavigateToSettings)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_settings),
+                            contentDescription = "설정",
+                            tint = androidx.compose.ui.graphics.Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
 
                 // 카테고리 필터
                 CategoryFilterRow(

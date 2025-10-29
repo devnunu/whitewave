@@ -5,6 +5,7 @@ import android.app.Activity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,13 +25,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -55,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
-import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.ViewEvent
 import kotlinx.coroutines.flow.collectLatest
@@ -123,24 +121,51 @@ fun SettingsScreen(
         )
     }
 
-    WhiteWaveScaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("설정") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0A1929),
+                        Color(0xFF1A2332)
+                    )
                 )
             )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
+            modifier = modifier.fillMaxSize()
         ) {
+            // 상단 앱 바
+            TopAppBar(
+                title = {
+                    Text(
+                        "Settings",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    androidx.compose.material3.IconButton(onClick = onBackClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = "뒤로가기",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.White
+                )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
             // 구독 상태 섹션
             SubscriptionStatusCard(
                 tier = state.subscriptionTier,
@@ -200,6 +225,17 @@ fun SettingsScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+
+        // Snackbar
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            SnackbarHost(snackbarHostState)
         }
     }
 }
@@ -215,8 +251,8 @@ private fun SubscriptionStatusCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier
@@ -225,87 +261,63 @@ private fun SubscriptionStatusCard(
                     brush = if (isPremium)
                         Brush.linearGradient(
                             colors = listOf(
-                                Color(0xFFFFD54F),  // 골드
-                                Color(0xFFFFA726)   // 오렌지-골드
+                                Color(0xFFFFD54F),
+                                Color(0xFFFFA726)
                             )
                         )
                     else
                         Brush.linearGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                Color(0xFF4A90E2),
+                                Color(0xFF6BA3FF)
                             )
                         )
                 )
+                .padding(24.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_premium),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.2f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_premium),
-                            contentDescription = null,
-                            tint = if (isPremium) Color.White else MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Text(
+                        text = if (isPremium) "WhiteWave Premium" else "WhiteWave",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = if (isPremium) "WhiteWave Premium" else "WhiteWave",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isPremium) Color.White else MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-
-                        Text(
-                            text = if (isPremium) "프리미엄 구독 중" else "프리미엄 기능을 이용해보세요",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (isPremium) Color.White.copy(alpha = 0.9f) else MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-
-                    if (!isPremium) {
-                        FilledTonalButton(
-                            onClick = onUpgradeClick,
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = Color.White.copy(alpha = 0.2f),
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            ),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("업그레이드")
-                        }
-                    }
+                    Text(
+                        text = if (isPremium) "프리미엄 구독 중" else "프리미엄 기능을 이용해보세요",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
                 }
 
-                if (isPremium) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Surface(
-                        color = Color.White.copy(alpha = 0.2f),
-                        shape = MaterialTheme.shapes.small
+                if (!isPremium) {
+                    FilledTonalButton(
+                        onClick = onUpgradeClick,
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(0xFFB3D4FF),
+                            contentColor = Color(0xFF1E4A7F)
+                        ),
+                        shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
-                            text = "모든 프리미엄 기능을 이용할 수 있습니다",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            "업그레이드",
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
@@ -330,24 +342,16 @@ private fun SettingsGroup(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+            color = Color(0xFF5FA3FF),
+            modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        // 그룹 컨텐츠를 포함하는 카드
-        Card(
+        // 그룹 컨텐츠
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                content()
-            }
+            content()
         }
     }
 }
@@ -361,73 +365,82 @@ private fun SettingItem(
     hasToggle: Boolean = false,
     isToggleOn: Boolean = false
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1E2A3A)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        // 아이콘
-        Box(
+        Row(
             modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondaryContainer),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .clickable(enabled = !hasToggle, onClick = onClick)
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+            // 아이콘
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF2A3A4A)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = null,
+                    tint = Color(0xFF9CA3AF),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
 
-        Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-        // 텍스트 영역
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            if (subtitle != null) {
-                Spacer(modifier = Modifier.height(2.dp))
+            // 텍스트 영역
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+
+                if (subtitle != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF9CA3AF)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // 토글 또는 화살표
+            if (hasToggle) {
+                Switch(
+                    checked = isToggleOn,
+                    onCheckedChange = { onClick() },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color(0xFF4A90E2),
+                        uncheckedThumbColor = Color(0xFF9CA3AF),
+                        uncheckedTrackColor = Color(0xFF2A3A4A)
+                    )
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_chevron_right),
+                    contentDescription = null,
+                    tint = Color(0xFF9CA3AF),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
-
-        // 토글 또는 화살표
-        if (hasToggle) {
-            Switch(
-                checked = isToggleOn,
-                onCheckedChange = { onClick() },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.primary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                    checkedBorderColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        } else {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chevron_right),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
     }
-
-    HorizontalDivider(
-        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
-        modifier = Modifier.padding(start = 72.dp)
-    )
 }

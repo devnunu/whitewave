@@ -129,10 +129,15 @@ class HomeViewModel(
             is ViewEvent.SavePreset -> savePreset(viewEvent.name)
             is ViewEvent.LoadPreset -> loadPreset(viewEvent.preset)
             is ViewEvent.TogglePlayback -> togglePlayback()
+            is ViewEvent.NavigateToSettings -> navigateToSettings()
             is ViewEvent.DismissPremiumDialog -> dismissPremiumDialog()
             is ViewEvent.StartSubscription -> startSubscription(viewEvent.activity)
             is ViewEvent.OnAdClosed -> onAdClosed()
         }
+    }
+
+    private fun navigateToSettings() {
+        sendEffect(Effect.NavigateTo("settings"))
     }
 
     private fun selectCategory(category: co.kr.whitewave.domain.model.sound.SoundCategory) {
