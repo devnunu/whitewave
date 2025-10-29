@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Microwave body -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M3,6h18c1,0 2,1 2,2v9c0,1 -1,2 -2,2H3c-1,0 -2,-1 -2,-2V8C1,7 2,6 3,6z"
+        android:strokeColor="#000000"
+        android:strokeWidth="1.5"
+        android:fillAlpha="0"/>
+    <!-- Window/door -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M4,8h12v8H4z"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:fillAlpha="0.1"/>
+    <!-- Control panel -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M17,8h5v8h-5z"
+        android:fillAlpha="0.2"/>
+    <!-- Buttons -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M18,9h1v1h-1z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M20,9h1v1h-1z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M18,11h1v1h-1z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M20,11h1v1h-1z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M18,13h1v1h-1z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M20,13h1v1h-1z"/>
+    <!-- Display -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M18,15h3v1h-3z"
+        android:fillAlpha="0.4"/>
+    <!-- Door handle -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M4,12h1v2H4z"/>
+    <!-- Rotating plate indicator -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M10,12m-2,0a2,2 0,1,1 4,0a2,2 0,1,1 -4,0"
+        android:strokeColor="#000000"
+        android:strokeWidth="0.8"
+        android:fillAlpha="0"/>
+</vector>

@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.domain.model.sound.Sound
 import co.kr.whitewave.presentation.R
+import co.kr.whitewave.presentation.util.getIconForSound
 
 @Composable
 fun SoundGrid(
@@ -47,10 +48,10 @@ fun SoundGrid(
     val sortedSounds = sounds.sortedBy { it.isPremium }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
-        contentPadding = PaddingValues(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
         items(sortedSounds) { sound ->
@@ -62,28 +63,13 @@ fun SoundGrid(
     }
 }
 
-// 사운드 이름에 따라 적절한 아이콘을 반환하는 함수
-private fun getSoundIcon(soundName: String): Int {
-    return when (soundName.lowercase()) {
-        "rain" -> R.drawable.ic_rain
-        "ocean" -> R.drawable.ic_ocean
-        "fire" -> R.drawable.ic_fire
-        "forest" -> R.drawable.ic_forest
-        "cafe", "café" -> R.drawable.ic_cafe
-        "wind" -> R.drawable.ic_wind
-        "white noise" -> R.drawable.ic_white_noise
-        "fan" -> R.drawable.ic_fan
-        else -> R.drawable.ic_sound_default
-    }
-}
-
 @Composable
 private fun SoundCard(
     sound: Sound,
     onSelect: (Sound) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val iconRes = getSoundIcon(sound.name)
+    val iconRes = getIconForSound(sound)
 
     // 테두리 색상 애니메이션 (네온 블루/청록색)
     val borderColor by animateColorAsState(
@@ -193,7 +179,7 @@ private fun SoundCard(
                         painter = painterResource(id = iconRes),
                         contentDescription = sound.name,
                         tint = contentColor,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(40.dp)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
