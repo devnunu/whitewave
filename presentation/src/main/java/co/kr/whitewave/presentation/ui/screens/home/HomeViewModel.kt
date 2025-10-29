@@ -122,6 +122,7 @@ class HomeViewModel(
     override fun handleViewEvent(viewEvent: ViewEvent) {
         when (viewEvent) {
             is ViewEvent.LoadSounds -> loadSounds()
+            is ViewEvent.SelectCategory -> selectCategory(viewEvent.category)
             is ViewEvent.ToggleSound -> toggleSound(viewEvent.sound)
             is ViewEvent.UpdateVolume -> updateVolume(viewEvent.sound, viewEvent.volume)
             is ViewEvent.SetTimer -> setTimer(viewEvent.duration)
@@ -132,6 +133,10 @@ class HomeViewModel(
             is ViewEvent.StartSubscription -> startSubscription(viewEvent.activity)
             is ViewEvent.OnAdClosed -> onAdClosed()
         }
+    }
+
+    private fun selectCategory(category: co.kr.whitewave.domain.model.sound.SoundCategory) {
+        setState { it.copy(selectedCategory = category) }
     }
 
     private fun loadSounds() {

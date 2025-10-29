@@ -6,5 +6,6 @@ data class Sound(
     val assetPath: String,
     var volume: Float = 1.0f,
     var isSelected: Boolean = false,
-    val isPremium: Boolean = false  // 프리미엄 여부 추가
+    val isPremium: Boolean = false,  // 프리미엄 여부 추가
+    val category: SoundCategory = SoundCategory.ALL  // 카테고리 추가
 )

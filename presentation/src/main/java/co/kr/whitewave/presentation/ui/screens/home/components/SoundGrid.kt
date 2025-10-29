@@ -47,10 +47,10 @@ fun SoundGrid(
     val sortedSounds = sounds.sortedBy { it.isPremium }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        columns = GridCells.Fixed(4),
+        contentPadding = PaddingValues(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
     ) {
         items(sortedSounds) { sound ->
@@ -138,7 +138,7 @@ private fun SoundCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable { onSelect(sound) }
-                    .padding(16.dp)
+                    .padding(8.dp)
             ) {
                 // 우측 상단 일시정지 버튼 (활성화된 카드에만)
                 if (sound.isSelected) {
@@ -147,7 +147,7 @@ private fun SoundCard(
                         color = androidx.compose.ui.graphics.Color(0xFF2A4A6A),
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .size(28.dp)
+                            .size(20.dp)
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
@@ -157,7 +157,7 @@ private fun SoundCard(
                                 painter = painterResource(id = R.drawable.ic_pause),
                                 contentDescription = "일시정지",
                                 tint = contentColor,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(12.dp)
                             )
                         }
                     }
@@ -170,15 +170,15 @@ private fun SoundCard(
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .size(24.dp)
+                            .size(18.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_premium),
                             contentDescription = "Premium",
                             tint = MaterialTheme.colorScheme.onTertiary,
                             modifier = Modifier
-                                .padding(4.dp)
-                                .size(16.dp)
+                                .padding(3.dp)
+                                .size(12.dp)
                         )
                     }
                 }
@@ -193,18 +193,18 @@ private fun SoundCard(
                         painter = painterResource(id = iconRes),
                         contentDescription = sound.name,
                         tint = contentColor,
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(32.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // 사운드 이름
                     Text(
                         text = sound.name,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                         color = contentColor,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()

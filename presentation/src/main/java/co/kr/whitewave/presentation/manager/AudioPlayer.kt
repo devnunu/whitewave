@@ -52,9 +52,10 @@ class AudioPlayer(
     }
 
     fun playSound(sound: Sound) {
-        if (!canPlayMoreSounds()) {
-            throw SoundMixingLimitException()
-        }
+        // 테스트용: 동시 재생 제한 임시 비활성화
+        // if (!canPlayMoreSounds()) {
+        //     throw SoundMixingLimitException()
+        // }
 
         if (!hasAudioFocus) {
             requestAudioFocus()

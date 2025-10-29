@@ -50,6 +50,7 @@ import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.Effect
 import co.kr.whitewave.presentation.ui.screens.home.HomeContract.ViewEvent
+import co.kr.whitewave.presentation.ui.screens.home.components.CategoryFilterRow
 import co.kr.whitewave.presentation.ui.screens.home.components.CustomTimerDialog
 import co.kr.whitewave.presentation.ui.screens.home.components.PlayingSoundsBottomSheet
 import co.kr.whitewave.presentation.ui.screens.home.components.SavePresetDialog
@@ -203,9 +204,18 @@ fun HomeScreen(
                     textAlign = TextAlign.Center
                 )
 
+                // 카테고리 필터
+                CategoryFilterRow(
+                    selectedCategory = state.selectedCategory,
+                    onCategorySelected = { category ->
+                        viewModel.handleViewEvent(ViewEvent.SelectCategory(category))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 // Sound grid
                 SoundGrid(
-                    sounds = state.sounds,
+                    sounds = state.filteredSounds,
                     onSoundSelect = { sound ->
                         viewModel.handleViewEvent(ViewEvent.ToggleSound(sound))
                     },

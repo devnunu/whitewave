@@ -2,6 +2,7 @@ package co.kr.whitewave.data.model.sound
 
 import co.kr.whitewave.data.DataMapper
 import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.model.sound.SoundCategory
 
 data class SoundEntity(
     val id: String,
@@ -9,7 +10,8 @@ data class SoundEntity(
     val assetPath: String,
     var volume: Float = 1.0f,
     var isSelected: Boolean = false,
-    val isPremium: Boolean = false  // 프리미엄 여부 추가
+    val isPremium: Boolean = false,  // 프리미엄 여부 추가
+    val category: SoundCategory = SoundCategory.ALL  // 카테고리 추가
 ) : DataMapper<Sound> {
 
     override fun toDomain(): Sound =
@@ -20,6 +22,7 @@ data class SoundEntity(
             volume = volume,
             isSelected = isSelected,
             isPremium = isPremium,
+            category = category
         )
 }
 
@@ -31,4 +34,5 @@ fun Sound.toEntity(): SoundEntity =
         volume = volume,
         isSelected = isSelected,
         isPremium = isPremium,
+        category = category
     )

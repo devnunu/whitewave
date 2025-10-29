@@ -3,6 +3,7 @@ package co.kr.whitewave.presentation.ui.screens.home
 import android.app.Activity
 import co.kr.whitewave.domain.model.preset.PresetWithSounds
 import co.kr.whitewave.domain.model.sound.Sound
+import co.kr.whitewave.domain.model.sound.SoundCategory
 import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 import co.kr.whitewave.presentation.ui.base.UiEffect
 import co.kr.whitewave.presentation.ui.base.UiState
@@ -19,6 +20,7 @@ object HomeContract {
      */
     data class State(
         val sounds: List<Sound> = emptyList(),
+        val selectedCategory: SoundCategory = SoundCategory.ALL,
         val isPlaying: Boolean = false,
         val timerDuration: Duration? = null,
         val remainingTime: Duration? = null,
@@ -26,13 +28,22 @@ object HomeContract {
         val playError: String? = null,
         val showPremiumDialog: Boolean = false,
         val subscriptionTier: SubscriptionTier = SubscriptionTier.Free
-    ) : UiState
+    ) : UiState {
+        // 필터링된 사운드 목록
+        val filteredSounds: List<Sound>
+            get() = if (selectedCategory == SoundCategory.ALL) {
+                sounds
+            } else {
+                sounds.filter { it.category == selectedCategory }
+            }
+    }
 
     /**
      * HomeScreen에서 발생할 수 있는 사용자 의도/액션
      */
     sealed class ViewEvent : UiViewEvent {
         object LoadSounds : ViewEvent()
+        data class SelectCategory(val category: SoundCategory) : ViewEvent()
         data class ToggleSound(val sound: Sound) : ViewEvent()
         data class UpdateVolume(val sound: Sound, val volume: Float) : ViewEvent()
         data class SetTimer(val duration: Duration?) : ViewEvent()
