@@ -233,7 +233,7 @@ fun HomeScreen(
                             showPlayingSounds = true
                         },
                     shape = MaterialTheme.shapes.extraSmall,
-                    color = androidx.compose.ui.graphics.Color(0xFF0F1F2E),
+                    color = androidx.compose.ui.graphics.Color(0xFF0A1422),
                     tonalElevation = 0.dp
                 ) {
                     Row(
