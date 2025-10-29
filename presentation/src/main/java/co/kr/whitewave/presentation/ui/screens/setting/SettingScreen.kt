@@ -124,7 +124,6 @@ fun SettingsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
