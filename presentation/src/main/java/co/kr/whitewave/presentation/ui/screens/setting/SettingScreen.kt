@@ -162,8 +162,9 @@ fun SettingsScreen(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp)
             ) {
             // 구독 상태 섹션
             SubscriptionStatusCard(

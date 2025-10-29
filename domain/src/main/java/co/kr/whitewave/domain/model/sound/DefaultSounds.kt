@@ -114,6 +114,153 @@ object DefaultSounds {
             assetPath = "sounds/clothes_dryer.mp3",
             isPremium = true,
             category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "wind",
+            name = "Wind",
+            assetPath = "sounds/wind.mp3",
+            isPremium = false,
+            category = SoundCategory.WEATHER
+        ),
+        Sound(
+            id = "rain_on_window",
+            name = "Rain on Window",
+            assetPath = "sounds/rain_on_window.mp3",
+            isPremium = false,
+            category = SoundCategory.WEATHER
+        ),
+        Sound(
+            id = "cicadas",
+            name = "Cicadas",
+            assetPath = "sounds/cicadas.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "crickets",
+            name = "Crickets",
+            assetPath = "sounds/crickets.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "fountain",
+            name = "Fountain",
+            assetPath = "sounds/fountain.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "frogs",
+            name = "Frogs",
+            assetPath = "sounds/frogs.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "owl",
+            name = "Owl",
+            assetPath = "sounds/owl.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "stream",
+            name = "Stream",
+            assetPath = "sounds/stream.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "waterfall",
+            name = "Waterfall",
+            assetPath = "sounds/waterfall.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "wolf",
+            name = "Wolf",
+            assetPath = "sounds/wolf.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "swimming_pool",
+            name = "Swimming Pool",
+            assetPath = "sounds/swimming_pool.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "playground",
+            name = "Playground",
+            assetPath = "sounds/playground.mp3",
+            isPremium = false,
+            category = SoundCategory.NATURE
+        ),
+        Sound(
+            id = "blender",
+            name = "Blender",
+            assetPath = "sounds/blender.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "boiling_water",
+            name = "Boiling Water",
+            assetPath = "sounds/boiling_water.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "bubble",
+            name = "Bubble",
+            assetPath = "sounds/bubble.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "electric_shaver",
+            name = "Electric Shaver",
+            assetPath = "sounds/electric_shaver.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "hair_dryer",
+            name = "Hair Dryer",
+            assetPath = "sounds/hair_dryer.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "ice_cube",
+            name = "Ice Cube",
+            assetPath = "sounds/ice_cube.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "microwave",
+            name = "Microwave",
+            assetPath = "sounds/microwave.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "restaurant",
+            name = "Restaurant",
+            assetPath = "sounds/restaurant.mp3",
+            isPremium = true,
+            category = SoundCategory.HOME
+        ),
+        Sound(
+            id = "waterdrop",
+            name = "Water Drop",
+            assetPath = "sounds/waterdrop.mp3",
+            isPremium = false,
+            category = SoundCategory.WHITE_NOISE
         )
     )
 
