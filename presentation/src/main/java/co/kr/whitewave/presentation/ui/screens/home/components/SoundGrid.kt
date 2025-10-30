@@ -18,6 +18,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,13 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.domain.model.sound.Sound
-import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.util.getIconForSound
 
 @Composable
@@ -140,7 +141,7 @@ private fun SoundCard(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_pause),
+                                imageVector = Icons.Filled.Pause,
                                 contentDescription = "일시정지",
                                 tint = contentColor,
                                 modifier = Modifier.size(12.dp)
@@ -159,7 +160,7 @@ private fun SoundCard(
                             .size(18.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_premium),
+                            imageVector = Icons.Filled.WorkspacePremium,
                             contentDescription = "Premium",
                             tint = MaterialTheme.colorScheme.onTertiary,
                             modifier = Modifier
@@ -176,7 +177,7 @@ private fun SoundCard(
                 ) {
                     // 사운드 아이콘
                     Icon(
-                        painter = painterResource(id = iconRes),
+                        imageVector = iconRes,
                         contentDescription = sound.name,
                         tint = contentColor,
                         modifier = Modifier.size(40.dp)

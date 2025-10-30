@@ -1,57 +1,59 @@
 package co.kr.whitewave.presentation.util
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import co.kr.whitewave.domain.model.sound.Sound
-import co.kr.whitewave.presentation.R
 
-fun getIconForSound(sound: Sound): Int {
+fun getIconForSound(sound: Sound): ImageVector {
     return when (sound.id) {
         // Weather sounds
-        "rain" -> R.drawable.ic_rain
-        "heavy_rain" -> R.drawable.ic_rain
-        "thunder" -> R.drawable.ic_thunder
-        "wind" -> R.drawable.ic_wind
-        "rain_on_window" -> R.drawable.ic_rain_on_window
+        "rain" -> Icons.Filled.WaterDrop
+        "heavy_rain" -> Icons.Filled.WaterDrop
+        "thunder" -> Icons.Filled.Thunderstorm
+        "wind" -> Icons.Filled.Air
+        "rain_on_window" -> Icons.Filled.Window
 
         // Nature sounds
-        "ocean" -> R.drawable.ic_wave
-        "forest" -> R.drawable.ic_forest
-        "shower" -> R.drawable.ic_shower
-        "bird" -> R.drawable.ic_bird
-        "cicadas" -> R.drawable.ic_cicadas
-        "crickets" -> R.drawable.ic_crickets
-        "fountain" -> R.drawable.ic_fountain
-        "frogs" -> R.drawable.ic_frogs
-        "owl" -> R.drawable.ic_owl
-        "stream" -> R.drawable.ic_stream
-        "waterfall" -> R.drawable.ic_waterfall
-        "wolf" -> R.drawable.ic_wolf
-        "swimming_pool" -> R.drawable.ic_swimming_pool
-        "playground" -> R.drawable.ic_playground
+        "ocean" -> Icons.Filled.Waves
+        "forest" -> Icons.Filled.Forest
+        "shower" -> Icons.Filled.Shower
+        "bird" -> Icons.Filled.Yard
+        "cicadas" -> Icons.Filled.BugReport
+        "crickets" -> Icons.Filled.BugReport
+        "fountain" -> Icons.Filled.WaterDrop
+        "frogs" -> Icons.Filled.Pets
+        "owl" -> Icons.Filled.Bedtime
+        "stream" -> Icons.Filled.Water
+        "waterfall" -> Icons.Filled.Water
+        "wolf" -> Icons.Filled.Pets
+        "swimming_pool" -> Icons.Filled.Pool
+        "playground" -> Icons.Filled.Park
 
         // Home sounds
-        "fireplace" -> R.drawable.ic_fire
-        "cafe" -> R.drawable.ic_cafe
-        "fan" -> R.drawable.ic_fan
-        "cat" -> R.drawable.ic_cat
-        "washing_machine" -> R.drawable.ic_washing_machine
-        "clothes_dryer" -> R.drawable.ic_clothes_dryer
-        "blender" -> R.drawable.ic_blender
-        "boiling_water" -> R.drawable.ic_boiling_water
-        "bubble" -> R.drawable.ic_bubble
-        "electric_shaver" -> R.drawable.ic_electric_shaver
-        "hair_dryer" -> R.drawable.ic_hair_dryer
-        "ice_cube" -> R.drawable.ic_ice_cube
-        "microwave" -> R.drawable.ic_microwave
-        "restaurant" -> R.drawable.ic_restaurant
+        "fireplace" -> Icons.Filled.Fireplace
+        "cafe" -> Icons.Filled.LocalCafe
+        "fan" -> Icons.Filled.Cyclone
+        "cat" -> Icons.Filled.Pets
+        "washing_machine" -> Icons.Filled.LocalLaundryService
+        "clothes_dryer" -> Icons.Filled.LocalLaundryService
+        "blender" -> Icons.Filled.Blender
+        "boiling_water" -> Icons.Filled.Whatshot
+        "bubble" -> Icons.Filled.BubbleChart
+        "electric_shaver" -> Icons.Filled.ContentCut
+        "hair_dryer" -> Icons.Filled.Air
+        "ice_cube" -> Icons.Filled.AcUnit
+        "microwave" -> Icons.Filled.Microwave
+        "restaurant" -> Icons.Filled.Restaurant
 
         // Transportation sounds
-        "airplane" -> R.drawable.ic_airplane
-        "subway" -> R.drawable.ic_subway
+        "airplane" -> Icons.Filled.Flight
+        "subway" -> Icons.Filled.DirectionsSubway
 
         // White noise sounds
-        "white_noise" -> R.drawable.ic_white_noise
-        "waterdrop" -> R.drawable.ic_waterdrop
+        "white_noise" -> Icons.Filled.GraphicEq
+        "waterdrop" -> Icons.Filled.WaterDrop
 
-        else -> R.drawable.ic_sound_default // 기본 아이콘
+        else -> Icons.Filled.MusicNote // 기본 아이콘
     }
 }

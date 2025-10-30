@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.VolumeDown
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,11 +31,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.domain.model.sound.Sound
-import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.WhiteWaveScaffold
 import co.kr.whitewave.presentation.util.getIconForSound
 
@@ -121,7 +122,7 @@ private fun SoundItem(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(
-                        painter = painterResource(id = getIconForSound(sound)),
+                        imageVector = getIconForSound(sound),
                         contentDescription = sound.name,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
@@ -138,7 +139,7 @@ private fun SoundItem(
 
                 IconButton(onClick = onRemove) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
+                        imageVector = Icons.Filled.Close,
                         contentDescription = "제거",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -153,7 +154,7 @@ private fun SoundItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_volume_down),
+                    imageVector = Icons.Filled.VolumeDown,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -172,7 +173,7 @@ private fun SoundItem(
                 )
 
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_volume_up),
+                    imageVector = Icons.Filled.VolumeUp,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant

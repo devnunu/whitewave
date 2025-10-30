@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,13 +41,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.kr.whitewave.domain.model.sound.Sound
-import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.util.formatForDisplay
+import co.kr.whitewave.presentation.util.getIconForSound
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -195,9 +197,7 @@ fun PlayingSoundsBottomSheet(
                         )
                     ) {
                         Icon(
-                            painter = painterResource(
-                                id = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
-                            ),
+                            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                             contentDescription = if (isPlaying) "일시정지" else "재생",
                             tint = Color.White,
                             modifier = Modifier.size(36.dp)
@@ -243,7 +243,7 @@ private fun PlayingSoundCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = getSoundIcon(sound.name)),
+                        imageVector = getIconForSound(sound),
                         contentDescription = sound.name,
                         tint = Color.White,
                         modifier = Modifier.size(36.dp)
@@ -318,21 +318,6 @@ private fun TimerButton(
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp
         )
-    }
-}
-
-// 사운드 이름에 따라 아이콘 리소스 반환
-private fun getSoundIcon(soundName: String): Int {
-    return when (soundName.lowercase()) {
-        "rain" -> R.drawable.ic_rain
-        "ocean", "ocean waves" -> R.drawable.ic_ocean
-        "fire", "campfire" -> R.drawable.ic_fire
-        "forest" -> R.drawable.ic_forest
-        "cafe", "café" -> R.drawable.ic_cafe
-        "wind" -> R.drawable.ic_wind
-        "white noise" -> R.drawable.ic_white_noise
-        "fan" -> R.drawable.ic_fan
-        else -> R.drawable.ic_sound_default
     }
 }
 
