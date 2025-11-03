@@ -33,9 +33,6 @@ fun AppNavHost(
         ) {
             HomeScreen(
                 viewModel = homeViewModel,
-                onNavigateToPlayingSounds = {
-                    navController.navigate(NavRoute.PlayingSounds)
-                },
                 onNavigateToSettings = {
                     navController.navigate(NavRoute.Settings)
                 }

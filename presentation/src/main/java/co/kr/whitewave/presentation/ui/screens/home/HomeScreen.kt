@@ -67,7 +67,6 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToPlayingSounds: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -318,7 +317,7 @@ fun HomeScreen(
                                 }
                             } else {
                                 Text(
-                                    text = "재생중인 음악이 없습니다",
+                                    text = "No music is currently playing.",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = androidx.compose.ui.graphics.Color(0xFF4A5A6A)
                                 )
@@ -352,7 +351,7 @@ fun HomeScreen(
                                         if (state.isPlaying) R.drawable.ic_pause
                                         else R.drawable.ic_play
                                     ),
-                                    contentDescription = if (state.isPlaying) "일시정지" else "재생",
+                                    contentDescription = if (state.isPlaying) "Pause" else "Play",
                                     modifier = Modifier.size(20.dp),
                                     tint = if (hasPlayingSounds)
                                         androidx.compose.ui.graphics.Color.Black

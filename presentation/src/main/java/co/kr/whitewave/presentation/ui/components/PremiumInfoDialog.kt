@@ -4,20 +4,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Waves
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,195 +27,203 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import co.kr.whitewave.presentation.R
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumInfoDialog(
     onDismiss: () -> Unit,
     onSubscribe: () -> Unit
 ) {
-    AlertDialog(
+    Dialog(
         onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.large,
-        containerColor = MaterialTheme.colorScheme.surface,
-        title = {
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF405266)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 프리미엄 아이콘
+                // Crown Icon
                 Box(
                     modifier = Modifier
                         .size(64.dp)
-                        .clip(CircleShape)
                         .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFFFFA726),  // 골드 컬러
-                                    Color(0xFFFFD54F)   // 밝은 골드
-                                )
-                            )
+                            color = Color(0xFF00D9FF).copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(16.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_premium),
-                        contentDescription = null,
-                        tint = Color.White,
+                        imageVector = Icons.Filled.WorkspacePremium,
+                        contentDescription = "Premium",
+                        tint = Color(0xFF00D9FF),
                         modifier = Modifier.size(36.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Title
                 Text(
                     text = "WhiteWave Premium",
-                    style = MaterialTheme.typography.headlineSmall,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = Color.White,
+                    textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
+                // Subtitle
                 Text(
-                    text = "더 많은 기능으로 완벽한 휴식을 경험하세요",
+                    text = "Experience perfect relaxation with premium features",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color(0xFFA8B2C1),
                     textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Features List
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    PremiumFeatureItem(
+                        icon = Icons.Filled.Waves,
+                        title = "Unlimited Sounds",
+                        description = "Access our entire, ever-growing sound library."
+                    )
+
+                    PremiumFeatureItem(
+                        icon = Icons.Filled.Layers,
+                        title = "Mix Multiple Sounds",
+                        description = "Combine more sounds than ever for the perfect ambiance."
+                    )
+
+                    PremiumFeatureItem(
+                        icon = Icons.Outlined.Block,
+                        title = "Ad-Free Experience",
+                        description = "Enjoy uninterrupted focus and relaxation."
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Pricing Banner
+                Text(
+                    text = "Just $0.99/month",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF00D9FF)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                )
-            }
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                PremiumFeatureItem(
-                    icon = R.drawable.ic_music_note,
-                    title = "더 많은 사운드",
-                    description = "15개 이상의 프리미엄 사운드로 다양한 조합을 만들어보세요"
-                )
+                // Upgrade Button
+                Button(
+                    onClick = onSubscribe,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(9999.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF00D9FF),
+                        contentColor = Color(0xFF0A1929)
+                    )
+                ) {
+                    Text(
+                        text = "Upgrade Now",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
 
-                PremiumFeatureItem(
-                    icon = R.drawable.ic_preset,
-                    title = "무제한 프리셋",
-                    description = "자주 사용하는 조합을 무제한으로 저장하세요"
-                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-                PremiumFeatureItem(
-                    icon = R.drawable.ic_music_note,
-                    title = "무제한 믹싱",
-                    description = "2개 이상의 사운드를 동시에 재생할 수 있습니다"
-                )
-
-                PremiumFeatureItem(
-                    icon = R.drawable.ic_notification,
-                    title = "광고 제거",
-                    description = "광고 없이 끊김 없는 재생을 즐기세요"
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = onSubscribe,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFC107)  // 골드 컬러 버튼
-                )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_premium),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "월 4,900원으로 업그레이드",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 12.dp)
-            ) {
-                Text(
-                    text = "나중에 하기",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                // Maybe Later Button
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    shape = RoundedCornerShape(9999.dp)
+                ) {
+                    Text(
+                        text = "Maybe Later",
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
-    )
+    }
 }
 
 @Composable
 private fun PremiumFeatureItem(
-    icon: Int,
+    icon: ImageVector,
     title: String,
     description: String
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 아이콘 컨테이너
+        // Icon Container
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondaryContainer),
+                .size(48.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(12.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = icon),
+                imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(20.dp)
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
             )
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // 텍스트 영역
-        Column {
+        // Text Area
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = Color.White
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFFA8B2C1)
             )
         }
     }

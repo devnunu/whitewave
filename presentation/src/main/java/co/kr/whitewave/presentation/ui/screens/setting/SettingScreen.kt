@@ -427,7 +427,7 @@ private fun SettingItemNew(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = Color(0xFF00D9FF),
                     uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Color(0xFF27373a),
+                    uncheckedTrackColor = Color(0xFF4A5A6A),
                     checkedBorderColor = Color.Transparent,
                     uncheckedBorderColor = Color.Transparent
                 )
