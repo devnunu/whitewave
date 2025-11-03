@@ -2,7 +2,6 @@ package co.kr.whitewave.presentation.ui.screens.setting
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,24 +16,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,15 +50,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import co.kr.whitewave.domain.model.subscription.SubscriptionTier
-import co.kr.whitewave.presentation.R
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.ViewEvent
@@ -92,12 +95,15 @@ fun SettingsScreen(
                 is Effect.NavigateToNotificationSettings -> {
                     onNotificationSettingClick()
                 }
+
                 is Effect.ShowPremiumDialog -> {
                     showPremiumDialog = true
                 }
+
                 is Effect.NavigateBack -> {
                     onBackClick()
                 }
+
                 is Effect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = effect.message,
@@ -133,109 +139,144 @@ fun SettingsScreen(
                 )
             )
     ) {
-        Column(
-            modifier = modifier.fillMaxSize()
-        ) {
-            // 상단 앱 바
-            TopAppBar(
-                title = {
-                    Text(
-                        "Settings",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    androidx.compose.material3.IconButton(onClick = onBackClick) {
+        Scaffold(
+            topBar = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_close),
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "뒤로가기",
-                            tint = Color.White
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = Color.White
-                )
-            )
 
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    // 오른쪽 공간 (empty space)
+                    Box(modifier = Modifier.size(40.dp))
+                }
+            },
+            snackbarHost = {
+                SnackbarHost(snackbarHostState)
+            },
+            containerColor = Color.Transparent
+        ) { paddingValues ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 16.dp)
             ) {
-            // 구독 상태 섹션
-            SubscriptionStatusCard(
-                tier = state.subscriptionTier,
-                onUpgradeClick = { viewModel.handleViewEvent(ViewEvent.ShowPremiumInfo) }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 설정 그룹 섹션
-            SettingsGroup(title = "앱 설정") {
-                // 알림 설정 아이템
-                SettingItem(
-                    icon = R.drawable.ic_notification,
-                    title = "알림 설정",
-                    subtitle = if (state.hasNotificationPermission)
-                        "알림 권한이 허용되어 있습니다"
-                    else
-                        "알림 권한이 필요합니다",
-                    onClick = { viewModel.handleViewEvent(ViewEvent.OpenNotificationSettings) }
+                // 구독 상태 섹션
+                SubscriptionStatusCard(
+                    tier = state.subscriptionTier,
+                    onUpgradeClick = { viewModel.handleViewEvent(ViewEvent.ShowPremiumInfo) }
                 )
 
-                // 추가 설정 아이템들 (예시)
-                SettingItem(
-                    icon = R.drawable.ic_sound_default,
-                    title = "사운드 품질",
-                    subtitle = "고품질 (Wi-Fi 연결 시)",
-                    onClick = { /* 사운드 품질 설정으로 이동 */ }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // App Controls 섹션
+                Text(
+                    text = "App Controls",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
-                SettingItem(
-                    icon = R.drawable.ic_timer,
-                    title = "백그라운드 재생",
-                    subtitle = "화면이 꺼져도 계속 재생",
-                    onClick = { /* 백그라운드 재생 설정으로 이동 */ },
-                    hasToggle = true,
-                    isToggleOn = true
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF1c2d30)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column {
+                        // Notifications
+                        SettingItemNew(
+                            icon = Icons.Filled.Notifications,
+                            title = "Notifications",
+                            hasToggle = true,
+                            isToggleOn = state.hasNotificationPermission,
+                            onToggleChange = { viewModel.handleViewEvent(ViewEvent.OpenNotificationSettings) }
+                        )
+
+                        HorizontalDivider(
+                            color = Color(0xFF27373a),
+                            thickness = 1.dp
+                        )
+
+                        // Background Playback
+                        SettingItemNew(
+                            icon = Icons.Filled.PlayCircle,
+                            title = "Background Playback",
+                            hasToggle = true,
+                            isToggleOn = false,
+                            onToggleChange = { /* TODO: Background playback toggle */ }
+                        )
+
+                        HorizontalDivider(
+                            color = Color(0xFF27373a),
+                            thickness = 1.dp
+                        )
+
+                        // Sound Quality
+                        SettingItemNew(
+                            icon = Icons.Filled.Tune,
+                            title = "Sound Quality",
+                            rightText = "High",
+                            onClick = { /* TODO: Sound quality settings */ }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // About 섹션
+                Text(
+                    text = "About",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF1c2d30)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    // App Version
+                    SettingItemNew(
+                        icon = Icons.Filled.Info,
+                        title = "App Version",
+                        rightText = "1.2.5"
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(64.dp))
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 정보 그룹 섹션
-            SettingsGroup(title = "정보") {
-                SettingItem(
-                    icon = R.drawable.ic_info,
-                    title = "앱 정보",
-                    subtitle = "버전 : 준비중",
-                    onClick = { /* 앱 정보 화면으로 이동 */ }
-                )
-
-                SettingItem(
-                    icon = R.drawable.ic_preset,
-                    title = "문의하기",
-                    subtitle = "개발자에게 의견을 보내주세요",
-                    onClick = { /* 문의하기 화면으로 이동 */ }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-            }
-        }
-
-        // Snackbar
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            SnackbarHost(snackbarHostState)
         }
     }
 }
@@ -252,72 +293,75 @@ private fun SubscriptionStatusCard(
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1c2d30)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = if (isPremium)
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFFFFD54F),
-                                Color(0xFFFFA726)
-                            )
-                        )
-                    else
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF4A90E2),
-                                Color(0xFF6BA3FF)
-                            )
-                        )
-                )
-                .padding(24.dp)
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
+            // 웨이브 이미지 (aspect-video)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF00A8CC),
+                                Color(0xFF00D9FF)
+                            )
+                        )
+                    )
+            )
+
+            // 텍스트 및 버튼 영역
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_premium),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (isPremium) "WhiteWave Premium" else "WhiteWave",
+                        text = if (isPremium) "Premium Plan" else "Free Plan",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = if (isPremium) "프리미엄 구독 중" else "프리미엄 기능을 이용해보세요",
+                        text = if (isPremium)
+                            "You're enjoying all premium features."
+                        else
+                            "Unlock all sounds and premium features.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.9f)
+                        color = Color(0xFF9ab7bc)
                     )
                 }
 
+                Spacer(modifier = Modifier.width(16.dp))
+
                 if (!isPremium) {
-                    FilledTonalButton(
+                    Button(
                         onClick = onUpgradeClick,
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color(0xFFB3D4FF),
-                            contentColor = Color(0xFF1E4A7F)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF00D9FF),
+                            contentColor = Color(0xFF0F2023)
                         ),
-                        shape = RoundedCornerShape(20.dp)
+                        shape = RoundedCornerShape(9999.dp),
+                        modifier = Modifier.height(40.dp)
                     ) {
                         Text(
-                            "업그레이드",
-                            fontWeight = FontWeight.SemiBold
+                            "Upgrade",
+                            fontWeight = FontWeight.Medium,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -327,118 +371,82 @@ private fun SubscriptionStatusCard(
 }
 
 @Composable
-private fun SettingsGroup(
+private fun SettingItemNew(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
-    content: @Composable () -> Unit
+    hasToggle: Boolean = false,
+    isToggleOn: Boolean = false,
+    onToggleChange: (() -> Unit)? = null,
+    rightText: String? = null,
+    onClick: (() -> Unit)? = null
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .animateContentSize()
-    ) {
-        // 그룹 제목
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF5FA3FF),
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        // 그룹 컨텐츠
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            content()
-        }
-    }
-}
-
-@Composable
-private fun SettingItem(
-    icon: Int,
-    title: String,
-    subtitle: String? = null,
-    onClick: () -> Unit,
-    hasToggle: Boolean = false,
-    isToggleOn: Boolean = false
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E2A3A)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(enabled = !hasToggle, onClick = onClick)
-                .padding(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 아이콘
+            // 아이콘 배경
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF2A3A4A)),
+                    .size(40.dp)
+                    .background(
+                        color = Color(0xFF27373a),
+                        shape = RoundedCornerShape(50.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = null,
-                    tint = Color(0xFF9CA3AF),
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Normal,
+                color = Color.White
+            )
+        }
 
-            // 텍스트 영역
-            Column(
-                modifier = Modifier.weight(1f)
+        // 오른쪽 컨트롤
+        if (hasToggle) {
+            Switch(
+                checked = isToggleOn,
+                onCheckedChange = { onToggleChange?.invoke() },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = Color(0xFF00D9FF),
+                    uncheckedThumbColor = Color.White,
+                    uncheckedTrackColor = Color(0xFF27373a),
+                    checkedBorderColor = Color.Transparent,
+                    uncheckedBorderColor = Color.Transparent
+                )
+            )
+        } else if (rightText != null) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    text = rightText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF8A9AAA)
                 )
-
-                if (subtitle != null) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF9CA3AF)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // 토글 또는 화살표
-            if (hasToggle) {
-                Switch(
-                    checked = isToggleOn,
-                    onCheckedChange = { onClick() },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Color(0xFF4A90E2),
-                        uncheckedThumbColor = Color(0xFF9CA3AF),
-                        uncheckedTrackColor = Color(0xFF2A3A4A)
-                    )
-                )
-            } else {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_chevron_right),
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
-                    tint = Color(0xFF9CA3AF),
-                    modifier = Modifier.size(20.dp)
+                    tint = Color(0xFF8A9AAA),
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
