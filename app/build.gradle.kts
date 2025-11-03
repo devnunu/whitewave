@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.whitewave.application.compose)
     alias(libs.plugins.ksp)
     kotlin("plugin.serialization") version "1.9.0"
+
+    id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 dependencies {
@@ -44,6 +47,10 @@ dependencies {
 
     // billing
     implementation(libs.android.billingclient)
+
+    // firebase
+    implementation(platform(libs.firbase.bom))
+    implementation(libs.firbase.analytics)
 
     // ads
     implementation(libs.play.service.ads)

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "803858817356",
+    "project_id": "whitewave-aff3f",
+    "storage_bucket": "whitewave-aff3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803858817356:android:8eefc43828e881e5976fe9",
+        "android_client_info": {
+          "package_name": "co.kr.whitewave"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPaRAEreDHo-JEOtI-p93BgcB41Uzgq_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

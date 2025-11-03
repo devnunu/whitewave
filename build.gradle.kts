@@ -8,4 +8,6 @@ plugins {
     alias(libs.plugins.whitewave.application.compose) apply false
     alias(libs.plugins.whitewave.library) apply false
     alias(libs.plugins.whitewave.library.compose) apply false
+
+    id("com.google.gms.google-services") version "4.4.4" apply false
 }

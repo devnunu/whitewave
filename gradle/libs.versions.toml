@@ -26,6 +26,9 @@ espresso = "3.5.1"
 appcompat = "1.6.1"
 material = "1.10.0"
 
+# firbase
+firebase-bom = "34.5.0"
+
 [libraries]
 # Build
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -60,6 +63,10 @@ androidx-media = { group = "androidx.media", name = "media", version.ref = "medi
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Firebase
+firbase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firbase-analytics = { group = "com.google.firebase", name = "firebase-analytics"}
 
 # Kotlin
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
