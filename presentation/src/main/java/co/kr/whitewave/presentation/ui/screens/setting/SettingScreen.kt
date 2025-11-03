@@ -203,7 +203,7 @@ fun SettingsScreen(
                         .padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1c2d30)
+                        containerColor = Color.White.copy(alpha = 0.1f)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
@@ -263,7 +263,7 @@ fun SettingsScreen(
                         .padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1c2d30)
+                        containerColor = Color.White.copy(alpha = 0.1f)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
@@ -294,7 +294,7 @@ private fun SubscriptionStatusCard(
             .padding(16.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1c2d30)
+            containerColor = Color.White.copy(alpha = 0.1f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -397,7 +397,7 @@ private fun SettingItemNew(
                 modifier = Modifier
                     .size(40.dp)
                     .background(
-                        color = Color(0xFF27373a),
+                        color = Color.White.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(50.dp)
                     ),
                 contentAlignment = Alignment.Center
