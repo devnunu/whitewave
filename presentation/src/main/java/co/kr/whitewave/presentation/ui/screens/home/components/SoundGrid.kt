@@ -145,7 +145,7 @@ private fun SoundCard(
                     // 사운드 이름
                     Text(
                         text = sound.name,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = androidx.compose.ui.graphics.Color.White,
                         maxLines = 2,
