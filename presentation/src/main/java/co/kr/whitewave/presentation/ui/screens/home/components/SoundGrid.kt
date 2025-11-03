@@ -105,7 +105,7 @@ private fun SoundCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(0.8f) // 세로로 조금 더 긴 형태
+            .aspectRatio(1f) // 세로로 조금 더 긴 형태
             .clickable { onSelect(sound) },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
@@ -137,7 +137,7 @@ private fun SoundCard(
                         imageVector = iconRes,
                         contentDescription = sound.name,
                         tint = contentColor,
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(24.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
