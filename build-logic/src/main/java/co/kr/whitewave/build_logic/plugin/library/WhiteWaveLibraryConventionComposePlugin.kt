@@ -11,14 +11,11 @@ class WhiteWaveLibraryConventionComposePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("co.kr.whitewave.plugin.library")
+            pluginManager.apply(libs.findPlugin("kotlin-compose").get().get().pluginId)
 
             extensions.configure<LibraryExtension> {
                 buildFeatures {
                     compose = true
-                }
-
-                composeOptions {
-                    kotlinCompilerExtensionVersion = libs.findVersion("compose-compiler").get().toString()
                 }
             }
         }

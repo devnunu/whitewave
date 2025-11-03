@@ -15,6 +15,7 @@ dependencies {
     // Gradle 및 kotlin 버전 변경에 따라 수동으로 변경 필요
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.kotlin.compose.compiler.plugin)
 }
 
 gradlePlugin {

@@ -1,14 +1,14 @@
 [versions]
 agp = "8.8.0"
-kotlin = "1.9.24"
+kotlin = "2.0.21"
 core-ktx = "1.10.1"
 compose-bom = "2024.02.00"
-compose-compiler = "1.5.14"
+compose-compiler = "1.5.15"
 koin = "3.5.0"
 media3 = "1.2.1"
 room = "2.6.1"
 lifecycle = "2.7.0"
-ksp = "1.9.24-1.0.20"
+ksp = "2.0.21-1.0.28"
 media = "1.6.0"
 billing = "6.1.0"
 datastorePreferences = "1.0.0"
@@ -33,6 +33,7 @@ firebase-bom = "34.5.0"
 # Build
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-compose-compiler-plugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
 # AndroidX
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -91,6 +92,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 

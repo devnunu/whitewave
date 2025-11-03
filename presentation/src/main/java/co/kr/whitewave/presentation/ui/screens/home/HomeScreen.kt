@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Waves
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -194,14 +197,23 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // 상단 타이틀 바 (WhiteWave + 설정 아이콘)
+                // 상단 타이틀 바 (파도 아이콘 + WhiteWave + 설정 아이콘)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // 왼쪽: 파도 아이콘
+                    Icon(
+                        imageVector = Icons.Filled.Waves,
+                        contentDescription = "WhiteWave",
+                        tint = androidx.compose.ui.graphics.Color(0xFF00D9FF),
+                        modifier = Modifier.size(32.dp)
+                    )
+
+                    // 중앙: WhiteWave 타이틀
                     Text(
                         text = "WhiteWave",
                         style = MaterialTheme.typography.headlineMedium,
@@ -209,16 +221,17 @@ fun HomeScreen(
                         color = androidx.compose.ui.graphics.Color.White
                     )
 
+                    // 오른쪽: 설정 아이콘
                     androidx.compose.material3.IconButton(
                         onClick = {
                             viewModel.handleViewEvent(ViewEvent.NavigateToSettings)
                         }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_settings),
+                            imageVector = Icons.Filled.Settings,
                             contentDescription = "설정",
                             tint = androidx.compose.ui.graphics.Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
