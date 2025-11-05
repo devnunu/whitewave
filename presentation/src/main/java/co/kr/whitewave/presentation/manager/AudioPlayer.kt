@@ -2,6 +2,7 @@ package co.kr.whitewave.presentation.manager
 
 // data/player/AudioPlayer.kt
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -41,6 +42,12 @@ class AudioPlayer(
     private val _playingSounds = MutableStateFlow<Map<String, Sound>>(emptyMap())
     val playingSounds: StateFlow<Map<String, Sound>> = _playingSounds.asStateFlow()
 
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
+
+    // 사용자가 명시적으로 일시정지했는지 여부
+    private var isUserPaused = false
+
     private fun canPlayMoreSounds(): Boolean {
         return when (subscriptionRepository.subscriptionTier.value) {
             is SubscriptionTier.Premium -> true
@@ -56,6 +63,9 @@ class AudioPlayer(
         // if (!canPlayMoreSounds()) {
         //     throw SoundMixingLimitException()
         // }
+
+        // 사운드를 새로 재생할 때는 사용자 일시정지 상태 해제
+        isUserPaused = false
 
         if (!hasAudioFocus) {
             requestAudioFocus()
@@ -79,6 +89,13 @@ class AudioPlayer(
                         repeatMode = Player.REPEAT_MODE_ALL
                         prepare()
                         volume = 0f
+
+                        // Player 상태 변경 리스너 추가
+                        addListener(object : Player.Listener {
+                            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                                updatePlayingState()
+                            }
+                        })
                     }
                 }.apply {
                     play()
@@ -87,6 +104,7 @@ class AudioPlayer(
 
                     // _playingSounds 상태 업데이트
                     _playingSounds.value = _playingSounds.value + (sound.id to sound)
+                    updatePlayingState()
                 }
             }
         }
@@ -97,6 +115,12 @@ class AudioPlayer(
     private fun requestAudioFocus() {
         hasAudioFocus = audioFocusManager.requestAudioFocus { active, volume ->
             coroutineScope.launch(Dispatchers.Main) {
+                // 사용자가 명시적으로 일시정지한 경우 AudioFocus 이벤트 무시
+                if (isUserPaused) {
+                    Log.d("AudioPlayer", "AudioFocus event ignored - user paused")
+                    return@launch
+                }
+
                 when {
                     active && volume < 1.0f -> {
                         players.forEach { (id, player) ->
@@ -125,6 +149,7 @@ class AudioPlayer(
                 }
                 players.remove(soundId)
                 _playingSounds.value = _playingSounds.value - soundId
+                updatePlayingState()
             }
         }
     }
@@ -180,6 +205,50 @@ class AudioPlayer(
             players[soundId]?.volume = volume
             // volume 업데이트 시 originalVolumes도 업데이트
             originalVolumes[soundId] = volume
+        }
+    }
+
+    fun pauseAll() {
+        Log.d("AudioPlayer", "pauseAll() called - players count: ${players.size}")
+        isUserPaused = true
+        coroutineScope.launch(Dispatchers.Main) {
+            players.forEach { (id, player) ->
+                Log.d("AudioPlayer", "Player $id - isPlaying: ${player.isPlaying}, playWhenReady: ${player.playWhenReady}")
+                if (player.isPlaying || player.playWhenReady) {
+                    player.pause()
+                    Log.d("AudioPlayer", "Player $id paused")
+                }
+            }
+            delay(100) // ExoPlayer가 상태를 업데이트할 시간 제공
+            updatePlayingState()
+        }
+    }
+
+    fun resumeAll() {
+        Log.d("AudioPlayer", "resumeAll() called - players count: ${players.size}")
+        isUserPaused = false
+        coroutineScope.launch(Dispatchers.Main) {
+            players.forEach { (id, player) ->
+                Log.d("AudioPlayer", "Player $id - isPlaying: ${player.isPlaying}, playWhenReady: ${player.playWhenReady}")
+                if (!player.isPlaying && !player.playWhenReady) {
+                    player.play()
+                    Log.d("AudioPlayer", "Player $id resumed")
+                }
+            }
+            delay(100) // ExoPlayer가 상태를 업데이트할 시간 제공
+            updatePlayingState()
+        }
+    }
+
+    fun isAnyPlaying(): Boolean {
+        return players.values.any { it.isPlaying }
+    }
+
+    private fun updatePlayingState() {
+        coroutineScope.launch(Dispatchers.Main) {
+            val anyPlaying = isAnyPlaying()
+            Log.d("AudioPlayer", "updatePlayingState - anyPlaying: $anyPlaying")
+            _isPlaying.value = anyPlaying
         }
     }
 

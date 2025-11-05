@@ -1,21 +1,28 @@
 package co.kr.whitewave.presentation.service
 
+import android.Manifest
 import android.app.Service
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.content.ContextCompat
+import co.kr.whitewave.domain.repository.NotificationSettingsRepository
 import co.kr.whitewave.presentation.manager.AudioPlayer
 import co.kr.whitewave.presentation.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class AudioService : Service() {
     private val audioPlayer: AudioPlayer by inject()
+    private val notificationSettingsRepository: NotificationSettingsRepository by inject()
     private lateinit var notificationManager: MediaNotificationManager
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -33,24 +40,47 @@ class AudioService : Service() {
         super.onCreate()
         notificationManager = MediaNotificationManager(this)
 
-        // 재생 중인 사운드 모니터링
+        // 재생 중인 사운드, 실제 재생 상태, 알림 설정을 함께 모니터링
         serviceScope.launch {
-            audioPlayer.playingSounds.collect { soundMap ->
+            combine(
+                audioPlayer.playingSounds,
+                audioPlayer.isPlaying,
+                notificationSettingsRepository.isNotificationEnabled
+            ) { soundMap, playerIsPlaying, notificationEnabled ->
+                Triple(soundMap, playerIsPlaying, notificationEnabled)
+            }.collect { (soundMap, playerIsPlaying, notificationEnabled) ->
                 activeSounds.clear()
                 activeSounds.addAll(soundMap.values.map { it.name })
-                isPlaying = soundMap.isNotEmpty()
+                val hasActiveSounds = soundMap.isNotEmpty()
+                isPlaying = playerIsPlaying
 
-                // 재생 상태에 따라 Foreground 서비스 시작/중지
-                if (isPlaying) {
-                    Log.d("AudioService", "Starting foreground service")
+                Log.d("AudioService", "State update - hasActiveSounds: $hasActiveSounds, isPlaying: $isPlaying")
+
+                // 시스템 알림 권한 확인
+                val hasSystemPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ContextCompat.checkSelfPermission(
+                        this@AudioService,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                } else {
+                    true
+                }
+
+                // 알림 설정이 활성화되어 있고, 시스템 권한이 있고, 사운드가 재생 중일 때만 알림 표시
+                if (hasActiveSounds && notificationEnabled && hasSystemPermission) {
+                    Log.d("AudioService", "Starting foreground service with isPlaying: $isPlaying")
                     startForeground(
                         MediaNotificationManager.NOTIFICATION_ID,
                         notificationManager.buildNotification(
-                            isPlaying = true,
+                            isPlaying = isPlaying,
                             remainingTime = remainingTime,
                             activeSounds = activeSounds
                         )
                     )
+                } else if (hasActiveSounds) {
+                    // 알림이 비활성화되어 있지만 재생 중일 때는 백그라운드로
+                    Log.d("AudioService", "Running in background (notification disabled)")
+                    stopForeground(true)
                 } else {
                     Log.d("AudioService", "Stopping foreground service")
                     stopForeground(true)
@@ -63,10 +93,14 @@ class AudioService : Service() {
         // 액션 처리
         when (intent?.action) {
             MediaNotificationManager.ACTION_PLAY -> {
-                // 일시정지된 사운드들 재생
+                Log.d("AudioService", "ACTION_PLAY received")
+                // 모든 사운드 재생 - isPlaying은 AudioPlayer의 Flow에서 자동 업데이트
+                audioPlayer.resumeAll()
             }
             MediaNotificationManager.ACTION_PAUSE -> {
-                // 현재 재생 중인 사운드들 일시정지
+                Log.d("AudioService", "ACTION_PAUSE received")
+                // 모든 사운드 일시정지 - isPlaying은 AudioPlayer의 Flow에서 자동 업데이트
+                audioPlayer.pauseAll()
             }
             MediaNotificationManager.ACTION_STOP -> {
                 stopAllSounds()

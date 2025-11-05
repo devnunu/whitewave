@@ -73,14 +73,30 @@ class HomeViewModel(
             }
         }
 
-        // 재생 중인 사운드 모니터링
+        // 재생 중인 사운드 모니터링 - playingSounds와 isPlaying을 함께 구독
         viewModelScope.launch {
             audioPlayer.playingSounds.collectLatest { playingSounds ->
-                // 재생 중인 사운드가 있으면 isPlaying을 true로 설정
                 setState { state ->
-                    state.copy(isPlaying = playingSounds.isNotEmpty())
+                    state.copy(sounds = state.sounds.map { sound ->
+                        playingSounds[sound.id]?.let { playingSound ->
+                            sound.copy(
+                                isSelected = true,
+                                volume = playingSound.volume
+                            )
+                        } ?: sound.copy(isSelected = false)
+                    })
                 }
                 Log.d("HomeViewModel", "Playing sounds updated: ${playingSounds.size}")
+            }
+        }
+
+        // 실제 재생 상태 모니터링
+        viewModelScope.launch {
+            audioPlayer.isPlaying.collectLatest { isPlaying ->
+                setState { state ->
+                    state.copy(isPlaying = isPlaying)
+                }
+                Log.d("HomeViewModel", "isPlaying updated: $isPlaying")
             }
         }
 
@@ -309,21 +325,8 @@ class HomeViewModel(
             val newPlayingState = !currentState.isPlaying
 
             if (newPlayingState) {
-                if (adManager.shouldShowAd()) {
-                    sendEffect(Effect.ShowAd)
-                    return@launch
-                }
-
-                // 선택된 사운드가 있으면 모두 재생
-                currentState.sounds.filter { it.isSelected }.forEach { sound ->
-                    try {
-                        audioPlayer.playSound(sound)
-                    } catch (e: SoundMixingLimitException) {
-                        setState { it.copy(playError = e.message) }
-                        sendEffect(Effect.ShowSnackbar(e.message ?: "사운드 재생 오류"))
-                        return@launch
-                    }
-                }
+                // 재생 재개
+                audioPlayer.resumeAll()
 
                 // 타이머가 일시정지 상태였다면 재개
                 if (timer.timerState.value is SoundTimer.TimerState.Paused) {
@@ -331,9 +334,7 @@ class HomeViewModel(
                 }
             } else {
                 // 모든 사운드 일시정지
-                currentState.sounds.filter { it.isSelected }.forEach { sound ->
-                    audioPlayer.stopSound(sound.id)
-                }
+                audioPlayer.pauseAll()
 
                 // 타이머도 일시정지
                 if (timer.timerState.value is SoundTimer.TimerState.Running) {

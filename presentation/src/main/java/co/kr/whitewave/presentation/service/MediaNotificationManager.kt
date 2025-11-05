@@ -66,20 +66,10 @@ class MediaNotificationManager(
             0,
             Intent(context, AudioService::class.java).apply {
                 action = if (isPlaying) ACTION_PAUSE else ACTION_PLAY
-                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val stopIntent = PendingIntent.getService(
-            context,
-            0,
-            Intent(context, AudioService::class.java).apply {
-                action = ACTION_STOP
-                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            },
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("WhiteWave")
@@ -94,25 +84,9 @@ class MediaNotificationManager(
                 if (isPlaying) "Pause" else "Play",
                 playPauseIntent
             )
-            .addAction(
-                R.drawable.ic_stop,
-                "Stop",
-                stopIntent
-            )
-            .setStyle(MediaStyle().setShowActionsInCompactView(0, 1))
-            .setOngoing(isPlaying)  // true에서 isPlaying으로 변경
+            .setStyle(MediaStyle().setShowActionsInCompactView(0))
+            .setOngoing(true)  // 항상 스와이프로 제거할 수 없도록 설정
             .setAutoCancel(false)
-            // 알림이 스와이프로 제거될 때 실행될 Intent 설정
-            .setDeleteIntent(
-                PendingIntent.getService(
-                    context,
-                    0,
-                    Intent(context, AudioService::class.java).apply {
-                        action = ACTION_STOP
-                    },
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-            )
             .build()
     }
 
