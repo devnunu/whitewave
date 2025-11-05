@@ -17,7 +17,8 @@ object SettingContract {
     data class State(
         val subscriptionTier: SubscriptionTier = SubscriptionTier.Free,
         val hasNotificationPermission: Boolean = false,
-        val isNotificationEnabled: Boolean = true // 앱 내 알림 설정 (기본값: 활성화)
+        val isNotificationEnabled: Boolean = true, // 앱 내 알림 설정 (기본값: 활성화)
+        val isBackgroundPlaybackEnabled: Boolean = true // 백그라운드 재생 설정 (기본값: 활성화)
     ) : UiState
 
     /**
@@ -28,6 +29,7 @@ object SettingContract {
         data class CheckNotificationPermission(val activity: Activity) : ViewEvent()
         object OpenNotificationSettings : ViewEvent()
         data class SetNotificationEnabled(val enabled: Boolean) : ViewEvent()
+        data class SetBackgroundPlaybackEnabled(val enabled: Boolean) : ViewEvent()
         object ShowPremiumInfo : ViewEvent()
         object NavigateBack : ViewEvent()
     }

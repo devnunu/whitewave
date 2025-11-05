@@ -15,6 +15,11 @@ interface NotificationSettingsRepository {
     val hasRequestedPermission: Flow<Boolean>
 
     /**
+     * 백그라운드 재생 활성화 여부
+     */
+    val isBackgroundPlaybackEnabled: Flow<Boolean>
+
+    /**
      * 앱 내 알림 활성화 상태 저장
      */
     suspend fun setNotificationEnabled(enabled: Boolean)
@@ -23,4 +28,9 @@ interface NotificationSettingsRepository {
      * 알림 권한 요청 여부 저장
      */
     suspend fun setHasRequestedPermission(requested: Boolean)
+
+    /**
+     * 백그라운드 재생 활성화 상태 저장
+     */
+    suspend fun setBackgroundPlaybackEnabled(enabled: Boolean)
 }

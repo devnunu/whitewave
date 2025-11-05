@@ -264,8 +264,12 @@ fun SettingsScreen(
                             icon = Icons.Filled.PlayCircle,
                             title = "Background Playback",
                             hasToggle = true,
-                            isToggleOn = false,
-                            onToggleChange = { /* TODO: Background playback toggle */ }
+                            isToggleOn = state.isBackgroundPlaybackEnabled,
+                            onToggleChange = {
+                                viewModel.handleViewEvent(
+                                    ViewEvent.SetBackgroundPlaybackEnabled(!state.isBackgroundPlaybackEnabled)
+                                )
+                            }
                         )
 
                         HorizontalDivider(

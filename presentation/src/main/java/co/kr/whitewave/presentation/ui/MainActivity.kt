@@ -11,8 +11,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import co.kr.whitewave.domain.repository.NotificationSettingsRepository
+import co.kr.whitewave.presentation.manager.AudioPlayer
 import co.kr.whitewave.presentation.navigation.AppNavHost
 import co.kr.whitewave.presentation.ui.theme.WhiteWaveTheme
 import kotlinx.coroutines.flow.first
@@ -22,6 +25,10 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
 
     private val notificationSettingsRepository: NotificationSettingsRepository by inject()
+    private val audioPlayer: AudioPlayer by inject()
+
+    // 백그라운드 전환으로 인해 일시정지되었는지 추적
+    private var wasPausedByBackground = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +42,34 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             checkAndRequestNotificationPermission()
         }
+
+        // 백그라운드 재생 설정에 따른 lifecycle 관리
+        lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStop(owner: LifecycleOwner) {
+                super.onStop(owner)
+                lifecycleScope.launch {
+                    val isBackgroundPlaybackEnabled =
+                        notificationSettingsRepository.isBackgroundPlaybackEnabled.first()
+
+                    // 백그라운드 재생이 비활성화되어 있고, 현재 재생 중인 경우
+                    if (!isBackgroundPlaybackEnabled && audioPlayer.isPlaying.value) {
+                        audioPlayer.pauseAll()
+                        wasPausedByBackground = true
+                    }
+                }
+            }
+
+            override fun onStart(owner: LifecycleOwner) {
+                super.onStart(owner)
+                lifecycleScope.launch {
+                    // 백그라운드 전환으로 인해 일시정지되었던 경우에만 재개
+                    if (wasPausedByBackground) {
+                        audioPlayer.resumeAll()
+                        wasPausedByBackground = false
+                    }
+                }
+            }
+        })
 
         setContent {
             WhiteWaveTheme {

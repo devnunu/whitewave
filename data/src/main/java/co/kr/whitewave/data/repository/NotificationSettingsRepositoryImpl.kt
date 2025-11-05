@@ -14,11 +14,18 @@ class NotificationSettingsRepositoryImpl(
     override val hasRequestedPermission: Flow<Boolean> =
         notificationSettingsLocalDataSource.hasRequestedPermission
 
+    override val isBackgroundPlaybackEnabled: Flow<Boolean> =
+        notificationSettingsLocalDataSource.isBackgroundPlaybackEnabled
+
     override suspend fun setNotificationEnabled(enabled: Boolean) {
         notificationSettingsLocalDataSource.setNotificationEnabled(enabled)
     }
 
     override suspend fun setHasRequestedPermission(requested: Boolean) {
         notificationSettingsLocalDataSource.setHasRequestedPermission(requested)
+    }
+
+    override suspend fun setBackgroundPlaybackEnabled(enabled: Boolean) {
+        notificationSettingsLocalDataSource.setBackgroundPlaybackEnabled(enabled)
     }
 }

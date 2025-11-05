@@ -36,6 +36,13 @@ class SettingsViewModel(
                 setState { it.copy(isNotificationEnabled = enabled) }
             }
             .launchIn(viewModelScope)
+
+        // 백그라운드 재생 설정 모니터링
+        notificationSettingsRepository.isBackgroundPlaybackEnabled
+            .onEach { enabled ->
+                setState { it.copy(isBackgroundPlaybackEnabled = enabled) }
+            }
+            .launchIn(viewModelScope)
     }
 
     override fun handleViewEvent(viewEvent: ViewEvent) {
@@ -44,6 +51,7 @@ class SettingsViewModel(
             is ViewEvent.CheckNotificationPermission -> checkNotificationPermission(viewEvent.activity)
             is ViewEvent.OpenNotificationSettings -> sendEffect(Effect.NavigateToNotificationSettings)
             is ViewEvent.SetNotificationEnabled -> setNotificationEnabled(viewEvent.enabled)
+            is ViewEvent.SetBackgroundPlaybackEnabled -> setBackgroundPlaybackEnabled(viewEvent.enabled)
             is ViewEvent.ShowPremiumInfo -> sendEffect(Effect.ShowPremiumDialog)
             is ViewEvent.NavigateBack -> sendEffect(Effect.NavigateBack)
         }
@@ -76,6 +84,12 @@ class SettingsViewModel(
     private fun setNotificationEnabled(enabled: Boolean) {
         viewModelScope.launch {
             notificationSettingsRepository.setNotificationEnabled(enabled)
+        }
+    }
+
+    private fun setBackgroundPlaybackEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            notificationSettingsRepository.setBackgroundPlaybackEnabled(enabled)
         }
     }
 }
