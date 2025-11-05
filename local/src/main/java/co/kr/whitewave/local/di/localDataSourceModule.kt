@@ -1,7 +1,9 @@
 package co.kr.whitewave.local.di
 
+import co.kr.whitewave.data.local.NotificationSettingsLocalDataSource
 import co.kr.whitewave.data.local.PresetLocalDataSource
 import co.kr.whitewave.data.local.SubscriptionLocalDataSource
+import co.kr.whitewave.local.impl.NotificationSettingsLocalDataSourceImpl
 import co.kr.whitewave.local.impl.PresetLocalDataSourceImpl
 import co.kr.whitewave.local.impl.SubscriptionLocalDataSourceImpl
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +20,10 @@ val localDataSourceModule = module {
             context = get(),
             coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
         )
+    }
+
+    single<NotificationSettingsLocalDataSource> {
+        NotificationSettingsLocalDataSourceImpl(context = get())
     }
 
 }

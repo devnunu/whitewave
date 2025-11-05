@@ -31,7 +31,7 @@ val viewModelModule = module {
             presetRepository = get()
         )
     }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get()) }
 
     // Use cases
     single {

@@ -11,10 +11,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
+import co.kr.whitewave.domain.repository.NotificationSettingsRepository
 import co.kr.whitewave.presentation.navigation.AppNavHost
 import co.kr.whitewave.presentation.ui.theme.WhiteWaveTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+
+    private val notificationSettingsRepository: NotificationSettingsRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +31,11 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        checkNotificationPermission()
+        // 최초 한 번만 알림 권한 요청
+        lifecycleScope.launch {
+            checkAndRequestNotificationPermission()
+        }
+
         setContent {
             WhiteWaveTheme {
                 Surface(
@@ -37,8 +48,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun checkNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    private suspend fun checkAndRequestNotificationPermission() {
+        // 이미 권한 요청을 한 적이 있는지 확인
+        val hasRequested = notificationSettingsRepository.hasRequestedPermission.first()
+
+        if (!hasRequested && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
@@ -49,6 +63,23 @@ class MainActivity : ComponentActivity() {
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                     NOTIFICATION_PERMISSION_CODE
                 )
+                // 권한 요청했음을 기록
+                notificationSettingsRepository.setHasRequestedPermission(true)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            NOTIFICATION_PERMISSION_CODE -> {
+                // 권한 요청 결과는 설정 화면에서 다시 확인됨
+                // 별도의 처리가 필요하지 않음
             }
         }
     }

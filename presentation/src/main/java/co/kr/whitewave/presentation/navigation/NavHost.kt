@@ -3,6 +3,7 @@ package co.kr.whitewave.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
@@ -14,6 +15,7 @@ import co.kr.whitewave.presentation.ui.screens.presetedit.PresetEditScreen
 import co.kr.whitewave.presentation.ui.screens.setting.SettingsScreen
 import co.kr.whitewave.presentation.util.ScreenAnim
 import co.kr.whitewave.presentation.util.composable
+import co.kr.whitewave.presentation.util.openNotificationSettings
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -43,8 +45,12 @@ fun AppNavHost(
         composable<NavRoute.Settings>(
             screenAnim = ScreenAnim.HORIZONTAL_SLIDE
         ) {
+            val context = LocalContext.current
             SettingsScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onNotificationSettingClick = {
+                    context.openNotificationSettings()
+                }
             )
         }
 

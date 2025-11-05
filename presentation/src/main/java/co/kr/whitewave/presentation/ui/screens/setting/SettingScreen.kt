@@ -42,6 +42,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,6 +56,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import co.kr.whitewave.domain.model.subscription.SubscriptionTier
 import co.kr.whitewave.presentation.ui.components.PremiumInfoDialog
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
@@ -80,6 +84,24 @@ fun SettingsScreen(
 
     // 다이얼로그 상태
     var showPremiumDialog by remember { mutableStateOf(false) }
+
+    // 라이프사이클 이벤트 감지 - 화면이 다시 보일 때마다 권한 상태 확인
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                activity?.let {
+                    viewModel.handleViewEvent(ViewEvent.CheckNotificationPermission(it))
+                }
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     // 컴포넌트가 처음 표시될 때 알림 권한 확인
     LaunchedEffect(Unit) {
@@ -209,13 +231,28 @@ fun SettingsScreen(
                 ) {
                     Column {
                         // Notifications
-                        SettingItemNew(
-                            icon = Icons.Filled.Notifications,
-                            title = "Notifications",
-                            hasToggle = true,
-                            isToggleOn = state.hasNotificationPermission,
-                            onToggleChange = { viewModel.handleViewEvent(ViewEvent.OpenNotificationSettings) }
-                        )
+                        if (state.hasNotificationPermission) {
+                            // 시스템 알림 권한이 있을 경우: 토글로 앱 내 알림 on/off
+                            SettingItemNew(
+                                icon = Icons.Filled.Notifications,
+                                title = "Notifications",
+                                hasToggle = true,
+                                isToggleOn = state.isNotificationEnabled,
+                                onToggleChange = {
+                                    viewModel.handleViewEvent(
+                                        ViewEvent.SetNotificationEnabled(!state.isNotificationEnabled)
+                                    )
+                                }
+                            )
+                        } else {
+                            // 시스템 알림 권한이 없을 경우: 설정으로 이동하는 버튼
+                            SettingItemNew(
+                                icon = Icons.Filled.Notifications,
+                                title = "Notifications",
+                                rightText = "Enable",
+                                onClick = { viewModel.handleViewEvent(ViewEvent.OpenNotificationSettings) }
+                            )
+                        }
 
                         HorizontalDivider(
                             color = Color(0xFF27373a),

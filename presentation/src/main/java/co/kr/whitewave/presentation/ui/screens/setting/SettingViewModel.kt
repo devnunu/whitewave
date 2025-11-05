@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
+import co.kr.whitewave.domain.repository.NotificationSettingsRepository
 import co.kr.whitewave.domain.repository.SubscriptionRepository
 import co.kr.whitewave.presentation.ui.base.BaseViewModel
 import co.kr.whitewave.presentation.ui.screens.setting.SettingContract.Effect
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val notificationSettingsRepository: NotificationSettingsRepository
 ) : BaseViewModel<State, ViewEvent, Effect>(State()) {
 
     init {
@@ -27,6 +29,13 @@ class SettingsViewModel(
                 setState { it.copy(subscriptionTier = tier) }
             }
             .launchIn(viewModelScope)
+
+        // 앱 내 알림 설정 모니터링
+        notificationSettingsRepository.isNotificationEnabled
+            .onEach { enabled ->
+                setState { it.copy(isNotificationEnabled = enabled) }
+            }
+            .launchIn(viewModelScope)
     }
 
     override fun handleViewEvent(viewEvent: ViewEvent) {
@@ -34,6 +43,7 @@ class SettingsViewModel(
             is ViewEvent.StartSubscription -> startSubscription(viewEvent.activity)
             is ViewEvent.CheckNotificationPermission -> checkNotificationPermission(viewEvent.activity)
             is ViewEvent.OpenNotificationSettings -> sendEffect(Effect.NavigateToNotificationSettings)
+            is ViewEvent.SetNotificationEnabled -> setNotificationEnabled(viewEvent.enabled)
             is ViewEvent.ShowPremiumInfo -> sendEffect(Effect.ShowPremiumDialog)
             is ViewEvent.NavigateBack -> sendEffect(Effect.NavigateBack)
         }
@@ -61,5 +71,11 @@ class SettingsViewModel(
         }
 
         setState { it.copy(hasNotificationPermission = hasPermission) }
+    }
+
+    private fun setNotificationEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            notificationSettingsRepository.setNotificationEnabled(enabled)
+        }
     }
 }

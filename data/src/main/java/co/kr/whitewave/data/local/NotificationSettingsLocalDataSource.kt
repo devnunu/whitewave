@@ -1,0 +1,25 @@
+package co.kr.whitewave.data.local
+
+import kotlinx.coroutines.flow.Flow
+
+interface NotificationSettingsLocalDataSource {
+    /**
+     * 앱 내 알림 활성화 여부
+     */
+    val isNotificationEnabled: Flow<Boolean>
+
+    /**
+     * 알림 권한 요청을 한 번이라도 했는지 여부
+     */
+    val hasRequestedPermission: Flow<Boolean>
+
+    /**
+     * 앱 내 알림 활성화 상태 저장
+     */
+    suspend fun setNotificationEnabled(enabled: Boolean)
+
+    /**
+     * 알림 권한 요청 여부 저장
+     */
+    suspend fun setHasRequestedPermission(requested: Boolean)
+}
