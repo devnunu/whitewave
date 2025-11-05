@@ -189,12 +189,12 @@ fun WhiteWaveTheme(
         else -> LightColorScheme
     }
 
-    // 상태 표시줄 색상 설정
+    // 상태 표시줄 색상 설정 - 항상 하얀색 아이콘 사용 (어두운 배경)
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view)?.isAppearanceLightStatusBars = false
         }
     }
 
