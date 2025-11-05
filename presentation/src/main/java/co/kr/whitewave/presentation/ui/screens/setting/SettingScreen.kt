@@ -2,6 +2,8 @@ package co.kr.whitewave.presentation.ui.screens.setting
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -84,6 +86,26 @@ fun SettingsScreen(
 
     // 다이얼로그 상태
     var showPremiumDialog by remember { mutableStateOf(false) }
+
+    // 앱 버전 가져오기
+    val appVersion = remember {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.packageManager.getPackageInfo(
+                    context.packageName,
+                    PackageManager.PackageInfoFlags.of(0)
+                ).versionName
+            } else {
+                @Suppress("DEPRECATION")
+                context.packageManager.getPackageInfo(
+                    context.packageName,
+                    0
+                ).versionName
+            }
+        } catch (e: Exception) {
+            "Unknown"
+        }
+    }
 
     // 라이프사이클 이벤트 감지 - 화면이 다시 보일 때마다 권한 상태 확인
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -312,7 +334,8 @@ fun SettingsScreen(
                     SettingItemNew(
                         icon = Icons.Filled.Info,
                         title = "App Version",
-                        rightText = "1.2.5"
+                        rightText = appVersion,
+                        showArrow = false
                     )
                 }
 
@@ -419,7 +442,8 @@ private fun SettingItemNew(
     isToggleOn: Boolean = false,
     onToggleChange: (() -> Unit)? = null,
     rightText: String? = null,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    showArrow: Boolean = true
 ) {
     Row(
         modifier = Modifier
@@ -481,14 +505,21 @@ private fun SettingItemNew(
                 Text(
                     text = rightText,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF8A9AAA)
+                    color = Color(0xFF8A9AAA),
+                    modifier = if (!showArrow) {
+                        Modifier.padding(end = 8.dp)
+                    } else {
+                        Modifier
+                    }
                 )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = Color(0xFF8A9AAA),
-                    modifier = Modifier.size(24.dp)
-                )
+                if (showArrow) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color(0xFF8A9AAA),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }
